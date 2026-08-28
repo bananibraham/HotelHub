@@ -10,11 +10,12 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-HotelHub-9f6efed1-e65d-4dcf-8793-97a69445fe9e")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("HotelHub")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e78bb1c3a4fdc89cb3cfe13679e0095f2e858b59")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+89fd9e447972878da6758a4d05cb62e09f262170")]
 [assembly: System.Reflection.AssemblyProductAttribute("HotelHub")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HotelHub")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
