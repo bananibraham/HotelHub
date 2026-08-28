@@ -1,0 +1,37 @@
+@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Access denied";
+}
+
+<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
+                <div class="text">
+                    <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>Access Denied</span></p>
+                    <h1 class="mb-4 bread">Access Denied</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="auth-card text-center">
+                    <div class="auth-header mb-4">
+                        <h2 class="text-danger">Access Denied</h2>
+                        <p>You do not have permission to access this resource.</p>
+                    </div>
+                    <div class="mt-4">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-primary btn-auth px-4">Return Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

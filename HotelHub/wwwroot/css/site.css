@@ -1,0 +1,175 @@
+/* HotelHub - Custom Overrides and Theme Styling */
+
+/* Ensure navbar logout button looks and behaves identically to standard nav-links */
+.navbar-nav .nav-item form {
+    display: inline;
+}
+
+.navbar-nav .btn.nav-link {
+    font-size: 14px;
+    font-weight: 400;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: inherit;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .btn.nav-link:hover {
+    color: #ffffff !important;
+    opacity: 1;
+}
+
+.ftco-navbar-light.scrolled .navbar-nav .btn.nav-link {
+    color: #000000 !important;
+    padding-top: 0.9rem !important;
+    padding-bottom: 0.9rem !important;
+}
+
+.ftco-navbar-light.scrolled .navbar-nav .btn.nav-link:hover {
+    color: #8d703b !important;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-nav .btn.nav-link {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 0.9rem !important;
+        padding-bottom: 0.9rem !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+}
+
+/* Deluxe Auth / Identity Form Styling */
+.auth-wrapper {
+    width: 100%;
+}
+
+.auth-card {
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    padding: 40px;
+    margin: 0 auto;
+}
+
+.auth-card .auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-card .auth-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    font-family: "Playfair Display", Georgia, serif;
+}
+
+.auth-card .auth-header p {
+    color: #777777;
+    font-size: 15px;
+    margin-bottom: 0;
+}
+
+.auth-card .form-group {
+    margin-bottom: 22px;
+}
+
+.auth-card .form-group label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+    color: #555555;
+    margin-bottom: 8px;
+}
+
+.auth-card .form-control {
+    height: 50px !important;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 10px 18px;
+    font-size: 15px;
+    color: #333333 !important;
+    background: #fafafa !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card .form-control:focus {
+    border-color: #8d703b;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(141, 112, 59, 0.15) !important;
+}
+
+.auth-card .btn-auth {
+    height: 52px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: #8d703b;
+    border: 1px solid #8d703b;
+    color: #ffffff;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.auth-card .btn-auth:hover {
+    background: #73592c;
+    border-color: #73592c;
+    color: #ffffff;
+}
+
+.auth-card .custom-checkbox .custom-control-label {
+    font-size: 14px;
+    color: #666666;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.auth-card .auth-links {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+    text-align: center;
+}
+
+.auth-card .auth-links a {
+    color: #8d703b;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.auth-card .auth-links a:hover {
+    color: #5d461f;
+    text-decoration: underline;
+}
+
+.auth-card .validation-summary-errors ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+/* Privacy & Standard Inner Page Content Styling */
+.inner-page-content {
+    line-height: 1.8;
+    color: #555555;
+}
+
+.inner-page-content h3 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 24px;
+    color: #1a1a1a;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
