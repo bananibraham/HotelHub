@@ -1,3 +1,5 @@
-<Solution>
-  <Project Path="HotelHub/HotelHub.csproj" />
+﻿<Solution>
+  <Project Path="PresentationLayer/PresentationLayer.csproj" />
+  <Project Path="BLLayer1/BLLayer1.csproj" />
+  <Project Path="DataAccessLayer/DataAccessLayer.csproj" />
 </Solution>
