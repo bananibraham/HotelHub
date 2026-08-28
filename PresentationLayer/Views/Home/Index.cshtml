@@ -1,0 +1,532 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- 1. HERO SLIDER -->
+<section class="home-slider owl-carousel">
+    <div class="slider-item" style="background-image:url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-center justify-content-center">
+                <div class="col-md-12 ftco-animate text-center">
+                    <div class="text mb-5 pb-3">
+                        <h1 class="mb-3">Welcome To HotelHub</h1>
+                        <h2>Luxury Hotels &amp; Resorts</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slider-item" style="background-image:url('@Url.Content("~/images/bg_2.jpg")');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-center justify-content-center">
+                <div class="col-md-12 ftco-animate text-center">
+                    <div class="text mb-5 pb-3">
+                        <h1 class="mb-3">Small Details Make A Big Difference</h1>
+                        <h2>The Best Place To Stay</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2. BOOKING / AVAILABILITY BAR -->
+<section class="ftco-booking">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <form action="#rooms-section" class="booking-form">
+                    <div class="row">
+                        <div class="col-md-3 d-flex">
+                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
+                                <div class="wrap">
+                                    <label for="checkin_date">Check-in Date</label>
+                                    <input type="text" id="checkin_date" class="form-control checkin_date" placeholder="Check-in date" autocomplete="off" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 d-flex">
+                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
+                                <div class="wrap">
+                                    <label for="checkout_date">Check-out Date</label>
+                                    <input type="text" id="checkout_date" class="form-control checkout_date" placeholder="Check-out date" autocomplete="off" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md d-flex">
+                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
+                                <div class="wrap">
+                                    <label for="room_type">Room</label>
+                                    <div class="form-field">
+                                        <div class="select-wrap">
+                                            <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                                            <select name="room_type" id="room_type" class="form-control">
+                                                <option value="suite">Suite</option>
+                                                <option value="family">Family Room</option>
+                                                <option value="deluxe">Deluxe Room</option>
+                                                <option value="classic">Classic Room</option>
+                                                <option value="superior">Superior Room</option>
+                                                <option value="luxury">Luxury Room</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md d-flex">
+                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
+                                <div class="wrap">
+                                    <label for="customer_count">Customer</label>
+                                    <div class="form-field">
+                                        <div class="select-wrap">
+                                            <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                                            <select name="customer_count" id="customer_count" class="form-control">
+                                                <option value="1">1 Adult</option>
+                                                <option value="2">2 Adults</option>
+                                                <option value="3">3 Adults</option>
+                                                <option value="4">4 Adults</option>
+                                                <option value="5">5 Adults</option>
+                                                <option value="6">6 Adults</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md d-flex">
+                            <div class="form-group d-flex align-self-stretch">
+                                <input type="submit" value="Check Availability" class="btn btn-primary py-3 px-4 align-self-stretch" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. WELCOME / ABOUT SECTION -->
+<section class="ftco-section ftc-no-pb ftc-no-pt" id="about-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 p-md-5 img img-2 d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/about.jpg")');">
+                <a href="https://vimeo.com/45830194" class="icon popup-vimeo d-flex justify-content-center align-items-center">
+                    <span class="icon-play"></span>
+                </a>
+            </div>
+            <div class="col-md-7 py-5 wrap-about pb-md-5 ftco-animate">
+                <div class="heading-section heading-section-wo-line pt-md-5 pl-md-5 mb-5">
+                    <div class="ml-md-0">
+                        <span class="subheading">Welcome to HotelHub</span>
+                        <h2 class="mb-4">Welcome To Our Hotel</h2>
+                    </div>
+                </div>
+                <div class="pb-md-5 pl-md-5">
+                    <p>On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country.</p>
+                    <p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she continued her way.</p>
+                    <ul class="ftco-social d-flex mt-4">
+                        <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                        <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                        <li class="ftco-animate"><a href="#"><span class="icon-google-plus"></span></a></li>
+                        <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. SERVICES SECTION -->
+<section class="ftco-section" id="services-section">
+    <div class="container">
+        <div class="row d-flex">
+            <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                <div class="media block-6 services py-4 d-block text-center">
+                    <div class="d-flex justify-content-center">
+                        <div class="icon d-flex align-items-center justify-content-center">
+                            <span class="flaticon-reception-bell"></span>
+                        </div>
+                    </div>
+                    <div class="media-body p-2 mt-2">
+                        <h3 class="heading mb-3">24/7 Front Desk</h3>
+                        <p>A small river named Duden flows by their place and supplies.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                <div class="media block-6 services py-4 d-block text-center">
+                    <div class="d-flex justify-content-center">
+                        <div class="icon d-flex align-items-center justify-content-center">
+                            <span class="flaticon-serving-dish"></span>
+                        </div>
+                    </div>
+                    <div class="media-body p-2 mt-2">
+                        <h3 class="heading mb-3">Restaurant &amp; Bar</h3>
+                        <p>A small river named Duden flows by their place and supplies.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                <div class="media block-6 services py-4 d-block text-center">
+                    <div class="d-flex justify-content-center">
+                        <div class="icon d-flex align-items-center justify-content-center">
+                            <span class="flaticon-car"></span>
+                        </div>
+                    </div>
+                    <div class="media-body p-2 mt-2">
+                        <h3 class="heading mb-3">Transfer Services</h3>
+                        <p>A small river named Duden flows by their place and supplies.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                <div class="media block-6 services py-4 d-block text-center">
+                    <div class="d-flex justify-content-center">
+                        <div class="icon d-flex align-items-center justify-content-center">
+                            <span class="flaticon-spa"></span>
+                        </div>
+                    </div>
+                    <div class="media-body p-2 mt-2">
+                        <h3 class="heading mb-3">Spa Suites</h3>
+                        <p>A small river named Duden flows by their place and supplies.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. OUR ROOMS SECTION (STATIC PRESENTATIONAL PREVIEW) -->
+<section class="ftco-section bg-light" id="rooms-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5 pb-3">
+            <div class="col-md-7 heading-section text-center ftco-animate">
+                <h2 class="mb-4">Our Rooms</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
+                <div class="room">
+                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-1.jpg")');">
+                        <div class="icon d-flex justify-content-center align-items-center">
+                            <span class="icon-search2"></span>
+                        </div>
+                    </a>
+                    <div class="text p-3 text-center">
+                        <h3 class="mb-3"><a href="#rooms-section">Suite Room</a></h3>
+                        <p><span class="price mr-2">$120.00</span> <span class="per">per night</span></p>
+                        <hr>
+                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
+                <div class="room">
+                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-2.jpg")');">
+                        <div class="icon d-flex justify-content-center align-items-center">
+                            <span class="icon-search2"></span>
+                        </div>
+                    </a>
+                    <div class="text p-3 text-center">
+                        <h3 class="mb-3"><a href="#rooms-section">Family Room</a></h3>
+                        <p><span class="price mr-2">$200.00</span> <span class="per">per night</span></p>
+                        <hr>
+                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
+                <div class="room">
+                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-3.jpg")');">
+                        <div class="icon d-flex justify-content-center align-items-center">
+                            <span class="icon-search2"></span>
+                        </div>
+                    </a>
+                    <div class="text p-3 text-center">
+                        <h3 class="mb-3"><a href="#rooms-section">Deluxe Room</a></h3>
+                        <p><span class="price mr-2">$150.00</span> <span class="per">per night</span></p>
+                        <hr>
+                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
+                <div class="room">
+                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-4.jpg")');">
+                        <div class="icon d-flex justify-content-center align-items-center">
+                            <span class="icon-search2"></span>
+                        </div>
+                    </a>
+                    <div class="text p-3 text-center">
+                        <h3 class="mb-3"><a href="#rooms-section">Classic Room</a></h3>
+                        <p><span class="price mr-2">$130.00</span> <span class="per">per night</span></p>
+                        <hr>
+                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
+                <div class="room">
+                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-5.jpg")');">
+                        <div class="icon d-flex justify-content-center align-items-center">
+                            <span class="icon-search2"></span>
+                        </div>
+                    </a>
+                    <div class="text p-3 text-center">
+                        <h3 class="mb-3"><a href="#rooms-section">Superior Room</a></h3>
+                        <p><span class="price mr-2">$300.00</span> <span class="per">per night</span></p>
+                        <hr>
+                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
+                <div class="room">
+                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-6.jpg")');">
+                        <div class="icon d-flex justify-content-center align-items-center">
+                            <span class="icon-search2"></span>
+                        </div>
+                    </a>
+                    <div class="text p-3 text-center">
+                        <h3 class="mb-3"><a href="#rooms-section">Luxury Room</a></h3>
+                        <p><span class="price mr-2">$500.00</span> <span class="per">per night</span></p>
+                        <hr>
+                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. STATISTICS / COUNTERS SECTION -->
+<section class="ftco-section ftco-counter img" id="section-counter" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-3 d-flex justify-content-center counter-wrap ftco-animate">
+                        <div class="block-18 text-center">
+                            <div class="text">
+                                <strong class="number" data-number="50000">0</strong>
+                                <span>Happy Guests</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex justify-content-center counter-wrap ftco-animate">
+                        <div class="block-18 text-center">
+                            <div class="text">
+                                <strong class="number" data-number="3000">0</strong>
+                                <span>Rooms</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex justify-content-center counter-wrap ftco-animate">
+                        <div class="block-18 text-center">
+                            <div class="text">
+                                <strong class="number" data-number="1000">0</strong>
+                                <span>Staffs</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex justify-content-center counter-wrap ftco-animate">
+                        <div class="block-18 text-center">
+                            <div class="text">
+                                <strong class="number" data-number="100">0</strong>
+                                <span>Destination</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. TESTIMONIALS / REVIEWS SECTION -->
+<section class="ftco-section testimony-section bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 ftco-animate">
+                <div class="row ftco-animate">
+                    <div class="col-md-12">
+                        <div class="carousel-testimony owl-carousel ftco-owl">
+                            <div class="item">
+                                <div class="testimony-wrap py-4 pb-5">
+                                    <div class="user-img mb-4" style="background-image: url('@Url.Content("~/images/person_1.jpg")')">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text text-center">
+                                        <p class="mb-4">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+                                        <p class="name">Nathan Smith</p>
+                                        <span class="position">Guests</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="testimony-wrap py-4 pb-5">
+                                    <div class="user-img mb-4" style="background-image: url('@Url.Content("~/images/person_2.jpg")')">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text text-center">
+                                        <p class="mb-4">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+                                        <p class="name">Nathan Smith</p>
+                                        <span class="position">Guests</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="testimony-wrap py-4 pb-5">
+                                    <div class="user-img mb-4" style="background-image: url('@Url.Content("~/images/person_3.jpg")')">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text text-center">
+                                        <p class="mb-4">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+                                        <p class="name">Nathan Smith</p>
+                                        <span class="position">Guests</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="testimony-wrap py-4 pb-5">
+                                    <div class="user-img mb-4" style="background-image: url('@Url.Content("~/images/person_4.jpg")')">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text text-center">
+                                        <p class="mb-4">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+                                        <p class="name">Nathan Smith</p>
+                                        <span class="position">Guests</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 8. RECENT BLOG SECTION -->
+<section class="ftco-section" id="blog-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5 pb-3">
+            <div class="col-md-7 heading-section text-center ftco-animate">
+                <h2>Recent Blog</h2>
+            </div>
+        </div>
+        <div class="row d-flex">
+            <div class="col-md-3 d-flex ftco-animate">
+                <div class="blog-entry align-self-stretch">
+                    <a href="#blog-section" class="block-20" style="background-image: url('@Url.Content("~/images/image_1.jpg")');"></a>
+                    <div class="text mt-3 d-block">
+                        <h3 class="heading mt-3"><a href="#blog-section">Even the all-powerful Pointing has no control about the blind texts</a></h3>
+                        <div class="meta mb-3">
+                            <div><a href="#blog-section">Dec 6, 2026</a></div>
+                            <div><a href="#blog-section">Admin</a></div>
+                            <div><a href="#blog-section" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex ftco-animate">
+                <div class="blog-entry align-self-stretch">
+                    <a href="#blog-section" class="block-20" style="background-image: url('@Url.Content("~/images/image_2.jpg")');"></a>
+                    <div class="text mt-3">
+                        <h3 class="heading mt-3"><a href="#blog-section">Even the all-powerful Pointing has no control about the blind texts</a></h3>
+                        <div class="meta mb-3">
+                            <div><a href="#blog-section">Dec 6, 2026</a></div>
+                            <div><a href="#blog-section">Admin</a></div>
+                            <div><a href="#blog-section" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex ftco-animate">
+                <div class="blog-entry align-self-stretch">
+                    <a href="#blog-section" class="block-20" style="background-image: url('@Url.Content("~/images/image_3.jpg")');"></a>
+                    <div class="text mt-3">
+                        <h3 class="heading mt-3"><a href="#blog-section">Even the all-powerful Pointing has no control about the blind texts</a></h3>
+                        <div class="meta mb-3">
+                            <div><a href="#blog-section">Dec 6, 2026</a></div>
+                            <div><a href="#blog-section">Admin</a></div>
+                            <div><a href="#blog-section" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex ftco-animate">
+                <div class="blog-entry align-self-stretch">
+                    <a href="#blog-section" class="block-20" style="background-image: url('@Url.Content("~/images/image_4.jpg")');"></a>
+                    <div class="text mt-3">
+                        <h3 class="heading mt-3"><a href="#blog-section">Even the all-powerful Pointing has no control about the blind texts</a></h3>
+                        <div class="meta mb-3">
+                            <div><a href="#blog-section">Dec 6, 2026</a></div>
+                            <div><a href="#blog-section">Admin</a></div>
+                            <div><a href="#blog-section" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 9. INSTAGRAM GALLERY SECTION -->
+<section class="instagram">
+    <div class="container-fluid">
+        <div class="row no-gutters justify-content-center pb-5">
+            <div class="col-md-7 text-center heading-section ftco-animate">
+                <h2><span>Instagram</span></h2>
+            </div>
+        </div>
+        <div class="row no-gutters">
+            <div class="col-sm-12 col-md ftco-animate">
+                <a href="@Url.Content("~/images/insta-1.jpg")" class="insta-img image-popup" style="background-image: url('@Url.Content("~/images/insta-1.jpg")');">
+                    <div class="icon d-flex justify-content-center">
+                        <span class="icon-instagram align-self-center"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-12 col-md ftco-animate">
+                <a href="@Url.Content("~/images/insta-2.jpg")" class="insta-img image-popup" style="background-image: url('@Url.Content("~/images/insta-2.jpg")');">
+                    <div class="icon d-flex justify-content-center">
+                        <span class="icon-instagram align-self-center"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-12 col-md ftco-animate">
+                <a href="@Url.Content("~/images/insta-3.jpg")" class="insta-img image-popup" style="background-image: url('@Url.Content("~/images/insta-3.jpg")');">
+                    <div class="icon d-flex justify-content-center">
+                        <span class="icon-instagram align-self-center"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-12 col-md ftco-animate">
+                <a href="@Url.Content("~/images/insta-4.jpg")" class="insta-img image-popup" style="background-image: url('@Url.Content("~/images/insta-4.jpg")');">
+                    <div class="icon d-flex justify-content-center">
+                        <span class="icon-instagram align-self-center"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-12 col-md ftco-animate">
+                <a href="@Url.Content("~/images/insta-5.jpg")" class="insta-img image-popup" style="background-image: url('@Url.Content("~/images/insta-5.jpg")');">
+                    <div class="icon d-flex justify-content-center">
+                        <span class="icon-instagram align-self-center"></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
