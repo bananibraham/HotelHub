@@ -1,8 +1,8 @@
 using HotelHub.Models.Entities;
-using HotelHub.Repository.Services;
+using BLLayer1.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelHub.Web.Controllers
+namespace PresentationLayer.Controllers
 {
     public class CustomerController : Controller
     {

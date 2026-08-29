@@ -1,6 +1,6 @@
 using HotelHub.Models.Entities;
 
-namespace HotelHub.Repository.Services
+namespace BLLayer1.Services
 {
     public interface IReviewService
     {

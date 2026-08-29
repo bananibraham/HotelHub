@@ -1,8 +1,8 @@
-using HotelHub.Data;
 using HotelHub.Models.Entities;
+using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelHub.Repository.Services
+namespace BLLayer1.Services
 {
     public class ReviewService : IReviewService
     {

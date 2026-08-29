@@ -1,8 +1,8 @@
-using HotelHub.Data;
 using HotelHub.Models.Entities;
+using DataAccessLayer.Data; //假设DbContext在DataAccessLayer
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelHub.Repository.Services
+namespace BLLayer1.Services
 {
     public class CustomerService : ICustomerService
     {

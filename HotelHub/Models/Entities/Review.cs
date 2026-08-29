@@ -8,26 +8,24 @@ namespace HotelHub.Models.Entities
         [Key]
         public int ReviewId { get; set; }
 
-        [Required(ErrorMessage = "Customer ID is required")]
+        [Required]
         public int CustomerId { get; set; }
 
-        [Required(ErrorMessage = "Booking ID is required")]
+        [Required]
         public int BookingId { get; set; }
 
-        [Required(ErrorMessage = "Rating is required")]
-        [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
+        [Required]
+        [Range(1, 5)]
         public int Rating { get; set; }
 
-        [Required(ErrorMessage = "Comment is required")]
-        [MaxLength(500, ErrorMessage = "Comment cannot exceed 500 characters")]
+        [Required]
+        [MaxLength(500)]
         public string Comment { get; set; }
 
-        [DataType(DataType.DateTime)]
         public DateTime ReviewDate { get; set; } = DateTime.Now;
-
         public bool IsApproved { get; set; } = false;
 
-        // Navigation Properties
+        // Navigation properties
         [ForeignKey(nameof(CustomerId))]
         public virtual Customer Customer { get; set; }
 

@@ -1,0 +1,64 @@
+@model IEnumerable<HotelHub.Models.Entities.Review>
+
+@{
+    ViewData["Title"] = "Review List";
+}
+
+<h1>Review List</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Review</a>
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Booking ID</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Review Date</th>
+            <th>Approved</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(item.Customer?.FirstName + " " + item.Customer?.LastName)</td>
+                <td>@Html.DisplayFor(modelItem => item.BookingId)</td>
+                <td>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= item.Rating)
+                        {
+                            <span>⭐</span>
+                        }
+                        else
+                        {
+                            <span>☆</span>
+                        }
+                    }
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Comment)</td>
+                <td>@Html.DisplayFor(modelItem => item.ReviewDate)</td>
+                <td>
+                    @if (item.IsApproved)
+                    {
+                        <span class="badge bg-success">Approved</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Pending</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ReviewId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.ReviewId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.ReviewId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
