@@ -1,35 +1,30 @@
-﻿using DataAccessLayer.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DataAccessLayer;
+using DataAccessLayer.Repositories.Interfaces;
+using HotelHub.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repositories.Classes
 {
     public class BasicOperation<T> : IBasicOperation<T> where T : class
     {
-        public Task<bool> AddAsync(T entity)
+        protected readonly ApplicationDbContext _context;
+        protected readonly DbSet<T> _dbSet;
+
+        public BasicOperation(ApplicationDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+            _dbSet = _context.Set<T>();
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public IEnumerable<T> GetAll() => _dbSet.ToList();
+        public T? GetById(int id) => _dbSet.Find(id);
+        public void Add(T entity) => _dbSet.Add(entity);
+        public void Update(T entity) => _dbSet.Update(entity);
+        public void Delete(int id)
         {
-            throw new NotImplementedException();
+            var entity = GetById(id);
+            if (entity != null) _dbSet.Remove(entity);
         }
-
-        public Task<IEnumerable<T>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<T?> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UpdateAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
+        public void SaveChanges() => _context.SaveChanges();
     }
 }
