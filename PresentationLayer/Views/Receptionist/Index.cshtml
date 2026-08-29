@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Receptionist Desk";
+}
+
+<!-- HERO BANNER -->
+<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_2.jpg")');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
+                <div class="text">
+                    <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>Receptionist</span></p>
+                    <h1 class="mb-4 bread">Receptionist Front Desk</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                        <div>
+                            <h2 class="h4 mb-0 text-info">Receptionist Front Desk</h2>
+                            <p class="text-muted mb-0">Staff Member: <strong>@User.Identity?.Name</strong></p>
+                        </div>
+                        <span class="badge badge-info px-3 py-2 text-uppercase text-white" style="font-size: 0.9rem;">Role: Receptionist</span>
+                    </div>
+
+                    <div class="alert alert-info d-flex align-items-center" role="alert">
+                        <div>
+                            <h5 class="alert-heading mb-1"><i class="icon-info-circle"></i> Receptionist Access Granted</h5>
+                            <p class="mb-0">You have access to staff front desk operations. You are restricted from Admin-only configuration pages.</p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-white border rounded text-center">
+                                <h6 class="text-muted text-uppercase mb-2">Guest Check-In / Check-Out</h6>
+                                <p class="small text-muted mb-0">Manage guest arrivals, keycards, and departures.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-white border rounded text-center">
+                                <h6 class="text-muted text-uppercase mb-2">Booking Management</h6>
+                                <p class="small text-muted mb-0">Search and manage existing guest reservations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

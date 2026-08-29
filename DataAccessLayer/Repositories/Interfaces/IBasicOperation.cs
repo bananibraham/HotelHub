@@ -1,4 +1,4 @@
-namespace DataAccessLayer.Repositories.Interfaces
+﻿namespace DataAccessLayer.Repositories.Interfaces
 {
     public interface IBasicOperation<T> where T : class
     {

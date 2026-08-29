@@ -53,6 +53,18 @@
                     <li class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Privacy" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Receptionist"))
+                    {
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Receptionist" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="Receptionist" asp-action="Index">Receptionist</a>
+                        </li>
+                    }
                     <partial name="_LoginPartial" />
                 </ul>
             </div>
