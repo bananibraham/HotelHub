@@ -1,3 +1,7 @@
+using BLLayer1.BLogic;
+using BLLayer1.Interfaces;
+using DataAccessLayer.Repositories.Classes;
+using DataAccessLayer.Repositories.Interfaces;
 using HotelHub.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +13,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddScoped(typeof(IBasicOperation<>), typeof(BasicOperation<>));
+builder.Services.AddScoped<ICustomerBL, CustomerBL>();
+builder.Services.AddScoped<IReviewBL, ReviewBL>();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
