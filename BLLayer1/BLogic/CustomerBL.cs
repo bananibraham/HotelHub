@@ -14,25 +14,21 @@ namespace BLLayer1.BLogic
             _customerRepo = customerRepo;
         }
 
-        public IEnumerable<CustomerVM> GetAll()
+        public async Task<IEnumerable<CustomerVM>> GetAllAsync()
         {
-            return _customerRepo.GetAll().Select(c => new CustomerVM
+            var customers = await _customerRepo.GetAllAsync();
+            return customers.Select(c => new CustomerVM
             {
                 CustomerId = c.CustomerId,
                 FullName = c.FullName,
                 Email = c.Email,
-                Phone = c.Phone,
-                NationalId = c.NationalId,
-                Address = c.Address,
-                City = c.City,
-                Country = c.Country,
-                IsActive = c.IsActive
+                Phone = c.Phone
             });
         }
 
-        public CustomerVM? GetById(int id)
+        public async Task<CustomerVM?> GetByIdAsync(int id)
         {
-            var c = _customerRepo.GetById(id);
+            var c = await _customerRepo.GetByIdAsync(id);
             if (c == null) return null;
 
             return new CustomerVM
@@ -40,62 +36,41 @@ namespace BLLayer1.BLogic
                 CustomerId = c.CustomerId,
                 FullName = c.FullName,
                 Email = c.Email,
-                Phone = c.Phone,
-                NationalId = c.NationalId,
-                Address = c.Address,
-                City = c.City,
-                Country = c.Country,
-                IsActive = c.IsActive
+                Phone = c.Phone
             };
         }
 
-        public void Create(CustomerVM vm)
+        public async Task CreateAsync(CustomerVM vm)
         {
             var customer = new Customer
             {
                 FullName = vm.FullName,
                 Email = vm.Email,
-                Phone = vm.Phone,
-                NationalId = vm.NationalId,
-                Address = vm.Address,
-                City = vm.City,
-                Country = vm.Country,
-                CreatedAt = DateTime.Now,
-                IsActive = true
+                Phone = vm.Phone
             };
 
-            _customerRepo.Add(customer);
-            _customerRepo.SaveChanges();
+            await _customerRepo.AddAsync(customer);
+            await _customerRepo.SaveChangesAsync();
         }
 
-        public void Update(CustomerVM vm)
+        public async Task UpdateAsync(CustomerVM vm)
         {
-            var customer = _customerRepo.GetById(vm.CustomerId);
+            var customer = await _customerRepo.GetByIdAsync(vm.CustomerId);
             if (customer != null)
             {
                 customer.FullName = vm.FullName;
                 customer.Email = vm.Email;
                 customer.Phone = vm.Phone;
-                customer.NationalId = vm.NationalId;
-                customer.Address = vm.Address;
-                customer.City = vm.City;
-                customer.Country = vm.Country;
 
                 _customerRepo.Update(customer);
-                _customerRepo.SaveChanges();
+                await _customerRepo.SaveChangesAsync();
             }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            // Soft Delete Policy according to ERD rules
-            var customer = _customerRepo.GetById(id);
-            if (customer != null)
-            {
-                customer.IsActive = false;
-                _customerRepo.Update(customer);
-                _customerRepo.SaveChanges();
-            }
+            await _customerRepo.DeleteAsync(id);
+            await _customerRepo.SaveChangesAsync();
         }
     }
 }

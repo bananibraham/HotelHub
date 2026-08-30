@@ -1,4 +1,4 @@
-﻿using DataAccessLayer;
+﻿using System.Linq.Expressions;
 using DataAccessLayer.Repositories.Interfaces;
 using HotelHub.Data;
 using Microsoft.EntityFrameworkCore;
@@ -16,15 +16,42 @@ namespace DataAccessLayer.Repositories.Classes
             _dbSet = _context.Set<T>();
         }
 
-        public IEnumerable<T> GetAll() => _dbSet.ToList();
-        public T? GetById(int id) => _dbSet.Find(id);
-        public void Add(T entity) => _dbSet.Add(entity);
-        public void Update(T entity) => _dbSet.Update(entity);
-        public void Delete(int id)
+        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+
+        public async Task<IEnumerable<T>> GetAllWithIncludesAsync(params Expression<Func<T, object>>[] includes)
         {
-            var entity = GetById(id);
-            if (entity != null) _dbSet.Remove(entity);
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.ToListAsync();
         }
-        public void SaveChanges() => _context.SaveChanges();
+
+        public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+
+        public async Task<T?> GetByIdWithIncludesAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+        public void Update(T entity) => _dbSet.Update(entity);
+        public void Delete(T entity) => _dbSet.Remove(entity);
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+            }
+        }
     }
 }

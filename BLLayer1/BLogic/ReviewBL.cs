@@ -14,22 +14,25 @@ namespace BLLayer1.BLogic
             _reviewRepo = reviewRepo;
         }
 
-        public IEnumerable<ReviewVM> GetAll()
+        public async Task<IEnumerable<ReviewVM>> GetAllAsync()
         {
-            return _reviewRepo.GetAll().Select(r => new ReviewVM
+            var reviews = await _reviewRepo.GetAllWithIncludesAsync(r => r.Customer!, r => r.Booking!);
+            return reviews.Select(r => new ReviewVM
             {
                 ReviewId = r.ReviewId,
                 CustomerId = r.CustomerId,
                 BookingId = r.BookingId,
                 Rating = r.Rating,
                 Comment = r.Comment,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                CustomerName = r.Customer != null ? r.Customer.FullName : "غير معروف",
+                BookingDetails = r.BookingId.HasValue ? $"حجز #{r.BookingId}" : "بدون حجز"
             });
         }
 
-        public ReviewVM? GetById(int id)
+        public async Task<ReviewVM?> GetByIdAsync(int id)
         {
-            var r = _reviewRepo.GetById(id);
+            var r = await _reviewRepo.GetByIdWithIncludesAsync(x => x.ReviewId == id, r => r.Customer!, r => r.Booking!);
             if (r == null) return null;
 
             return new ReviewVM
@@ -39,11 +42,13 @@ namespace BLLayer1.BLogic
                 BookingId = r.BookingId,
                 Rating = r.Rating,
                 Comment = r.Comment,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                CustomerName = r.Customer != null ? r.Customer.FullName : "غير معروف",
+                BookingDetails = r.BookingId.HasValue ? $"حجز #{r.BookingId}" : "بدون حجز"
             };
         }
 
-        public void Create(ReviewVM vm)
+        public async Task CreateAsync(ReviewVM vm)
         {
             var review = new Review
             {
@@ -54,13 +59,13 @@ namespace BLLayer1.BLogic
                 CreatedAt = DateTime.Now
             };
 
-            _reviewRepo.Add(review);
-            _reviewRepo.SaveChanges();
+            await _reviewRepo.AddAsync(review);
+            await _reviewRepo.SaveChangesAsync();
         }
 
-        public void Update(ReviewVM vm)
+        public async Task UpdateAsync(ReviewVM vm)
         {
-            var review = _reviewRepo.GetById(vm.ReviewId);
+            var review = await _reviewRepo.GetByIdAsync(vm.ReviewId);
             if (review != null)
             {
                 review.CustomerId = vm.CustomerId;
@@ -69,14 +74,14 @@ namespace BLLayer1.BLogic
                 review.Comment = vm.Comment;
 
                 _reviewRepo.Update(review);
-                _reviewRepo.SaveChanges();
+                await _reviewRepo.SaveChangesAsync();
             }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            _reviewRepo.Delete(id);
-            _reviewRepo.SaveChanges();
+            await _reviewRepo.DeleteAsync(id);
+            await _reviewRepo.SaveChangesAsync();
         }
     }
 }

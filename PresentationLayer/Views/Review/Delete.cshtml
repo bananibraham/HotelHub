@@ -1,0 +1,26 @@
+@model BLLayer1.ViewModel.ReviewVM
+
+@{
+    ViewData["Title"] = "Delete Review";
+}
+
+<div class="container mt-4">
+    <h3>U will delete the Review ,Are U Sure ?</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Customer</dt>
+        <dd class="col-sm-9">@Model.CustomerName</dd>
+
+        <dt class="col-sm-3">Rating</dt>
+        <dd class="col-sm-9">@Model.Rating / 5</dd>
+
+        <dt class="col-sm-3">Comment</dt>
+        <dd class="col-sm-9">@Model.Comment</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ReviewId" />
+        <button type="submit" class="btn btn-danger">confirm delete</button>
+        <a asp-action="Index" class="btn btn-secondary">cancel</a>
+    </form>
+</div>

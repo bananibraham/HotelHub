@@ -1,12 +1,17 @@
-﻿namespace DataAccessLayer.Repositories.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace DataAccessLayer.Repositories.Interfaces
 {
     public interface IBasicOperation<T> where T : class
     {
-        IEnumerable<T> GetAll();
-        T? GetById(int id);
-        void Add(T entity);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllWithIncludesAsync(params Expression<Func<T, object>>[] includes);
+        Task<T?> GetByIdAsync(int id);
+        Task<T?> GetByIdWithIncludesAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
+        Task AddAsync(T entity);
         void Update(T entity);
-        void Delete(int id);
-        void SaveChanges();
+        void Delete(T entity);
+        Task SaveChangesAsync();
+        Task DeleteAsync(int id);
     }
 }
