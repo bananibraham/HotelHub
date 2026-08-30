@@ -14,9 +14,10 @@ namespace BLLayer1.BLogic
             _customerRepo = customerRepo;
         }
 
-        public IEnumerable<CustomerVM> GetAll()
+        public async Task<IEnumerable<CustomerVM>> GetAllAsync()
         {
-            return _customerRepo.GetAll().Select(c => new CustomerVM
+            var customers = await _customerRepo.GetAllAsync();
+            return customers.Select(c => new CustomerVM
             {
                 CustomerId = c.CustomerId,
                 FullName = c.FullName,
@@ -30,9 +31,9 @@ namespace BLLayer1.BLogic
             });
         }
 
-        public CustomerVM? GetById(int id)
+        public async Task<CustomerVM?> GetByIdAsync(int id)
         {
-            var c = _customerRepo.GetById(id);
+            var c = await _customerRepo.GetByIdAsync(id);
             if (c == null) return null;
 
             return new CustomerVM
@@ -49,7 +50,7 @@ namespace BLLayer1.BLogic
             };
         }
 
-        public void Create(CustomerVM vm)
+        public async Task CreateAsync(CustomerVM vm)
         {
             var customer = new Customer
             {
@@ -64,13 +65,13 @@ namespace BLLayer1.BLogic
                 IsActive = true
             };
 
-            _customerRepo.Add(customer);
-            _customerRepo.SaveChanges();
+            await _customerRepo.AddAsync(customer);
+            await _customerRepo.SaveChangesAsync();
         }
 
-        public void Update(CustomerVM vm)
+        public async Task UpdateAsync(CustomerVM vm)
         {
-            var customer = _customerRepo.GetById(vm.CustomerId);
+            var customer = await _customerRepo.GetByIdAsync(vm.CustomerId);
             if (customer != null)
             {
                 customer.FullName = vm.FullName;
@@ -82,19 +83,18 @@ namespace BLLayer1.BLogic
                 customer.Country = vm.Country;
 
                 _customerRepo.Update(customer);
-                _customerRepo.SaveChanges();
+                await _customerRepo.SaveChangesAsync();
             }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            // Soft Delete Policy according to ERD rules
-            var customer = _customerRepo.GetById(id);
+            var customer = await _customerRepo.GetByIdAsync(id);
             if (customer != null)
             {
                 customer.IsActive = false;
                 _customerRepo.Update(customer);
-                _customerRepo.SaveChanges();
+                await _customerRepo.SaveChangesAsync();
             }
         }
     }
