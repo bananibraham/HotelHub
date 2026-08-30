@@ -1,0 +1,78 @@
+﻿@model BLLayer1.ViewModel.BookingVM
+
+@{
+    ViewData["Title"] = $"Delete Booking #{Model.BookingId}";
+}
+
+<!-- HERO BANNER -->
+<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
+                <div class="text">
+                    <p class="breadcrumbs mb-2">
+                        <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+                        <span class="mr-2"><a asp-action="Index">Bookings</a></span> 
+                        <span>Delete</span>
+                    </p>
+                    <h1 class="mb-4 bread">Delete Booking</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <h4 class="alert-heading mb-1"><i class="icon-warning"></i> Confirm Deletion</h4>
+                        <p class="mb-0">Are you sure you want to delete this booking record? This action will remove the reservation from active records.</p>
+                    </div>
+
+                    <div class="bg-light p-4 rounded border mb-4">
+                        <h5 class="text-primary mb-3">Booking #@Model.BookingId Summary</h5>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+                                <span class="text-muted d-block small">Guest</span>
+                                <strong>@Model.CustomerName</strong>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="text-muted d-block small">Room</span>
+                                <strong>Room @Model.RoomNumber (@Model.RoomType)</strong>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="text-muted d-block small">Check-in</span>
+                                <strong>@Model.CheckInDate.ToString("yyyy-MM-dd")</strong>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="text-muted d-block small">Check-out</span>
+                                <strong>@Model.CheckOutDate.ToString("yyyy-MM-dd")</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block small">Status</span>
+                                <strong>@Model.Status</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block small">Total Amount</span>
+                                <strong class="text-success">$@Model.TotalPrice.ToString("N2")</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="BookingId" />
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">Keep Booking</a>
+                            <button type="submit" class="btn btn-danger px-4">Confirm Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
