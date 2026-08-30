@@ -4,10 +4,10 @@ namespace BLLayer1.Interfaces
 {
     public interface ICustomerBL
     {
-        IEnumerable<CustomerVM> GetAll();
-        CustomerVM? GetById(int id);
-        void Create(CustomerVM customerVm);
-        void Update(CustomerVM customerVm);
-        void Delete(int id); // Soft Delete execution
+        Task<IEnumerable<CustomerVM>> GetAllAsync();
+        Task<CustomerVM?> GetByIdAsync(int id);
+        Task CreateAsync(CustomerVM customerVm);
+        Task UpdateAsync(CustomerVM customerVm);
+        Task DeleteAsync(int id);
     }
 }
