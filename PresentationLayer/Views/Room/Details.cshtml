@@ -1,0 +1,100 @@
+﻿@model DataAccessLayer.Models.Room
+
+@{
+    ViewData["Title"] = "Room Details";
+}
+
+<h1>Room Details</h1>
+
+<div class="card">
+    <div class="card-body">
+
+        <h4>Room Information</h4>
+
+        <hr />
+
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                Room Number
+            </dt>
+            <dd class="col-sm-9">
+                @Model.RoomNumber
+            </dd>
+
+            <dt class="col-sm-3">
+                Room Type
+            </dt>
+            <dd class="col-sm-9">
+                @Model.RoomType?.Name
+            </dd>
+
+            <dt class="col-sm-3">
+                Floor
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Floor
+            </dd>
+
+            <dt class="col-sm-3">
+                Status
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Status
+            </dd>
+
+            <dt class="col-sm-3">
+                Description
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Description
+            </dd>
+
+            <dt class="col-sm-3">
+                Image
+            </dt>
+            <dd class="col-sm-9">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         alt="Room Image"
+                         style="max-width:300px; max-height:200px;"
+                         class="img-thumbnail" />
+                }
+                else
+                {
+                    <span>No image available</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">
+                Created At
+            </dt>
+            <dd class="col-sm-9">
+                @Model.CreatedAt
+            </dd>
+
+            <dt class="col-sm-3">
+                Active
+            </dt>
+            <dd class="col-sm-9">
+                @(Model.IsActive ? "Yes" : "No")
+            </dd>
+
+        </dl>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Back to List
+        </a>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+        {
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-warning">
+                Edit
+            </a>
+        }
+
+    </div>
+</div>
