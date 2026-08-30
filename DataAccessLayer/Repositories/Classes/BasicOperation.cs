@@ -1,30 +1,57 @@
-﻿using DataAccessLayer;
-using DataAccessLayer.Repositories.Interfaces;
-using HotelHub.Data;
+﻿using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using HotelHub.Data;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace DataAccessLayer.Repositories.Classes
 {
     public class BasicOperation<T> : IBasicOperation<T> where T : class
     {
-        protected readonly ApplicationDbContext _context;
-        protected readonly DbSet<T> _dbSet;
+        private readonly ApplicationDbContext _context;
 
         public BasicOperation(ApplicationDbContext context)
         {
             _context = context;
-            _dbSet = _context.Set<T>();
         }
 
-        public IEnumerable<T> GetAll() => _dbSet.ToList();
-        public T? GetById(int id) => _dbSet.Find(id);
-        public void Add(T entity) => _dbSet.Add(entity);
-        public void Update(T entity) => _dbSet.Update(entity);
-        public void Delete(int id)
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            var entity = GetById(id);
-            if (entity != null) _dbSet.Remove(entity);
+            return await _context.Set<T>().ToListAsync();
         }
-        public void SaveChanges() => _context.SaveChanges();
+
+        public async Task<T?> GetByIdAsync(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task<bool> AddAsync(T entity)
+        {
+            await _context.Set<T>().AddAsync(entity);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateAsync(T entity)
+        {
+            _context.Set<T>().Update(entity);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            T? entity = await GetByIdAsync(id);
+
+            if (entity == null)
+            {
+                return false;
+            }
+
+            _context.Set<T>().Remove(entity);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }
