@@ -4,10 +4,10 @@ namespace BLLayer1.Interfaces
 {
     public interface IReviewBL
     {
-        IEnumerable<ReviewVM> GetAll();
-        ReviewVM? GetById(int id);
-        void Create(ReviewVM reviewVm);
-        void Update(ReviewVM reviewVm);
-        void Delete(int id);
+        Task<IEnumerable<ReviewVM>> GetAllAsync();
+        Task<ReviewVM?> GetByIdAsync(int id);
+        Task CreateAsync(ReviewVM reviewVm);
+        Task UpdateAsync(ReviewVM reviewVm);
+        Task DeleteAsync(int id);
     }
 }
