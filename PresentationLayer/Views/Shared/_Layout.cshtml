@@ -50,6 +50,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("Index", "Home")#blog-section">Blog</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Customers</a>
+                    </li>
                     <li class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Privacy" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>

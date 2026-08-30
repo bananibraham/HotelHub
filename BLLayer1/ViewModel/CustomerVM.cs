@@ -39,6 +39,6 @@ namespace BLLayer1.ViewModel
         [Display(Name = "country")]
         public string Country { get; set; } = string.Empty;
 
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
     }
 }

@@ -1,0 +1,43 @@
+@model IEnumerable<BLLayer1.ViewModel.CustomerVM>
+
+@{
+    ViewData["Title"] = "Customer List";
+}
+
+<section class="ftco-section bg-light py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Customers Management</h2>
+            <a asp-action="Create" class="btn btn-primary py-2 px-4">Add New Customer</a>
+        </div>
+        <div class="table-responsive bg-white p-4 shadow-sm rounded">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.FullName)</th>
+                        <th>@Html.DisplayNameFor(model => model.Email)</th>
+                        <th>@Html.DisplayNameFor(model => model.Phone)</th>
+                        <th>@Html.DisplayNameFor(model => model.City)</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                            <td>@Html.DisplayFor(modelItem => item.City)</td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-warning me-1">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-info me-1">Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

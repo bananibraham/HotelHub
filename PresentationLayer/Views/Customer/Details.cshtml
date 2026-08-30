@@ -1,0 +1,45 @@
+@model BLLayer1.ViewModel.CustomerVM
+
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<section class="ftco-section bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h3 class="mb-4">Customer Details</h3>
+                        <dl class="row">
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.FullName)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Email)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Phone)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Phone)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.NationalId)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.NationalId)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Address)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Address)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.City)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.City)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Country)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Country)</dd>
+                        </dl>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <a asp-action="Edit" asp-route-id="@Model?.CustomerId" class="btn btn-warning">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -9,5 +9,8 @@ namespace BLLayer1.Interfaces
         Task CreateAsync(ReviewVM reviewVm);
         Task UpdateAsync(ReviewVM reviewVm);
         Task DeleteAsync(int id);
+  
+        
+    
     }
 }
