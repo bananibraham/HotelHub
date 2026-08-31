@@ -21,18 +21,15 @@ namespace BLLayer1.BLogic
             _bookingRepository = bookingRepository;
         }
 
-
         public async Task<IEnumerable<Payment>> GetAllAsync()
         {
             return await _paymentRepository.GetAllAsync();
         }
 
-
         public async Task<Payment?> GetByIdAsync(int id)
         {
             return await _paymentRepository.GetByIdAsync(id);
         }
-
 
         public async Task<bool> CreateAsync(PaymentCreateVm paymentVm)
         {
@@ -41,34 +38,24 @@ namespace BLLayer1.BLogic
                 return false;
             }
 
-
-            Booking? booking =
-                await _bookingRepository.GetByIdAsync(paymentVm.BookingId);
-
+            Booking? booking = await _bookingRepository.GetByIdAsync(paymentVm.BookingId);
             if (booking == null)
             {
                 return false;
             }
 
-
-            IEnumerable<Payment> payments =
-                await _paymentRepository.GetAllAsync();
-
+            IEnumerable<Payment> payments = await _paymentRepository.GetAllAsync();
 
             decimal totalPaid = payments
                 .Where(p => p.BookingId == paymentVm.BookingId)
                 .Sum(p => p.Amount);
 
+            decimal newTotalPaid = totalPaid + paymentVm.Amount;
 
-            decimal newTotalPaid =
-                totalPaid + paymentVm.Amount;
-
-
-            if (newTotalPaid > booking.TotalAmount)
+            if (newTotalPaid > booking.TotalPrice)
             {
                 return false;
             }
-
 
             Payment payment = new Payment
             {
@@ -81,10 +68,11 @@ namespace BLLayer1.BLogic
                 CreatedAt = DateTime.Now
             };
 
+            await _paymentRepository.AddAsync(payment);
+            int rowsAffected = await _paymentRepository.SaveChangesAsync();
 
-            return await _paymentRepository.AddAsync(payment);
+            return rowsAffected > 0;
         }
-
 
         public async Task<bool> UpdateAsync(Payment payment)
         {
@@ -93,28 +81,19 @@ namespace BLLayer1.BLogic
                 return false;
             }
 
-
-            Payment? existingPayment =
-                await _paymentRepository.GetByIdAsync(payment.PaymentId);
-
+            Payment? existingPayment = await _paymentRepository.GetByIdAsync(payment.PaymentId);
             if (existingPayment == null)
             {
                 return false;
             }
 
-
-            Booking? booking =
-                await _bookingRepository.GetByIdAsync(payment.BookingId);
-
+            Booking? booking = await _bookingRepository.GetByIdAsync(payment.BookingId);
             if (booking == null)
             {
                 return false;
             }
 
-
-            IEnumerable<Payment> payments =
-                await _paymentRepository.GetAllAsync();
-
+            IEnumerable<Payment> payments = await _paymentRepository.GetAllAsync();
 
             decimal otherPaymentsTotal = payments
                 .Where(p =>
@@ -122,31 +101,26 @@ namespace BLLayer1.BLogic
                     p.PaymentId != payment.PaymentId)
                 .Sum(p => p.Amount);
 
+            decimal newTotalPaid = otherPaymentsTotal + payment.Amount;
 
-            decimal newTotalPaid =
-                otherPaymentsTotal + payment.Amount;
-
-
-            if (newTotalPaid > booking.TotalAmount)
+            if (newTotalPaid > booking.TotalPrice)
             {
                 return false;
             }
 
+            _paymentRepository.Update(payment);
+            int rowsAffected = await _paymentRepository.SaveChangesAsync();
 
-            return await _paymentRepository.UpdateAsync(payment);
+            return rowsAffected > 0;
         }
-
 
         public async Task<bool> DeleteAsync(int id)
         {
-            Payment? payment =
-                await _paymentRepository.GetByIdAsync(id);
-
+            Payment? payment = await _paymentRepository.GetByIdAsync(id);
             if (payment == null)
             {
                 return false;
             }
-
 
             return await _paymentRepository.DeleteAsync(id);
         }

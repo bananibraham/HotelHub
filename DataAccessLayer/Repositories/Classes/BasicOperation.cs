@@ -26,18 +26,14 @@ namespace DataAccessLayer.Repositories.Classes
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<bool> AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
-
-            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> UpdateAsync(T entity)
+        public void Update(T entity)
         {
             _context.Set<T>().Update(entity);
-
-            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -52,6 +48,11 @@ namespace DataAccessLayer.Repositories.Classes
             _context.Set<T>().Remove(entity);
 
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
         }
     }
 }

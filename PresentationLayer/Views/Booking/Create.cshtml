@@ -1,0 +1,97 @@
+﻿@model BLLayer1.ViewModel.BookingVM
+
+@{
+    ViewData["Title"] = "Create New Booking";
+}
+
+<!-- HERO BANNER -->
+<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
+                <div class="text">
+                    <p class="breadcrumbs mb-2">
+                        <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+                        <span class="mr-2"><a asp-action="Index">Bookings</a></span> 
+                        <span>Create</span>
+                    </p>
+                    <h1 class="mb-4 bread">New Reservation</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="auth-header mb-4">
+                        <h2 class="h4 text-primary mb-1">Create Booking</h2>
+                        <p class="text-muted small">Select guest, room, and stay dates to create a new reservation.</p>
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Customer Selection -->
+                        <div class="form-group mb-3">
+                            <label asp-for="CustomerId" class="font-weight-bold"></label>
+                            <select asp-for="CustomerId" asp-items="ViewBag.Customers" class="form-control">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                            <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Room Selection (Temporary Mock Data) -->
+                        <div class="form-group mb-3">
+                            <label asp-for="RoomId" class="font-weight-bold"></label>
+                            <select asp-for="RoomId" asp-items="ViewBag.Rooms" class="form-control">
+                                <option value="">-- Select Room --</option>
+                            </select>
+                            <span asp-validation-for="RoomId" class="text-danger small"></span>
+                            <small class="form-text text-muted">Room selections are pre-configured with temporary rates.</small>
+                        </div>
+
+                        <div class="row">
+                            <!-- Check-in Date -->
+                            <div class="col-md-6 form-group mb-3">
+                                <label asp-for="CheckInDate" class="font-weight-bold"></label>
+                                <input asp-for="CheckInDate" type="date" class="form-control" />
+                                <span asp-validation-for="CheckInDate" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Check-out Date -->
+                            <div class="col-md-6 form-group mb-3">
+                                <label asp-for="CheckOutDate" class="font-weight-bold"></label>
+                                <input asp-for="CheckOutDate" type="date" class="form-control" />
+                                <span asp-validation-for="CheckOutDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Status Selection -->
+                        <div class="form-group mb-4">
+                            <label asp-for="Status" class="font-weight-bold"></label>
+                            <select asp-for="Status" asp-items="ViewBag.Statuses" class="form-control">
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Create Reservation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
