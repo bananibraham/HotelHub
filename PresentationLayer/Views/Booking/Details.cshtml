@@ -1,4 +1,4 @@
-﻿@model BLLayer1.ViewModel.BookingVM
+@model BLLayer1.ViewModel.BookingVM
 
 @{
     ViewData["Title"] = $"Booking #{Model.BookingId} Details";
@@ -25,6 +25,25 @@
 
 <section class="ftco-section bg-light">
     <div class="container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Success!</strong> @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
         <div class="row justify-content-center">
             <div class="col-md-9">
                 <div class="card shadow-sm border-0 p-4">
@@ -98,19 +117,37 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="d-flex justify-content-between pt-3 border-top">
-                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                    <div class="d-flex justify-content-between pt-3 border-top flex-wrap gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 mb-2">
                             <i class="icon-arrow-left"></i> Back to List
                         </a>
-                        <div>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            @if (Model.Status == "Pending" || Model.Status == "Confirmed")
+                            {
+                                <form asp-action="CheckIn" asp-route-id="@Model.BookingId" method="post" class="d-inline mr-2" onsubmit="return confirm('Confirm check-in for this booking?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="icon-sign-in"></i> Check-In
+                                    </button>
+                                </form>
+                            }
+                            @if (Model.Status == "CheckedIn")
+                            {
+                                <form asp-action="CheckOut" asp-route-id="@Model.BookingId" method="post" class="d-inline mr-2" onsubmit="return confirm('Confirm check-out for this booking?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-dark px-4" style="background-color: #6a1b9a; border-color: #6a1b9a;">
+                                        <i class="icon-sign-out"></i> Check-Out
+                                    </button>
+                                </form>
+                            }
                             <a asp-action="Edit" asp-route-id="@Model.BookingId" class="btn btn-primary px-4 mr-2">
                                 <i class="icon-edit"></i> Edit
                             </a>
-                            @if (Model.Status != "Cancelled")
+                            @if (Model.Status != "Cancelled" && Model.Status != "CheckedOut")
                             {
-                                <form asp-action="Cancel" asp-route-id="@Model.BookingId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                <form asp-action="Cancel" asp-route-id="@Model.BookingId" method="post" class="d-inline mr-2" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-warning px-3 mr-2">Cancel Booking</button>
+                                    <button type="submit" class="btn btn-warning px-3">Cancel Booking</button>
                                 </form>
                             }
                             <a asp-action="Delete" asp-route-id="@Model.BookingId" class="btn btn-outline-danger px-3">

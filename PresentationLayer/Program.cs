@@ -22,8 +22,6 @@ builder.Services.AddScoped<IBookingBL, BookingBL>();
 builder.Services.AddScoped<IRoomTypeBL, RoomTypeBL>();
 builder.Services.AddScoped<IRoomBL, RoomBL>();
 
-builder.Services.AddScoped<IBookingBL, BookingBL>();
-
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
