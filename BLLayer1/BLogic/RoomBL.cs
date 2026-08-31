@@ -27,26 +27,49 @@ namespace BLLayer1.BLogic
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task AddAsync(Room entity)
+        public async Task<bool> CreateAsync(Room room)
         {
-            await _repository.AddAsync(entity);
-            await _repository.SaveChangesAsync();
+            try
+            {
+                await _repository.AddAsync(room);
+                await _repository.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        public void Update(Room entity)
+        public async Task<bool> UpdateAsync(Room room)
         {
-            _repository.Update(entity);
+            try
+            {
+                _repository.Update(room);
+                await _repository.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            await _repository.DeleteAsync(id);
-            await _repository.SaveChangesAsync();
-        }
+            try
+            {
+                await _repository.DeleteAsync(id);
+                await _repository.SaveChangesAsync();
 
-        public async Task SaveChangesAsync()
-        {
-            await _repository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }
