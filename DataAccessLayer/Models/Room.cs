@@ -23,7 +23,7 @@ namespace DataAccessLayer.Models
 
         [Required]
         [StringLength(50)]
-        public string Status { get; set; }
+        public string Status { get; set; } 
 
         [StringLength(500)]
         public string? Description { get; set; }
@@ -37,6 +37,6 @@ namespace DataAccessLayer.Models
         public bool IsActive { get; set; } = true;
 
 
-        public RoomType RoomType { get; set; }
+        public RoomType RoomType { get; set; } 
     }
 }
