@@ -1,53 +1,58 @@
-﻿using DataAccessLayer;
-using DataAccessLayer.Repositories.Interfaces;
-using HotelHub.Data;
+﻿using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using HotelHub.Data;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace DataAccessLayer.Repositories.Classes
 {
     public class BasicOperation<T> : IBasicOperation<T> where T : class
     {
-        protected readonly ApplicationDbContext _context;
-        protected readonly DbSet<T> _dbSet;
+        private readonly ApplicationDbContext _context;
 
         public BasicOperation(ApplicationDbContext context)
         {
             _context = context;
-            _dbSet = _context.Set<T>();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return await _context.Set<T>().ToListAsync();
         }
 
         public async Task<T?> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _context.Set<T>().FindAsync(id);
         }
 
         public async Task AddAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
+            await _context.Set<T>().AddAsync(entity);
         }
 
         public void Update(T entity)
         {
-            _dbSet.Update(entity);
+            _context.Set<T>().Update(entity);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await GetByIdAsync(id);
-            if (entity != null)
+            T? entity = await GetByIdAsync(id);
+
+            if (entity == null)
             {
-                _dbSet.Remove(entity);
+                return false;
             }
+
+            _context.Set<T>().Remove(entity);
+
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,0 +1,133 @@
+﻿@model BLLayer1.ViewModel.PaymentCreateVm
+
+@{
+    ViewData["Title"] = "Create Payment";
+}
+
+<h1>Create Payment</h1>
+
+<form asp-action="Create" method="post">
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger">
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="BookingId"
+               class="form-label">
+        </label>
+
+        <input asp-for="BookingId"
+               class="form-control" />
+
+        <span asp-validation-for="BookingId"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="Amount"
+               class="form-label">
+        </label>
+
+        <input asp-for="Amount"
+               class="form-control" />
+
+        <span asp-validation-for="Amount"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="PaymentMethod"
+               class="form-label">
+        </label>
+
+        <select asp-for="PaymentMethod"
+                class="form-select">
+
+            <option value="">Select payment method</option>
+
+            <option value="Cash">Cash</option>
+
+            <option value="Card">Card</option>
+
+            <option value="Bank Transfer">
+                Bank Transfer
+            </option>
+
+            <option value="Other">
+                Other
+            </option>
+
+        </select>
+
+        <span asp-validation-for="PaymentMethod"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="PaymentDate"
+               class="form-label">
+        </label>
+
+        <input asp-for="PaymentDate"
+               type="datetime-local"
+               class="form-control" />
+
+        <span asp-validation-for="PaymentDate"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="TransactionId"
+               class="form-label">
+        </label>
+
+        <input asp-for="TransactionId"
+               class="form-control" />
+
+        <span asp-validation-for="TransactionId"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="Notes"
+               class="form-label">
+        </label>
+
+        <textarea asp-for="Notes"
+                  class="form-control">
+        </textarea>
+
+        <span asp-validation-for="Notes"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <button type="submit"
+            class="btn btn-primary">
+        Create
+    </button>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Back
+    </a>
+
+</form>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,95 @@
+﻿@model DataAccessLayer.Models.Payment
+
+@{
+    ViewData["Title"] = "Payment Details";
+}
+
+<h1>Payment Details</h1>
+
+<hr />
+
+<dl class="row">
+
+    <dt class="col-sm-3">
+        Payment ID
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.PaymentId
+    </dd>
+
+
+    <dt class="col-sm-3">
+        Booking ID
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.BookingId
+    </dd>
+
+
+    <dt class="col-sm-3">
+        Amount
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Amount
+    </dd>
+
+
+    <dt class="col-sm-3">
+        Payment Method
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.PaymentMethod
+    </dd>
+
+
+    <dt class="col-sm-3">
+        Payment Date
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.PaymentDate
+    </dd>
+
+
+    <dt class="col-sm-3">
+        Transaction ID
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.TransactionId
+    </dd>
+
+
+    <dt class="col-sm-3">
+        Notes
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Notes
+    </dd>
+
+
+    <dt class="col-sm-3">
+        Created At
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.CreatedAt
+    </dd>
+
+</dl>
+
+<a asp-action="Edit"
+   asp-route-id="@Model.PaymentId"
+   class="btn btn-warning">
+    Edit
+</a>
+
+<a asp-action="Index"
+   class="btn btn-secondary">
+    Back
+</a>
