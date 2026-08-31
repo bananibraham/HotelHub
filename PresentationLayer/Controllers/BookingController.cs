@@ -1,4 +1,4 @@
-﻿using BLLayer1.Interfaces;
+using BLLayer1.Interfaces;
 using BLLayer1.MockData;
 using BLLayer1.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -122,10 +122,45 @@ namespace PresentationLayer.Controllers
             var success = await _bookingBL.CancelAsync(id);
             if (!success)
             {
+                TempData["ErrorMessage"] = $"Booking #{id} could not be cancelled.";
                 return NotFound();
             }
 
             TempData["SuccessMessage"] = $"Booking #{id} has been cancelled.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: /Booking/CheckIn/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckIn(int id)
+        {
+            var (success, message) = await _bookingBL.CheckInAsync(id);
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: /Booking/CheckOut/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckOut(int id)
+        {
+            var (success, message) = await _bookingBL.CheckOutAsync(id);
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+            }
             return RedirectToAction(nameof(Index));
         }
 
