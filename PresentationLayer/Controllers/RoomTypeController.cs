@@ -14,14 +14,12 @@ namespace PresentationLayer.Controllers
             _roomTypeBL = roomTypeBL;
         }
 
-
         public async Task<IActionResult> Index()
         {
             var roomTypes = await _roomTypeBL.GetAllAsync();
 
             return View(roomTypes);
         }
-
 
         public async Task<IActionResult> Details(int id)
         {
@@ -33,13 +31,11 @@ namespace PresentationLayer.Controllers
             return View(roomType);
         }
 
-
         [Authorize(Roles = "Admin,Receptionist")]
         public IActionResult Create()
         {
             return View();
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -49,11 +45,16 @@ namespace PresentationLayer.Controllers
             if (!ModelState.IsValid)
                 return View(roomType);
 
-            await _roomTypeBL.AddAsync(roomType);
+            var result = await _roomTypeBL.CreateAsync(roomType);
+
+            if (!result)
+            {
+                ModelState.AddModelError("", "Failed to create Room Type.");
+                return View(roomType);
+            }
 
             return RedirectToAction(nameof(Index));
         }
-
 
         [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Edit(int id)
@@ -66,7 +67,6 @@ namespace PresentationLayer.Controllers
             return View(roomType);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Receptionist")]
@@ -78,8 +78,13 @@ namespace PresentationLayer.Controllers
             if (!ModelState.IsValid)
                 return View(roomType);
 
-            _roomTypeBL.Update(roomType);
-            await _roomTypeBL.SaveChangesAsync();
+            var result = await _roomTypeBL.UpdateAsync(roomType);
+
+            if (!result)
+            {
+                ModelState.AddModelError("", "Failed to update Room Type.");
+                return View(roomType);
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -95,13 +100,15 @@ namespace PresentationLayer.Controllers
             return View(roomType);
         }
 
-
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _roomTypeBL.DeleteAsync(id);
+            var result = await _roomTypeBL.DeleteAsync(id);
+
+            if (!result)
+                return NotFound();
 
             return RedirectToAction(nameof(Index));
         }

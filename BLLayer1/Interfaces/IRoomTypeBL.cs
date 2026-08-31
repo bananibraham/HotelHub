@@ -6,8 +6,12 @@ using System.Text;
 
 namespace BLLayer1.Interfaces
 {
-    public interface IRoomTypeBL : IBasicOperation<RoomType>
+    public interface IRoomTypeBL 
     {
-
+        Task<IEnumerable<RoomType>> GetAllAsync();
+        Task<RoomType?> GetByIdAsync(int id);
+        Task<bool> CreateAsync(RoomType roomType);
+        Task<bool> UpdateAsync(RoomType roomType);
+        Task<bool> DeleteAsync(int id);
     }
 }

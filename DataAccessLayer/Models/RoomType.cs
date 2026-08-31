@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -11,13 +12,14 @@ namespace DataAccessLayer.Models
 
         [Required]
         [StringLength(50)]
-        public string Name { get; set; }
+        public string Name { get; set; } 
 
         [StringLength(500)]
         public string? Description { get; set; }
 
         [Required]
         [Range(1000, 10000000)]
+       
         public decimal PricePerNight { get; set; }
 
         [Required]
