@@ -35,6 +35,7 @@ namespace PresentationLayer.Controllers
                 return NotFound();
 
             return View(room);
+
         }
 
         [Authorize(Roles = "Admin,Receptionist")]
@@ -67,6 +68,11 @@ namespace PresentationLayer.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+
+
+
 
         [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Edit(int id)
