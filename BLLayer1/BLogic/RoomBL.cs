@@ -27,6 +27,8 @@ namespace BLLayer1.BLogic
             return await _repository.GetByIdAsync(id);
         }
 
+        
+
         public async Task<bool> CreateAsync(Room room)
         {
             try
@@ -36,11 +38,15 @@ namespace BLLayer1.BLogic
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new Exception("Room Create Error: " + ex.Message, ex);
             }
         }
+
+
+
+
 
         public async Task<bool> UpdateAsync(Room room)
         {

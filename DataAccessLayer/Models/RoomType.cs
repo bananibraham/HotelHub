@@ -19,7 +19,7 @@ namespace DataAccessLayer.Models
 
         [Required]
         [Range(1000, 10000000)]
-       
+        [Precision(18, 2)]
         public decimal PricePerNight { get; set; }
 
         [Required]
