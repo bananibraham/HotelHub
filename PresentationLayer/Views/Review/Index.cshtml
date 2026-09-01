@@ -1,0 +1,40 @@
+@model IEnumerable<BLLayer1.ViewModel.ReviewVM>
+
+@{
+    ViewData["Title"] = "Review List";
+}
+
+<div class="container mt-4">
+    <h2>Reviews</h2>
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Add new Review</a>
+    </p>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Booking</th>
+            <th>Review</th>
+            <th>Comment</th>
+            <th>Adding Date</th>
+            <th>procedure</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>@item.CustomerName</td>
+                <td>@item.BookingDetails</td>
+                <td>@item.Rating / 5</td>
+                <td>@item.Comment</td>
+                <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ReviewId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.ReviewId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.ReviewId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

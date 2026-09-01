@@ -6,27 +6,30 @@ namespace BLLayer1.ViewModel
     {
         public int ReviewId { get; set; }
 
-        [Required(ErrorMessage = "customer name required")]
-        [Display(Name = "customer name")]
+        [Required(ErrorMessage = "Please choose a Customer")]
+        [Display(Name = "Customer Name")]
         public int CustomerId { get; set; }
 
-        [Display(Name = "booking number(optional)")]
+        [Display(Name = "Booking Number (optional)")]
         public int? BookingId { get; set; }
 
-        [Required(ErrorMessage = "review required")]
-        [Range(1, 5, ErrorMessage = "review must be between 1 and 5")]
-        [Display(Name = "review")]
+        [Required(ErrorMessage = "Review is required")]
+        [Range(1, 5, ErrorMessage = "Review must be between 1 and 5")]
+        [Display(Name = "Review Rating")]
         public int Rating { get; set; }
 
-        [Required(ErrorMessage = "review comment required")]
+        [Required(ErrorMessage = "comment required")]
         [StringLength(500, MinimumLength = 5, ErrorMessage = "comment must be between 5 and 500 characters")]
-        [Display(Name = "comment")]
+        [Display(Name = "Comment")]
         public string Comment { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // Display properties for Views
+        // Display Properties
+        [Display(Name = "Customer Name")]
         public string? CustomerName { get; set; }
-        public string? BookingNumber { get; set; }
+
+        [Display(Name = "Booking Number")]
+        public string? BookingDetails { get; set; }
     }
 }

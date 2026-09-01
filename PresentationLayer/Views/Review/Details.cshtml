@@ -1,0 +1,30 @@
+@model BLLayer1.ViewModel.ReviewVM
+
+@{
+    ViewData["Title"] = "Review Details";
+}
+
+<div class="container mt-4">
+    <h2>Review Details</h2>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Customer</dt>
+        <dd class="col-sm-9">@Model.CustomerName</dd>
+
+        <dt class="col-sm-3">booking</dt>
+        <dd class="col-sm-9">@Model.BookingDetails</dd>
+
+        <dt class="col-sm-3">Rate</dt>
+        <dd class="col-sm-9">@Model.Rating / 5</dd>
+
+        <dt class="col-sm-3">Comment</dt>
+        <dd class="col-sm-9">@Model.Comment</dd>
+
+        <dt class="col-sm-3">Creation Date</dt>
+        <dd class="col-sm-9">@Model.CreatedAt</dd>
+    </dl>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.ReviewId" class="btn btn-warning">edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to menu</a>
+    </div>
+</div>
