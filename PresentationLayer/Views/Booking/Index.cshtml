@@ -1,0 +1,260 @@
+@model IEnumerable<BLLayer1.ViewModel.BookingVM>
+
+@{
+    ViewData["Title"] = "Bookings Management";
+}
+
+<!-- HERO BANNER -->
+<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
+                <div class="text">
+                    <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>Bookings</span></p>
+                    <h1 class="mb-4 bread">Booking Management</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Success!</strong> @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-1 text-primary">All Hotel Bookings</h2>
+                    <p class="text-muted small mb-0">Manage guest reservations, view stay details, check in, check out, edit, cancel, and create new bookings.</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary px-4 py-2">
+                    <i class="icon-plus"></i> New Booking
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Guest / Customer</th>
+                            <th>Room</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Total Price</th>
+                            <th>Status</th>
+                            <th class="text-center" style="min-width: 260px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="icon-calendar-o" style="font-size: 2.5rem;"></i>
+                                    <p class="mt-2 mb-0">No bookings found. Click "New Booking" to create your first reservation.</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="font-weight-bold">#@item.BookingId</td>
+                                    <td>
+                                        <div class="font-weight-bold text-dark">@item.CustomerName</div>
+                                        @if (!string.IsNullOrEmpty(item.CustomerEmail))
+                                        {
+                                            <div class="small text-muted">@item.CustomerEmail</div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-secondary px-2 py-1">Room @item.RoomNumber</span>
+                                        <div class="small text-muted">@item.RoomType</div>
+                                    </td>
+                                    <td>@item.CheckInDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@item.CheckOutDate.ToString("yyyy-MM-dd")</td>
+                                    <td class="font-weight-bold text-success">$@item.TotalPrice.ToString("N2")</td>
+                                    <td>
+                                        @switch (item.Status)
+                                        {
+                                            case "Confirmed":
+                                                <span class="badge badge-success px-3 py-1">Confirmed</span>
+                                                break;
+                                            case "CheckedIn":
+                                                <span class="badge badge-info px-3 py-1">Checked-In</span>
+                                                break;
+                                            case "CheckedOut":
+                                                <span class="badge badge-dark px-3 py-1">Checked-Out</span>
+                                                break;
+                                            case "Cancelled":
+                                                <span class="badge badge-danger px-3 py-1">Cancelled</span>
+                                                break;
+                                            default:
+                                                <span class="badge badge-warning px-3 py-1 text-dark">@item.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <div class="booking-actions">
+                                            @if (item.Status == "Pending" || item.Status == "Confirmed")
+                                            {
+                                                <form asp-action="CheckIn" asp-route-id="@item.BookingId" method="post" class="d-inline" onsubmit="return confirm('Confirm check-in for Guest @item.CustomerName (Booking #@item.BookingId)?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="action-btn action-checkin" title="Check In Guest">
+                                                        <span class="icon-sign-in"></span> Check-In
+                                                    </button>
+                                                </form>
+                                            }
+                                            @if (item.Status == "CheckedIn")
+                                            {
+                                                <form asp-action="CheckOut" asp-route-id="@item.BookingId" method="post" class="d-inline" onsubmit="return confirm('Confirm check-out for Guest @item.CustomerName (Booking #@item.BookingId)?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="action-btn action-checkout" title="Check Out Guest">
+                                                        <span class="icon-sign-out"></span> Check-Out
+                                                    </button>
+                                                </form>
+                                            }
+                                            <a asp-action="Details" asp-route-id="@item.BookingId" class="action-btn action-details" title="View Details">
+                                                <span class="icon-eye"></span> Details
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.BookingId" class="action-btn action-edit" title="Edit Booking">
+                                                <span class="icon-pencil"></span> Edit
+                                            </a>
+                                            @if (item.Status != "Cancelled" && item.Status != "CheckedOut")
+                                            {
+                                                <form asp-action="Cancel" asp-route-id="@item.BookingId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel Booking #@item.BookingId?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="action-btn action-cancel" title="Cancel Booking">
+                                                        <span class="icon-close"></span> Cancel
+                                                    </button>
+                                                </form>
+                                            }
+                                            <a asp-action="Delete" asp-route-id="@item.BookingId" class="action-btn action-delete" title="Delete Booking">
+                                                <span class="icon-trash"></span> Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Booking Actions — scoped styling */
+    .booking-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        line-height: 1.4;
+        border-radius: 5px;
+        border: 1.5px solid transparent;
+        background: transparent;
+        text-decoration: none !important;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        letter-spacing: 0.01em;
+    }
+
+    .action-btn span[class^="icon-"] {
+        font-size: 0.82rem;
+    }
+
+    /* Check-In — muted emerald green */
+    .action-checkin {
+        color: #2e7d32;
+        border-color: #2e7d32;
+    }
+    .action-checkin:hover {
+        background: #2e7d32;
+        color: #fff;
+    }
+
+    /* Check-Out — muted deep purple */
+    .action-checkout {
+        color: #6a1b9a;
+        border-color: #6a1b9a;
+    }
+    .action-checkout:hover {
+        background: #6a1b9a;
+        color: #fff;
+    }
+
+    /* Details — muted slate blue */
+    .action-details {
+        color: #5a7d9a;
+        border-color: #5a7d9a;
+    }
+    .action-details:hover {
+        background: #5a7d9a;
+        color: #fff;
+    }
+
+    /* Edit — professional blue */
+    .action-edit {
+        color: #3a6ea5;
+        border-color: #3a6ea5;
+    }
+    .action-edit:hover {
+        background: #3a6ea5;
+        color: #fff;
+    }
+
+    /* Cancel — muted amber */
+    .action-cancel {
+        color: #b8860b;
+        border-color: #c9972e;
+    }
+    .action-cancel:hover {
+        background: #c9972e;
+        color: #fff;
+        border-color: #c9972e;
+    }
+
+    /* Delete — muted red */
+    .action-delete {
+        color: #b04a4a;
+        border-color: #b04a4a;
+    }
+    .action-delete:hover {
+        background: #b04a4a;
+        color: #fff;
+    }
+</style>

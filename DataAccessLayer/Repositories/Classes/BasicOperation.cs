@@ -1,19 +1,22 @@
 ﻿using System.Linq.Expressions;
 using DataAccessLayer.Repositories.Interfaces;
 using HotelHub.Data;
+﻿using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using HotelHub.Data;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace DataAccessLayer.Repositories.Classes
 {
     public class BasicOperation<T> : IBasicOperation<T> where T : class
     {
-        protected readonly ApplicationDbContext _context;
-        protected readonly DbSet<T> _dbSet;
+        private readonly ApplicationDbContext _context;
 
         public BasicOperation(ApplicationDbContext context)
         {
             _context = context;
-            _dbSet = _context.Set<T>();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();

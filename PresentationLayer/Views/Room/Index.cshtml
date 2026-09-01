@@ -1,0 +1,83 @@
+﻿@model IEnumerable<DataAccessLayer.Models.Room>
+
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<h1>Rooms</h1>
+
+@if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New Room</a>
+
+       
+    </p>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Room Number</th>
+            <th>Room Type</th>
+            <th>Floor</th>
+            <th>Status</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.RoomNumber</td>
+
+                <td>
+                    @room.RoomType?.Name
+                </td>
+
+                <td>@room.Floor</td>
+
+                <td>@room.Status</td>
+
+                <td>
+                    @if (room.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                </td>
+
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@room.Id"
+                       class="btn btn-info btn-sm">
+                        Details
+                    </a>
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+                    {
+                        <a asp-action="Edit"
+                           asp-route-id="@room.Id"
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
+
+                        <a asp-action="Delete"
+                           asp-route-id="@room.Id"
+                           class="btn btn-danger btn-sm">
+                            Delete
+
+                            
+
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,162 @@
+@model BLLayer1.ViewModel.BookingVM
+
+@{
+    ViewData["Title"] = $"Booking #{Model.BookingId} Details";
+}
+
+<!-- HERO BANNER -->
+<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
+                <div class="text">
+                    <p class="breadcrumbs mb-2">
+                        <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+                        <span class="mr-2"><a asp-action="Index">Bookings</a></span> 
+                        <span>Details</span>
+                    </p>
+                    <h1 class="mb-4 bread">Booking Details</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Success!</strong> @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                        <div>
+                            <h2 class="h4 mb-0 text-primary">Booking #@Model.BookingId</h2>
+                            <small class="text-muted">Created on @Model.CreatedAt.ToString("MMMM dd, yyyy - hh:mm tt")</small>
+                        </div>
+                        <div>
+                            @switch (Model.Status)
+                            {
+                                case "Confirmed":
+                                    <span class="badge badge-success px-3 py-2 text-uppercase" style="font-size: 0.9rem;">Confirmed</span>
+                                    break;
+                                case "CheckedIn":
+                                    <span class="badge badge-info px-3 py-2 text-uppercase" style="font-size: 0.9rem;">Checked-In</span>
+                                    break;
+                                case "CheckedOut":
+                                    <span class="badge badge-dark px-3 py-2 text-uppercase" style="font-size: 0.9rem;">Checked-Out</span>
+                                    break;
+                                case "Cancelled":
+                                    <span class="badge badge-danger px-3 py-2 text-uppercase" style="font-size: 0.9rem;">Cancelled</span>
+                                    break;
+                                default:
+                                    <span class="badge badge-warning px-3 py-2 text-uppercase text-dark" style="font-size: 0.9rem;">@Model.Status</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <!-- Guest Information -->
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded border h-100">
+                                <h6 class="text-uppercase text-muted font-weight-bold mb-3">Guest Information</h6>
+                                <p class="mb-1"><strong>Name:</strong> @Model.CustomerName</p>
+                                @if (!string.IsNullOrEmpty(Model.CustomerEmail))
+                                {
+                                    <p class="mb-1"><strong>Email:</strong> @Model.CustomerEmail</p>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.CustomerPhone))
+                                {
+                                    <p class="mb-1"><strong>Phone:</strong> @Model.CustomerPhone</p>
+                                }
+                                <p class="mb-0 text-muted small mt-2">Customer ID: #@Model.CustomerId</p>
+                            </div>
+                        </div>
+
+                        <!-- Room & Stay Information -->
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded border h-100">
+                                <h6 class="text-uppercase text-muted font-weight-bold mb-3">Room & Stay Details</h6>
+                                <p class="mb-1"><strong>Room:</strong> Room @Model.RoomNumber (@Model.RoomType)</p>
+                                <p class="mb-1"><strong>Check-in:</strong> @Model.CheckInDate.ToString("dddd, MMMM dd, yyyy")</p>
+                                <p class="mb-1"><strong>Check-out:</strong> @Model.CheckOutDate.ToString("dddd, MMMM dd, yyyy")</p>
+                                <p class="mb-0"><strong>Duration:</strong> @((Model.CheckOutDate.Date - Model.CheckInDate.Date).Days) night(s)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price & Summary -->
+                    <div class="p-3 bg-white rounded border mb-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted text-uppercase small font-weight-bold d-block">Total Reservation Amount</span>
+                            <span class="h3 font-weight-bold text-success mb-0">$@Model.TotalPrice.ToString("N2")</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-muted small d-block">Reservation Status</span>
+                            <strong class="text-dark">@Model.Status</strong>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between pt-3 border-top flex-wrap gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 mb-2">
+                            <i class="icon-arrow-left"></i> Back to List
+                        </a>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            @if (Model.Status == "Pending" || Model.Status == "Confirmed")
+                            {
+                                <form asp-action="CheckIn" asp-route-id="@Model.BookingId" method="post" class="d-inline mr-2" onsubmit="return confirm('Confirm check-in for this booking?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="icon-sign-in"></i> Check-In
+                                    </button>
+                                </form>
+                            }
+                            @if (Model.Status == "CheckedIn")
+                            {
+                                <form asp-action="CheckOut" asp-route-id="@Model.BookingId" method="post" class="d-inline mr-2" onsubmit="return confirm('Confirm check-out for this booking?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-dark px-4" style="background-color: #6a1b9a; border-color: #6a1b9a;">
+                                        <i class="icon-sign-out"></i> Check-Out
+                                    </button>
+                                </form>
+                            }
+                            <a asp-action="Edit" asp-route-id="@Model.BookingId" class="btn btn-primary px-4 mr-2">
+                                <i class="icon-edit"></i> Edit
+                            </a>
+                            @if (Model.Status != "Cancelled" && Model.Status != "CheckedOut")
+                            {
+                                <form asp-action="Cancel" asp-route-id="@Model.BookingId" method="post" class="d-inline mr-2" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-warning px-3">Cancel Booking</button>
+                                </form>
+                            }
+                            <a asp-action="Delete" asp-route-id="@Model.BookingId" class="btn btn-outline-danger px-3">
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

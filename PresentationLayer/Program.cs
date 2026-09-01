@@ -15,7 +15,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped(typeof(IBasicOperation<>), typeof(BasicOperation<>));
 builder.Services.AddScoped<ICustomerBL, CustomerBL>();
+builder.Services.AddScoped<IPaymentBL, PaymentBL>();
 builder.Services.AddScoped<IReviewBL, ReviewBL>();
+builder.Services.AddScoped<IBookingBL, BookingBL>();
+
+builder.Services.AddScoped<IRoomTypeBL, RoomTypeBL>();
+builder.Services.AddScoped<IRoomBL, RoomBL>();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()

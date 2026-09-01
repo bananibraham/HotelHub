@@ -69,8 +69,13 @@ namespace BLLayer1.BLogic
 
         public async Task DeleteAsync(int id)
         {
-            await _customerRepo.DeleteAsync(id);
-            await _customerRepo.SaveChangesAsync();
+            var customer = await _customerRepo.GetByIdAsync(id);
+            if (customer != null)
+            {
+                customer.IsActive = false;
+                _customerRepo.Update(customer);
+                await _customerRepo.SaveChangesAsync();
+            }
         }
     }
 }
