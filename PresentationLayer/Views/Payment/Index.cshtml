@@ -1,218 +1,114 @@
-﻿@model IEnumerable<DataAccessLayer.Models.Payment>
+@model IEnumerable<DataAccessLayer.Models.Payment>
 
 @{
-    ViewData["Title"] = "Payments";
-    bool isAdmin = User.IsInRole("Admin");
-    bool isReceptionist = User.IsInRole("Receptionist");
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = "Financial Payments - HotelHub";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout";
 }
 
-<section class="hero-wrap hero-wrap-2"
-         style="background-image: url('@Url.Content("~/images/bg_1.jpg")');"
-         data-stellar-background-ratio="0.5">
-
-    <div class="overlay"></div>
-
-    <div class="container">
-        <div class="row no-gutters slider-text align-items-end justify-content-center">
-            <div class="col-md-9 ftco-animate pb-5 text-center">
-                <p class="breadcrumbs">
-                    <span class="mr-2">
-                        <a asp-controller="Home" asp-action="Index">
-                            Home <i class="ion-ios-arrow-forward"></i>
-                        </a>
-                    </span>
-                    <span>Payments</span>
-                </p>
-
-                <h1 class="mb-3 bread">Payment Management</h1>
-            </div>
+@if (!isAdmin)
+{
+    <!-- HERO BANNER -->
+    <section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container text-center position-relative" style="z-index: 2;">
+            <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>&bull;</span> <span class="text-white">Payments</span></p>
+            <h1 class="bread mb-2">Transaction Ledger</h1>
+            <p class="subtitle">Audited financial transactions, receipts, and payment settlements in EGP.</p>
         </div>
-    </div>
-</section>
+    </section>
+}
 
-<section class="ftco-section bg-light">
-    <div class="container">
-
-        @if (TempData["Success"] != null)
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div>
+            <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Accounting &amp; Audit</span>
+            <h2 class="font-weight-bold mb-1 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                Payment Transactions
+            </h2>
+            <p class="text-muted small mb-0">Financial records and payment settlements in Egyptian Pounds (EGP).</p>
+        </div>
+        @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
         {
-            <div class="alert alert-success alert-dismissible fade show shadow-sm"
-                 role="alert">
-                <i class="icon-check mr-2"></i>
-                @TempData["Success"]
-
-                <button type="button"
-                        class="close"
-                        data-dismiss="alert">
-                    <span>&times;</span>
-                </button>
+            <div class="mt-3 mt-md-0">
+                <a asp-action="Create" class="btn-luxury-gold">
+                    <i class="icon-plus mr-1"></i> Record Payment
+                </a>
             </div>
         }
+    </div>
 
-        <div class="row mb-4 align-items-center">
-            <div class="col-md-8">
-                <span class="subheading">Financial Management</span>
-                <h2 class="mb-2">Payments</h2>
-                <p class="text-muted mb-0">
-                    Manage hotel payments and keep booking balances accurate.
-                </p>
-            </div>
-
-            <div class="col-md-4 text-md-right mt-3 mt-md-0">
-                @if (isAdmin || isReceptionist)
-                {
-                    <a asp-action="Create"
-                       class="btn btn-primary px-4 py-3">
-                        <i class="icon-plus mr-2"></i>
-                        Add Payment
-                    </a>
-                }
-            </div>
-        </div>
-
-        <div class="row">
-
-            @if (Model != null && Model.Any())
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var payment in Model)
             {
-                foreach (var payment in Model)
-                {
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card border-0 shadow-sm h-100">
-
-                            <div class="card-body p-4">
-
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <span class="text-muted small">
-                                            PAYMENT
-                                        </span>
-
-                                        <h4 class="mb-0">
-                                            #@payment.PaymentId
-                                        </h4>
-                                    </div>
-
-                                    <span class="badge badge-light px-3 py-2">
-                                        <i class="icon-credit-card mr-1"></i>
-                                        @payment.PaymentMethod
-                                    </span>
-                                </div>
-
-                                <div class="mb-4">
-                                    <div class="text-muted small mb-1">
-                                        Amount Paid
-                                    </div>
-
-                                    <h3 class="mb-0"
-                                        style="color:#8d703b;">
-                                        @payment.Amount.ToString("N2")
-                                    </h3>
-                                </div>
-
-                                <div class="row mb-3">
-
-                                    <div class="col-6">
-                                        <div class="text-muted small">
-                                            Booking
-                                        </div>
-
-                                        <strong>
-                                            #@payment.BookingId
-                                        </strong>
-                                    </div>
-
-                                    <div class="col-6">
-                                        <div class="text-muted small">
-                                            Payment Date
-                                        </div>
-
-                                        <strong>
-                                            @payment.PaymentDate.ToString("dd MMM yyyy")
-                                        </strong>
-                                    </div>
-
-                                </div>
-
-                                @if (!string.IsNullOrWhiteSpace(payment.TransactionId))
-                                {
-                                    <div class="mb-3">
-                                        <div class="text-muted small">
-                                            Transaction ID
-                                        </div>
-
-                                        <div class="text-truncate">
-                                            @payment.TransactionId
-                                        </div>
-                                    </div>
-                                }
-
-                                <hr />
-
-                                <div class="d-flex flex-wrap">
-
-                                    <a asp-action="Details"
-                                       asp-route-id="@payment.PaymentId"
-                                       class="btn btn-outline-secondary btn-sm mr-2 mb-2">
-                                        <i class="icon-eye mr-1"></i>
-                                        Details
-                                    </a>
-
-                                    @if (isAdmin || isReceptionist)
-                                    {
-                                        <a asp-action="Edit"
-                                           asp-route-id="@payment.PaymentId"
-                                           class="btn btn-outline-primary btn-sm mr-2 mb-2">
-                                            <i class="icon-pencil mr-1"></i>
-                                            Edit
-                                        </a>
-                                    }
-
-                                    @if (isAdmin)
-                                    {
-                                        <a asp-action="Delete"
-                                           asp-route-id="@payment.PaymentId"
-                                           class="btn btn-outline-danger btn-sm mb-2">
-                                            <i class="icon-trash mr-1"></i>
-                                            Delete
-                                        </a>
-                                    }
-
-                                </div>
-
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="luxury-card h-100 p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.5px;">Transaction</span>
+                                <h4 class="mb-0 font-weight-bold" style="color: #8d703b;">PAY-@payment.PaymentId</h4>
                             </div>
-
+                            <span class="badge badge-light border px-3 py-2">
+                                <i class="icon-credit-card mr-1"></i> @payment.PaymentMethod
+                            </span>
                         </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm text-center p-5">
 
                         <div class="mb-3">
-                            <i class="icon-credit-card"
-                               style="font-size:50px;color:#8d703b;"></i>
+                            <span class="text-muted small d-block">Amount Settled</span>
+                            <h3 class="mb-0 font-weight-bold text-success" style="font-family: 'Playfair Display', Georgia, serif;">
+                                +@payment.Amount.ToString("N2") EGP
+                            </h3>
                         </div>
 
-                        <h3>No Payments Found</h3>
+                        <div class="row mb-3 bg-light rounded p-2 mx-0">
+                            <div class="col-6">
+                                <div class="text-muted small">Reservation</div>
+                                <a asp-controller="Booking" asp-action="Details" asp-route-id="@payment.BookingId" class="font-weight-bold text-dark">
+                                    #HH-@payment.BookingId.ToString("D5")
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small">Processed On</div>
+                                <span class="font-weight-bold text-dark">@payment.PaymentDate.ToString("dd MMM yyyy")</span>
+                            </div>
+                        </div>
 
-                        <p class="text-muted">
-                            There are currently no payment records.
-                        </p>
-
-                        @if (isAdmin || isReceptionist)
+                        @if (!string.IsNullOrWhiteSpace(payment.TransactionId))
                         {
-                            <a asp-action="Create"
-                               class="btn btn-primary px-4 py-3">
-                                <i class="icon-plus mr-2"></i>
-                                Create First Payment
-                            </a>
+                            <div class="mb-3 small">
+                                <span class="text-muted d-block">Reference ID:</span>
+                                <code class="text-dark">@payment.TransactionId</code>
+                            </div>
                         }
 
+                        <hr />
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Details" asp-route-id="@payment.PaymentId" class="btn btn-outline-secondary btn-sm">
+                                <i class="icon-eye mr-1"></i> View Receipt
+                            </a>
+                            <span class="badge-luxury-confirmed">Recorded</span>
+                        </div>
                     </div>
                 </div>
             }
-
-        </div>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="luxury-card text-center p-5">
+                    <div class="mb-3">
+                        <i class="icon-credit-card" style="font-size: 50px; color: #8d703b;"></i>
+                    </div>
+                    <h3 style="font-family: 'Playfair Display', Georgia, serif;">No Payment Records</h3>
+                    <p class="text-muted">There are currently no transactions recorded in the system ledger.</p>
+                </div>
+            </div>
+        }
     </div>
-</section>
+</div>

@@ -1,5 +1,7 @@
+@model IEnumerable<DataAccessLayer.Models.Room>
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Home - HotelHub Luxury Resorts";
+    var roomTypes = ViewBag.RoomTypes as IEnumerable<DataAccessLayer.Models.RoomType> ?? Enumerable.Empty<DataAccessLayer.Models.RoomType>();
 }
 
 <!-- 1. HERO SLIDER -->
@@ -34,71 +36,69 @@
 </section>
 
 <!-- 2. BOOKING / AVAILABILITY BAR -->
-<section class="ftco-booking">
+<section class="ftco-booking" style="margin-top: -50px; position: relative; z-index: 20;">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <form action="#rooms-section" class="booking-form">
-                    <div class="row">
+                <form asp-controller="Booking" asp-action="AvailableRooms" method="get" class="booking-form shadow-lg" style="background: #ffffff; border-radius: 16px; border: 1px solid rgba(141, 112, 59, 0.2); padding: 15px 25px;">
+                    <div class="row align-items-center">
                         <div class="col-md-3 d-flex">
-                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
-                                <div class="wrap">
-                                    <label for="checkin_date">Check-in Date</label>
-                                    <input type="text" id="checkin_date" class="form-control checkin_date" placeholder="Check-in date" autocomplete="off" />
+                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
+                                <div class="wrap w-100">
+                                    <label for="checkin_date" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
+                                        <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-in Date
+                                    </label>
+                                    <input type="date" id="checkin_date" name="checkIn" class="luxury-input w-100" value="@DateTime.Today.ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3 d-flex">
-                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
-                                <div class="wrap">
-                                    <label for="checkout_date">Check-out Date</label>
-                                    <input type="text" id="checkout_date" class="form-control checkout_date" placeholder="Check-out date" autocomplete="off" />
+                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
+                                <div class="wrap w-100">
+                                    <label for="checkout_date" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
+                                        <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-out Date
+                                    </label>
+                                    <input type="date" id="checkout_date" name="checkOut" class="luxury-input w-100" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
                                 </div>
                             </div>
                         </div>
                         <div class="col-md d-flex">
-                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
-                                <div class="wrap">
-                                    <label for="room_type">Room</label>
-                                    <div class="form-field">
-                                        <div class="select-wrap">
-                                            <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-                                            <select name="room_type" id="room_type" class="form-control">
-                                                <option value="suite">Suite</option>
-                                                <option value="family">Family Room</option>
-                                                <option value="deluxe">Deluxe Room</option>
-                                                <option value="classic">Classic Room</option>
-                                                <option value="superior">Superior Room</option>
-                                                <option value="luxury">Luxury Room</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
+                                <div class="wrap w-100">
+                                    <label for="room_type" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
+                                        <i class="icon-bed mr-1" style="color: #8d703b;"></i> Classification
+                                    </label>
+                                    <select name="roomTypeId" id="room_type" class="luxury-input w-100">
+                                        <option value="">All Room Types</option>
+                                        @foreach (var rt in roomTypes)
+                                        {
+                                            <option value="@rt.Id">@rt.Name</option>
+                                        }
+                                    </select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md d-flex">
-                            <div class="form-group p-4 align-self-stretch d-flex align-items-end">
-                                <div class="wrap">
-                                    <label for="customer_count">Customer</label>
-                                    <div class="form-field">
-                                        <div class="select-wrap">
-                                            <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-                                            <select name="customer_count" id="customer_count" class="form-control">
-                                                <option value="1">1 Adult</option>
-                                                <option value="2">2 Adults</option>
-                                                <option value="3">3 Adults</option>
-                                                <option value="4">4 Adults</option>
-                                                <option value="5">5 Adults</option>
-                                                <option value="6">6 Adults</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
+                                <div class="wrap w-100">
+                                    <label for="customer_count" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
+                                        <i class="icon-users mr-1" style="color: #8d703b;"></i> Guests
+                                    </label>
+                                    <select name="guestCount" id="customer_count" class="luxury-input w-100">
+                                        <option value="1">1 Guest</option>
+                                        <option value="2" selected>2 Guests</option>
+                                        <option value="3">3 Guests</option>
+                                        <option value="4">4 Guests</option>
+                                        <option value="5">5+ Guests</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md d-flex">
-                            <div class="form-group d-flex align-self-stretch">
-                                <input type="submit" value="Check Availability" class="btn btn-primary py-3 px-4 align-self-stretch" />
+                            <div class="form-group d-flex align-self-stretch w-100 p-3 mb-0">
+                                <button type="submit" class="btn-luxury-gold w-100 align-self-stretch font-weight-bold" style="border-radius: 8px;">
+                                    Check Availability
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -199,105 +199,73 @@
     </div>
 </section>
 
-<!-- 5. OUR ROOMS SECTION (STATIC PRESENTATIONAL PREVIEW) -->
+<!-- 5. OUR ROOMS SECTION (DYNAMIC DATABASE ROOMS) -->
 <section class="ftco-section bg-light" id="rooms-section">
     <div class="container">
         <div class="row justify-content-center mb-5 pb-3">
             <div class="col-md-7 heading-section text-center ftco-animate">
-                <h2 class="mb-4">Our Rooms</h2>
+                <span class="subheading">Exclusive Resort Accommodations</span>
+                <h2 class="mb-4">Our Summer Rooms &amp; Suites</h2>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-                <div class="room">
-                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-1.jpg")');">
-                        <div class="icon d-flex justify-content-center align-items-center">
-                            <span class="icon-search2"></span>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var room in Model)
+                {
+                    var price = room.RoomType?.PricePerNight ?? 1500m;
+                    <div class="col-sm col-md-6 col-lg-4 ftco-animate mb-4">
+                        <div class="room-card-premium">
+                            <div class="room-card-img-wrap">
+                                <img src="@Url.Content(string.IsNullOrEmpty(room.ImageUrl) ? "~/images/room-1.jpg" : room.ImageUrl)" alt="Room @room.RoomNumber" />
+                                <span class="room-badge-category">
+                                    <i class="icon-hotel mr-1"></i> Room @room.RoomNumber
+                                </span>
+                                <span class="room-badge-floor">
+                                    Floor @room.Floor
+                                </span>
+                            </div>
+                            <div class="room-card-content">
+                                <div>
+                                    <h3 class="room-card-title">
+                                        <a asp-controller="Booking" asp-action="Checkout" asp-route-roomId="@room.Id">
+                                            @(room.RoomType?.Name ?? "Deluxe Suite")
+                                        </a>
+                                    </h3>
+                                    <p class="text-muted small mb-3">
+                                        @(string.IsNullOrEmpty(room.Description) ? (room.RoomType?.Description ?? "Luxury seaside accommodations with modern comfort and panoramic views.") : room.Description)
+                                    </p>
+                                    <div class="amenity-chip-list">
+                                        <span class="amenity-chip"><i class="icon-users"></i> Up to @(room.RoomType?.Capacity ?? 2) Guests</span>
+                                        <span class="amenity-chip"><i class="icon-wifi"></i> Free WiFi</span>
+                                        <span class="amenity-chip"><i class="icon-snowflake-o"></i> AC</span>
+                                    </div>
+                                </div>
+                                <div class="pt-3 border-top">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <span class="small text-muted d-block">Starting from</span>
+                                            <span class="h4 font-weight-bold mb-0" style="color: #8d703b; font-family: 'Playfair Display', Georgia, serif;">
+                                                @price.ToString("N0") EGP
+                                            </span>
+                                            <small class="text-muted"> / night</small>
+                                        </div>
+                                    </div>
+                                    <a asp-controller="Booking" asp-action="Checkout" asp-route-roomId="@room.Id" class="btn-luxury-gold w-100 font-weight-bold">
+                                        Reserve Suite <i class="icon-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </a>
-                    <div class="text p-3 text-center">
-                        <h3 class="mb-3"><a href="#rooms-section">Suite Room</a></h3>
-                        <p><span class="price mr-2">$120.00</span> <span class="per">per night</span></p>
-                        <hr>
-                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No rooms currently available in the resort catalog.</p>
                 </div>
-            </div>
-            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-                <div class="room">
-                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-2.jpg")');">
-                        <div class="icon d-flex justify-content-center align-items-center">
-                            <span class="icon-search2"></span>
-                        </div>
-                    </a>
-                    <div class="text p-3 text-center">
-                        <h3 class="mb-3"><a href="#rooms-section">Family Room</a></h3>
-                        <p><span class="price mr-2">$200.00</span> <span class="per">per night</span></p>
-                        <hr>
-                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-                <div class="room">
-                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-3.jpg")');">
-                        <div class="icon d-flex justify-content-center align-items-center">
-                            <span class="icon-search2"></span>
-                        </div>
-                    </a>
-                    <div class="text p-3 text-center">
-                        <h3 class="mb-3"><a href="#rooms-section">Deluxe Room</a></h3>
-                        <p><span class="price mr-2">$150.00</span> <span class="per">per night</span></p>
-                        <hr>
-                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-                <div class="room">
-                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-4.jpg")');">
-                        <div class="icon d-flex justify-content-center align-items-center">
-                            <span class="icon-search2"></span>
-                        </div>
-                    </a>
-                    <div class="text p-3 text-center">
-                        <h3 class="mb-3"><a href="#rooms-section">Classic Room</a></h3>
-                        <p><span class="price mr-2">$130.00</span> <span class="per">per night</span></p>
-                        <hr>
-                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-                <div class="room">
-                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-5.jpg")');">
-                        <div class="icon d-flex justify-content-center align-items-center">
-                            <span class="icon-search2"></span>
-                        </div>
-                    </a>
-                    <div class="text p-3 text-center">
-                        <h3 class="mb-3"><a href="#rooms-section">Superior Room</a></h3>
-                        <p><span class="price mr-2">$300.00</span> <span class="per">per night</span></p>
-                        <hr>
-                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm col-md-6 col-lg-4 ftco-animate">
-                <div class="room">
-                    <a href="#rooms-section" class="img d-flex justify-content-center align-items-center" style="background-image: url('@Url.Content("~/images/room-6.jpg")');">
-                        <div class="icon d-flex justify-content-center align-items-center">
-                            <span class="icon-search2"></span>
-                        </div>
-                    </a>
-                    <div class="text p-3 text-center">
-                        <h3 class="mb-3"><a href="#rooms-section">Luxury Room</a></h3>
-                        <p><span class="price mr-2">$500.00</span> <span class="per">per night</span></p>
-                        <hr>
-                        <p class="pt-1"><a href="#rooms-section" class="btn-custom">View Room Details <span class="icon-long-arrow-right"></span></a></p>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </section>

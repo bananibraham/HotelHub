@@ -1,0 +1,166 @@
+@model BLLayer1.ViewModel.BookingVM
+@{
+    ViewData["Title"] = "Guest Reservation Checkout";
+    var room = (DataAccessLayer.Models.Room)ViewBag.Room;
+    var nights = (int)ViewBag.Nights;
+    var total = (decimal)ViewBag.TotalPrice;
+}
+
+<!-- HERO BANNER -->
+<section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <p class="breadcrumbs mb-2">
+            <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+            <span class="mr-2">&bull;</span>
+            <span class="text-white">Checkout</span>
+        </p>
+        <h1 class="bread mb-2">Review &amp; Reserve</h1>
+        <p class="subtitle">Complete your guest information to lock in your luxury resort reservation.</p>
+    </div>
+</section>
+
+<section class="ftco-section bg-light py-5">
+    <div class="container">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <i class="icon-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+        }
+
+        <div class="row">
+            <!-- GUEST & CONTACT DETAILS FORM -->
+            <div class="col-lg-7 mb-4">
+                <div class="luxury-card p-4 p-md-5">
+                    <div class="border-bottom pb-3 mb-4">
+                        <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Step 1 of 2</span>
+                        <h3 class="font-weight-bold text-dark mb-1" style="font-family: 'Playfair Display', Georgia, serif;">
+                            Guest &amp; Contact Details
+                        </h3>
+                        <p class="text-muted small mb-0">Your reservation details will be confirmed under your verified guest profile.</p>
+                    </div>
+
+                    <form asp-action="ConfirmCheckout" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="RoomId" />
+                        <input type="hidden" asp-for="CheckInDate" />
+                        <input type="hidden" asp-for="CheckOutDate" />
+                        <input type="hidden" asp-for="CustomerId" />
+
+                        <div class="form-group mb-4">
+                            <label class="small font-weight-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">
+                                Primary Guest Name
+                            </label>
+                            <input asp-for="CustomerName" class="luxury-input w-100 font-weight-bold" readonly style="background-color: #f8f9fa;" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-4">
+                                <label class="small font-weight-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">
+                                    Email Address (For Confirmation)
+                                </label>
+                                <input asp-for="CustomerEmail" class="luxury-input w-100" readonly style="background-color: #f8f9fa;" />
+                            </div>
+                            <div class="col-md-6 form-group mb-4">
+                                <label asp-for="CustomerPhone" class="small font-weight-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">
+                                    Contact Phone Number
+                                </label>
+                                <input asp-for="CustomerPhone" class="luxury-input w-100" placeholder="01012345678" required />
+                                <span asp-validation-for="CustomerPhone" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- RESORT PERKS CALLOUT -->
+                        <div class="p-3 mb-4 rounded" style="background: #fdfbf7; border: 1px solid rgba(141, 112, 59, 0.2);">
+                            <div class="d-flex align-items-start">
+                                <i class="icon-star mr-3 mt-1" style="font-size: 1.5rem; color: #8d703b;"></i>
+                                <div class="small">
+                                    <strong class="text-dark d-block mb-1">Included with Your Stay:</strong>
+                                    <ul class="mb-0 pl-3 text-muted">
+                                        <li>Complimentary welcome beverage upon arrival</li>
+                                        <li>High-speed fiber-optic Wi-Fi in suite and private beach</li>
+                                        <li>Free cancellation up to 24 hours prior to check-in</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top flex-wrap">
+                            <a asp-action="AvailableRooms" asp-route-checkIn="@Model.CheckInDate.ToString("yyyy-MM-dd")" asp-route-checkOut="@Model.CheckOutDate.ToString("yyyy-MM-dd")" class="btn-luxury-outline mb-2 mb-md-0">
+                                <i class="icon-arrow-left mr-2"></i> Select Another Suite
+                            </a>
+                            <button type="submit" class="btn-luxury-gold px-5 py-3">
+                                Lock In Stay &amp; Pay <i class="icon-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- STICKY RESERVATION SUMMARY CARD -->
+            <div class="col-lg-5 mb-4">
+                <div class="luxury-card sticky-top" style="top: 20px;">
+                    <div style="height: 200px; overflow: hidden; position: relative;">
+                        <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "/images/room-1.jpg" : room.ImageUrl)" alt="Room @room.RoomNumber" style="width: 100%; height: 100%; object-fit: cover;" />
+                        <span class="room-badge-category">
+                            Room @room.RoomNumber
+                        </span>
+                        <span class="room-badge-floor">
+                            Floor @room.Floor
+                        </span>
+                    </div>
+
+                    <div class="luxury-card-body">
+                        <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Stay Itinerary</span>
+                        <h4 class="font-weight-bold mb-1 text-dark mt-1" style="font-family: 'Playfair Display', Georgia, serif;">
+                            @(room.RoomType?.Name ?? "Luxury Suite")
+                        </h4>
+                        <p class="text-muted small mb-3">Capacity: Up to @(room.RoomType?.Capacity ?? 2) Guests &bull; Sea View</p>
+
+                        <div class="border-top border-bottom py-3 my-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Check-In:</span>
+                                <strong class="text-dark">@Model.CheckInDate.ToString("ddd, dd MMM yyyy") <small class="text-muted">(From 3:00 PM)</small></strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Check-Out:</span>
+                                <strong class="text-dark">@Model.CheckOutDate.ToString("ddd, dd MMM yyyy") <small class="text-muted">(By 12:00 PM)</small></strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">Duration:</span>
+                                <strong class="text-dark">@nights @(nights == 1 ? "Night" : "Nights")</strong>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Nightly Rate:</span>
+                                <span class="text-dark font-weight-bold">@(room.RoomType?.PricePerNight.ToString("N0") ?? "0") EGP</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Stay Calculation:</span>
+                                <span class="text-dark font-weight-bold">@nights &times; @(room.RoomType?.PricePerNight.ToString("N0") ?? "0") EGP</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted small">Taxes &amp; Resort Surcharges:</span>
+                                <span class="text-success font-weight-bold">Included</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                <div>
+                                    <span class="small text-uppercase font-weight-bold text-muted d-block">Total Due</span>
+                                    <span class="small text-muted">Payable in EGP</span>
+                                </div>
+                                <span class="h3 font-weight-bold mb-0" style="color: #8d703b; font-family: 'Playfair Display', Georgia, serif;">
+                                    @total.ToString("N2") EGP
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

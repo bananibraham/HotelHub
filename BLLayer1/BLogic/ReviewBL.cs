@@ -25,8 +25,8 @@ namespace BLLayer1.BLogic
                 Rating = r.Rating,
                 Comment = r.Comment,
                 CreatedAt = r.CreatedAt,
-                CustomerName = r.Customer != null ? r.Customer.FullName : "غير معروف",
-                BookingDetails = r.BookingId.HasValue ? $"حجز #{r.BookingId}" : "بدون حجز"
+                CustomerName = r.Customer != null ? r.Customer.FullName : "Guest",
+                BookingDetails = r.BookingId.HasValue ? $"Booking #{r.BookingId}" : "General Guest Review"
             });
         }
 
@@ -43,8 +43,8 @@ namespace BLLayer1.BLogic
                 Rating = r.Rating,
                 Comment = r.Comment,
                 CreatedAt = r.CreatedAt,
-                CustomerName = r.Customer != null ? r.Customer.FullName : "غير معروف",
-                BookingDetails = r.BookingId.HasValue ? $"حجز #{r.BookingId}" : "بدون حجز"
+                CustomerName = r.Customer != null ? r.Customer.FullName : "Guest",
+                BookingDetails = r.BookingId.HasValue ? $"Booking #{r.BookingId}" : "General Guest Review"
             };
         }
 

@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Models;
+using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,6 +18,11 @@ namespace DataAccessLayer.Configurations
             builder.HasOne(b => b.Customer)
                    .WithMany(c => c.Bookings)
                    .HasForeignKey(b => b.CustomerId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(b => b.Room)
+                   .WithMany(r => r.Bookings)
+                   .HasForeignKey(b => b.RoomId)
                    .OnDelete(DeleteBehavior.Restrict);
         }
     }

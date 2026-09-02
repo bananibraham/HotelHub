@@ -1,0 +1,104 @@
+@model BLLayer1.ViewModel.BookingVM
+@{
+    ViewData["Title"] = $"Reservation #{Model.BookingId} Confirmed";
+    int nights = Math.Max(1, (Model.CheckOutDate.Date - Model.CheckInDate.Date).Days);
+}
+
+<!-- HERO BANNER -->
+<section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <p class="breadcrumbs mb-2">
+            <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+            <span class="mr-2">&bull;</span>
+            <span class="text-white">Confirmation</span>
+        </p>
+        <h1 class="bread mb-2">Reservation Confirmed</h1>
+        <p class="subtitle">We look forward to welcoming you to HotelHub Luxury Resort &amp; Spa.</p>
+    </div>
+</section>
+
+<section class="ftco-section bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <!-- VOUCHER CARD -->
+                <div class="luxury-voucher text-center mb-4">
+                    <div class="mb-3 d-flex justify-content-center">
+                        <div style="width: 76px; height: 76px; border-radius: 50%; background: #e6f7ef; display: flex; align-items: center; justify-content: center; border: 2px solid #b7ecd2;">
+                            <i class="icon-check" style="font-size: 2.4rem; color: #0d8a50;"></i>
+                        </div>
+                    </div>
+
+                    <span class="badge-luxury-confirmed mb-2 d-inline-block">
+                        <i class="icon-shield mr-1"></i> Verified &amp; Confirmed Stay
+                    </span>
+
+                    <h2 class="font-weight-bold text-dark mt-2 mb-1" style="font-family: 'Playfair Display', Georgia, serif;">
+                        Thank You, @Model.CustomerName!
+                    </h2>
+                    <p class="text-muted mb-4">
+                        Your booking has been registered in the resort system. Booking Reference: 
+                        <strong class="text-dark font-weight-bold" style="font-size: 1.1rem; letter-spacing: 1px;">#HH-@Model.BookingId.ToString("D5")</strong>
+                    </p>
+
+                    <!-- VOUCHER DETAILS GRID -->
+                    <div class="p-4 mb-4 rounded text-left" style="background: #fcfbf9; border: 1px solid #ebdcc5;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <span class="small text-muted text-uppercase d-block" style="letter-spacing: 1px;">Reserved Suite</span>
+                                <span class="h5 font-weight-bold text-dark mb-0">Room @Model.RoomNumber &bull; @Model.RoomType</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <span class="small text-muted text-uppercase d-block" style="letter-spacing: 1px;">Stay Duration</span>
+                                <span class="h5 font-weight-bold text-dark mb-0">@nights @(nights == 1 ? "Night" : "Nights")</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <span class="small text-muted text-uppercase d-block" style="letter-spacing: 1px;">Check-In</span>
+                                <strong class="text-dark">@Model.CheckInDate.ToString("dddd, dd MMMM yyyy")</strong>
+                                <small class="text-muted d-block">From 3:00 PM onwards</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <span class="small text-muted text-uppercase d-block" style="letter-spacing: 1px;">Check-Out</span>
+                                <strong class="text-dark">@Model.CheckOutDate.ToString("dddd, dd MMMM yyyy")</strong>
+                                <small class="text-muted d-block">By 12:00 PM noon</small>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="small text-muted text-uppercase d-block" style="letter-spacing: 1px;">Total Reservation Cost</span>
+                                <span class="h3 font-weight-bold mb-0" style="color: #8d703b; font-family: 'Playfair Display', Georgia, serif;">
+                                    @Model.TotalPrice.ToString("N2") EGP
+                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="small text-muted text-uppercase d-block" style="letter-spacing: 1px;">Reservation Status</span>
+                                <span class="badge-luxury-confirmed mt-1 d-inline-block">@Model.Status</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHECK-IN NOTICE -->
+                    <div class="p-3 bg-white border rounded mb-4 text-left small text-muted">
+                        <strong class="text-dark d-block mb-1"><i class="icon-info-circle mr-1" style="color: #8d703b;"></i> Resort Check-In Information:</strong>
+                        Please present a valid national ID or passport along with this reservation confirmation upon arrival at the HotelHub reception lobby. Complimentary valet parking is provided.
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="d-flex justify-content-center flex-wrap" style="gap: 12px;">
+                        <button onclick="window.print()" class="btn-luxury-outline px-4 py-3">
+                            <i class="icon-print mr-2"></i> Print Voucher
+                        </button>
+                        <a asp-controller="Payment" asp-action="Checkout" asp-route-bookingId="@Model.BookingId" class="btn-luxury-gold px-4 py-3">
+                            <i class="icon-credit-card mr-2"></i> Payment / View Receipts
+                        </a>
+                        <a asp-action="Index" class="btn-luxury-outline px-4 py-3">
+                            <i class="icon-calendar mr-2"></i> My Reservations
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="btn-luxury-outline px-4 py-3">
+                            <i class="icon-home mr-2"></i> Return Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

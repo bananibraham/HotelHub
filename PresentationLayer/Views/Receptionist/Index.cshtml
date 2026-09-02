@@ -1,53 +1,79 @@
-﻿@{
-    ViewData["Title"] = "Receptionist Desk";
+@inject PresentationLayer.Services.IUserService UserService
+@{
+    ViewData["Title"] = "Front Desk Reception - HotelHub";
+    var staffName = await UserService.GetDisplayNameAsync(User);
 }
 
 <!-- HERO BANNER -->
-<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_2.jpg")');">
+<section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_2.jpg")');">
     <div class="overlay"></div>
-    <div class="container">
-        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
-            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
-                <div class="text">
-                    <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>Receptionist</span></p>
-                    <h1 class="mb-4 bread">Receptionist Front Desk</h1>
-                </div>
-            </div>
-        </div>
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <p class="breadcrumbs mb-2">
+            <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+            <span class="mr-2">&bull;</span>
+            <span class="text-white">Staff Portal</span>
+        </p>
+        <h1 class="bread mb-2">Receptionist Front Desk</h1>
+        <p class="subtitle">Guest arrivals, departures, room service charges, and walk-in bookings.</p>
     </div>
-</div>
+</section>
 
-<section class="ftco-section bg-light">
+<section class="ftco-section bg-light py-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-10">
-                <div class="card shadow-sm border-0 p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                <div class="luxury-card p-4 p-md-5">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3 flex-wrap">
                         <div>
-                            <h2 class="h4 mb-0 text-info">Receptionist Front Desk</h2>
-                            <p class="text-muted mb-0">Staff Member: <strong>@User.Identity?.Name</strong></p>
+                            <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Front Desk Console</span>
+                            <h2 class="font-weight-bold mb-0 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                                Welcome, @staffName
+                            </h2>
+                            <p class="text-muted small mb-0">Authorized Front Desk Operations &amp; Guest Relations</p>
                         </div>
-                        <span class="badge badge-info px-3 py-2 text-uppercase text-white" style="font-size: 0.9rem;">Role: Receptionist</span>
+                        <span class="badge-luxury-checkedin mt-2 mt-md-0">Staff Active</span>
                     </div>
 
-                    <div class="alert alert-info d-flex align-items-center" role="alert">
-                        <div>
-                            <h5 class="alert-heading mb-1"><i class="icon-info-circle"></i> Receptionist Access Granted</h5>
-                            <p class="mb-0">You have access to staff front desk operations. You are restricted from Admin-only configuration pages.</p>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-md-6 mb-3">
-                            <div class="p-3 bg-white border rounded text-center">
-                                <h6 class="text-muted text-uppercase mb-2">Guest Check-In / Check-Out</h6>
-                                <p class="small text-muted mb-0">Manage guest arrivals, keycards, and departures.</p>
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-4">
+                            <div class="p-4 bg-white border rounded text-center h-100 d-flex flex-column justify-content-between shadow-sm" style="border-radius: 12px !important;">
+                                <div>
+                                    <div class="mb-3 d-inline-block p-3 rounded-circle" style="background: #fdfbf7; color: #8d703b;">
+                                        <i class="icon-calendar-check-o" style="font-size: 2.2rem;"></i>
+                                    </div>
+                                    <h5 class="text-uppercase mb-2 font-weight-bold text-dark" style="letter-spacing: 0.5px;">Guest Reservations</h5>
+                                    <p class="small text-muted mb-4">Perform check-ins, check-outs, process arrivals, and register walk-in guests.</p>
+                                </div>
+                                <div class="d-flex justify-content-center" style="gap: 8px;">
+                                    <a asp-controller="Booking" asp-action="Index" class="btn-luxury-gold py-2 px-3">
+                                        <i class="icon-calendar mr-1"></i> Reservations
+                                    </a>
+                                    <a asp-controller="Customer" asp-action="Index" class="btn-luxury-outline py-2 px-3">
+                                        <i class="icon-users mr-1"></i> Guests
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="p-3 bg-white border rounded text-center">
-                                <h6 class="text-muted text-uppercase mb-2">Booking Management</h6>
-                                <p class="small text-muted mb-0">Search and manage existing guest reservations.</p>
+                        <div class="col-md-6 mb-4">
+                            <div class="p-4 bg-white border rounded text-center h-100 d-flex flex-column justify-content-between shadow-sm" style="border-radius: 12px !important;">
+                                <div>
+                                    <div class="mb-3 d-inline-block p-3 rounded-circle" style="background: #fdfbf7; color: #8d703b;">
+                                        <i class="icon-credit-card" style="font-size: 2.2rem;"></i>
+                                    </div>
+                                    <h5 class="text-uppercase mb-2 font-weight-bold text-dark" style="letter-spacing: 0.5px;">Billing &amp; Inventory</h5>
+                                    <p class="small text-muted mb-4">Issue statements, record guest payments at reception, and monitor room status.</p>
+                                </div>
+                                <div class="d-flex justify-content-center" style="gap: 8px;">
+                                    <a asp-controller="Invoice" asp-action="Index" class="btn-luxury-outline py-2 px-3">
+                                        <i class="icon-file-text mr-1"></i> Invoices
+                                    </a>
+                                    <a asp-controller="Payment" asp-action="Index" class="btn-luxury-outline py-2 px-3">
+                                        <i class="icon-credit-card mr-1"></i> Payments
+                                    </a>
+                                    <a asp-controller="Room" asp-action="Index" class="btn-luxury-outline py-2 px-3">
+                                        <i class="icon-bed mr-1"></i> Rooms
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

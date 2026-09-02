@@ -1,0 +1,31 @@
+@inject SignInManager<IdentityUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+    var current = ViewContext.RouteData.Values["Page"]?.ToString() ?? "";
+}
+
+<div class="luxury-manage-nav luxury-card p-2 mb-3">
+    <a class="luxury-manage-link @(current.EndsWith("Index") ? "active" : "")" asp-page="./Index">
+        <span class="nav-icon"><i class="icon-user"></i></span>
+        <span>Profile &amp; Contact</span>
+        <i class="icon-chevron-right ml-auto nav-arrow"></i>
+    </a>
+    <a class="luxury-manage-link @(current.EndsWith("ChangePassword") ? "active" : "")" asp-page="./ChangePassword">
+        <span class="nav-icon"><i class="icon-lock"></i></span>
+        <span>Security &amp; Password</span>
+        <i class="icon-chevron-right ml-auto nav-arrow"></i>
+    </a>
+    <a class="luxury-manage-link" asp-controller="Booking" asp-action="Index">
+        <span class="nav-icon"><i class="icon-calendar"></i></span>
+        <span>My Bookings &amp; Stays</span>
+        <i class="icon-chevron-right ml-auto nav-arrow"></i>
+    </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a class="luxury-manage-link" asp-controller="Admin" asp-action="Index">
+            <span class="nav-icon"><i class="icon-shield"></i></span>
+            <span>Executive Dashboard</span>
+            <i class="icon-chevron-right ml-auto nav-arrow"></i>
+        </a>
+    }
+</div>

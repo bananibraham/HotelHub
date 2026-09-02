@@ -1,0 +1,171 @@
+@model IEnumerable<DataAccessLayer.Models.Room>
+@{
+    ViewData["Title"] = "Available Summer Suites";
+    var checkIn = (DateTime)ViewBag.CheckIn;
+    var checkOut = (DateTime)ViewBag.CheckOut;
+    var nights = (int)ViewBag.Nights;
+}
+
+<!-- HERO BANNER -->
+<section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <p class="breadcrumbs mb-2">
+            <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+            <span class="mr-2">&bull;</span>
+            <span class="text-white">Accommodations</span>
+        </p>
+        <h1 class="bread mb-2">Available Suites &amp; Villas</h1>
+        <p class="subtitle">Select from our exclusive collection of luxury beachfront rooms, penthouses, and private suites.</p>
+    </div>
+</section>
+
+<!-- FLOATING DATES & FILTERS BAR -->
+<section class="py-0" style="margin-top: -45px; position: relative; z-index: 20;">
+    <div class="container">
+        <div class="luxury-card p-4 shadow-lg border-0" style="background: #ffffff; border-radius: 16px;">
+            <form asp-controller="Booking" asp-action="AvailableRooms" method="get">
+                <div class="row align-items-end">
+                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                        <label class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
+                            <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-In Date
+                        </label>
+                        <input type="date" name="checkIn" value="@checkIn.ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="luxury-input w-100" required />
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                        <label class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
+                            <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-Out Date
+                        </label>
+                        <input type="date" name="checkOut" value="@checkOut.ToString("yyyy-MM-dd")" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="luxury-input w-100" required />
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                        <label class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
+                            <i class="icon-bed mr-1" style="color: #8d703b;"></i> Classification
+                        </label>
+                        <select name="roomTypeId" asp-items="ViewBag.RoomTypes" class="luxury-input w-100">
+                            <option value="">All Room Types</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <button type="submit" class="btn-luxury-gold w-100 h-100 py-3 font-weight-bold">
+                            <i class="icon-search mr-2"></i> Update Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- RESULTS CATALOG -->
+<section class="ftco-section bg-light py-5">
+    <div class="container">
+        <!-- HEADER INFO -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom flex-wrap">
+            <div>
+                <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 2px;">
+                    Real-Time Availability
+                </span>
+                <h2 class="font-weight-bold text-dark mt-1 mb-0" style="font-family: 'Playfair Display', Georgia, serif;">
+                    Available Units for Your Stay
+                </h2>
+                <p class="text-muted small mb-0 mt-1">
+                    Dates: <strong>@checkIn.ToString("ddd, dd MMM yyyy")</strong> &rarr; <strong>@checkOut.ToString("ddd, dd MMM yyyy")</strong> 
+                    &bull; Duration: <strong>@nights @(nights == 1 ? "Night" : "Nights")</strong>
+                </p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <span class="badge-luxury-confirmed">
+                    <i class="icon-check-circle mr-1"></i> @Model.Count() Suites Available
+                </span>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row">
+                @foreach (var room in Model)
+                {
+                    var rate = room.RoomType?.PricePerNight ?? 1500m;
+                    var total = nights * rate;
+
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="room-card-premium">
+                            <div class="room-card-img-wrap">
+                                <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "/images/room-1.jpg" : room.ImageUrl)" alt="Room @room.RoomNumber" />
+                                <span class="room-badge-category">
+                                    <i class="icon-hotel mr-1"></i> Room @room.RoomNumber
+                                </span>
+                                <span class="room-badge-floor">
+                                    Floor @room.Floor
+                                </span>
+                            </div>
+
+                            <div class="room-card-content">
+                                <div>
+                                    <h3 class="room-card-title">
+                                        <a asp-action="Checkout" asp-route-roomId="@room.Id" asp-route-checkIn="@checkIn.ToString("yyyy-MM-dd")" asp-route-checkOut="@checkOut.ToString("yyyy-MM-dd")">
+                                            @(room.RoomType?.Name ?? "Deluxe Suite")
+                                        </a>
+                                    </h3>
+
+                                    <p class="text-muted small mb-3" style="line-height: 1.6;">
+                                        @(string.IsNullOrEmpty(room.Description) ? (room.RoomType?.Description ?? "Breathtaking views, king bed, and private marble bath.") : room.Description)
+                                    </p>
+
+                                    <!-- AMENITY CHIPS -->
+                                    <div class="amenity-chip-list">
+                                        <span class="amenity-chip"><i class="icon-users"></i> Up to @(room.RoomType?.Capacity ?? 2) Guests</span>
+                                        <span class="amenity-chip"><i class="icon-wifi"></i> Free WiFi</span>
+                                        <span class="amenity-chip"><i class="icon-snowflake-o"></i> AC</span>
+                                        <span class="amenity-chip"><i class="icon-coffee"></i> Nespresso</span>
+                                        <span class="amenity-chip text-success"><i class="icon-check"></i> Free Breakfast</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <!-- PRICING BOX -->
+                                    <div class="room-pricing-box d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="room-price-night d-block">Starting from</span>
+                                            <strong class="text-dark" style="font-size: 1.15rem;">@rate.ToString("N0") EGP</strong>
+                                            <small class="text-muted"> / night</small>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="small text-muted d-block">Total (@nights @(nights == 1 ? "night" : "nights"))</span>
+                                            <span class="room-price-total">@total.ToString("N0") EGP</span>
+                                            <small class="text-muted d-block" style="font-size: 10px;">Taxes &amp; Fees Included</small>
+                                        </div>
+                                    </div>
+
+                                    <a asp-action="Checkout" asp-route-roomId="@room.Id" asp-route-checkIn="@checkIn.ToString("yyyy-MM-dd")" asp-route-checkOut="@checkOut.ToString("yyyy-MM-dd")" class="btn-luxury-gold w-100 font-weight-bold">
+                                        Reserve This Suite <i class="icon-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="luxury-card p-5 text-center my-4">
+                <div class="mb-3">
+                    <i class="icon-calendar" style="font-size: 4rem; color: #8d703b;"></i>
+                </div>
+                <h3 class="font-weight-bold text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                    No Suites Available for Selected Dates
+                </h3>
+                <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">
+                    All suites matching your stay criteria are occupied during this period. Try adjusting your check-in date or selecting a different room type.
+                </p>
+                <div>
+                    <a asp-action="AvailableRooms" asp-route-checkIn="@DateTime.Today.AddDays(7).ToString("yyyy-MM-dd")" asp-route-checkOut="@DateTime.Today.AddDays(9).ToString("yyyy-MM-dd")" class="btn-luxury-gold">
+                        <i class="icon-refresh mr-1"></i> Search Next Week's Openings
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</section>

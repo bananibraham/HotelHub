@@ -1,0 +1,168 @@
+@model IEnumerable<BLLayer1.ViewModel.BookingVM>
+@{
+    ViewData["Title"] = "My Reservations - HotelHub";
+}
+
+<!-- HERO BANNER -->
+<section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <p class="breadcrumbs mb-2">
+            <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+            <span class="mr-2">&bull;</span>
+            <span class="text-white">Guest Portal</span>
+        </p>
+        <h1 class="bread mb-2">My Stays &amp; Reservations</h1>
+        <p class="subtitle">Review your confirmed stays, settle balances, and manage upcoming resort visits.</p>
+    </div>
+</section>
+
+<section class="ftco-section bg-light py-5">
+    <div class="container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <i class="icon-check mr-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <i class="icon-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <div>
+                <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1.5px;">Resort History</span>
+                <h2 class="font-weight-bold mb-1 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                    Your Bookings &amp; Itineraries
+                </h2>
+                <p class="text-muted small mb-0">Official record of all luxury accommodations reserved under your account.</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <a asp-action="AvailableRooms" class="btn-luxury-gold">
+                    <i class="icon-plus mr-2"></i> Book New Stay
+                </a>
+            </div>
+        </div>
+
+        <div class="luxury-card">
+            <div class="table-responsive">
+                <table class="table table-luxury mb-0">
+                    <thead>
+                        <tr>
+                            <th>Reservation Ref</th>
+                            <th>Suite / Unit</th>
+                            <th>Stay Period</th>
+                            <th>Total Rate</th>
+                            <th>Status</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                int stayNights = Math.Max(1, (item.CheckOutDate.Date - item.CheckInDate.Date).Days);
+                                <tr>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@item.BookingId" class="font-weight-bold" style="color: #8d703b;">
+                                            #HH-@item.BookingId.ToString("D5")
+                                        </a>
+                                        <small class="text-muted d-block">Booked: @item.CreatedAt.ToString("dd MMM yyyy")</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark d-block">Room @item.RoomNumber</strong>
+                                        <small class="text-muted">@item.RoomType</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-dark font-weight-bold">@item.CheckInDate.ToString("dd MMM") &rarr; @item.CheckOutDate.ToString("dd MMM yyyy")</span>
+                                        <small class="text-muted d-block">@stayNights @(stayNights == 1 ? "Night" : "Nights") Stay</small>
+                                    </td>
+                                    <td>
+                                        <span class="font-weight-bold text-dark" style="font-size: 1.05rem;">
+                                            @item.TotalPrice.ToString("N2") EGP
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.Status == "Confirmed")
+                                        {
+                                            <span class="badge-luxury-confirmed">Confirmed</span>
+                                        }
+                                        else if (item.Status == "CheckedIn")
+                                        {
+                                            <span class="badge-luxury-checkedin">In-House</span>
+                                        }
+                                        else if (item.Status == "CheckedOut")
+                                        {
+                                            <span class="badge-luxury-checkedout">Completed</span>
+                                        }
+                                        else if (item.Status == "Cancelled")
+                                        {
+                                            <span class="badge-luxury-cancelled">Cancelled</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-luxury-gold">@item.Status</span>
+                                        }
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="d-inline-flex align-items-center" style="gap: 6px;">
+                                            <a asp-action="Details" asp-route-id="@item.BookingId" class="btn btn-sm btn-outline-secondary" title="View Statement">
+                                                <i class="icon-eye mr-1"></i> Details
+                                            </a>
+
+                                            @if (item.Status != "Cancelled" && item.Status != "CheckedOut")
+                                            {
+                                                <a asp-controller="Payment" asp-action="Checkout" asp-route-bookingId="@item.BookingId" class="btn btn-sm btn-outline-success" title="Settle Balance">
+                                                    <i class="icon-credit-card mr-1"></i> Pay
+                                                </a>
+                                            }
+
+                                            @if (item.Status != "Cancelled" && item.Status != "CheckedIn" && item.Status != "CheckedOut" && item.CheckInDate.Date > DateTime.Today)
+                                            {
+                                                <form asp-action="Cancel" asp-route-id="@item.BookingId" method="post" class="d-inline" onsubmit="return confirm('Cancel reservation #HH-@item.BookingId.ToString("D5")? Free cancellation will be applied.');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Booking">
+                                                        <i class="icon-times mr-1"></i> Cancel
+                                                    </button>
+                                                </form>
+                                            }
+
+                                            @if (item.Status == "CheckedOut")
+                                            {
+                                                <a asp-controller="Review" asp-action="Create" asp-route-bookingId="@item.BookingId" class="btn btn-sm btn-outline-warning">
+                                                    <i class="icon-star mr-1"></i> Review
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="my-4">
+                                        <i class="icon-calendar" style="font-size: 3.5rem; color: #8d703b;"></i>
+                                        <h4 class="font-weight-bold text-dark mt-3" style="font-family: 'Playfair Display', Georgia, serif;">No Reservations Yet</h4>
+                                        <p class="text-muted mb-4" style="max-width: 450px; margin: 0 auto;">You have not made any bookings with us yet. Discover our private suites and experience true luxury.</p>
+                                        <a asp-action="AvailableRooms" class="btn-luxury-gold">
+                                            Explore Available Suites
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

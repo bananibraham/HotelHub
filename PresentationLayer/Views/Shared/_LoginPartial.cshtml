@@ -1,24 +1,34 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject PresentationLayer.Services.IUserService UserService
 
 @if (SignInManager.IsSignedIn(User))
 {
+    var displayName = await UserService.GetDisplayNameAsync(User);
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+        <a class="nav-link font-weight-bold" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage Account">
+            <i class="icon-user mr-1" style="color: #c5a880;"></i> Hello, @displayName!
+        </a>
     </li>
     <li class="nav-item">
         <form class="form-inline d-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
-            <button type="submit" class="nav-link btn btn-link">Logout</button>
+            <button type="submit" class="nav-link btn btn-link" style="cursor:pointer; font-size: 13.5px; opacity: 0.85;">
+                <i class="icon-sign-out mr-1"></i> Logout
+            </button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
+            <i class="icon-user-plus mr-1" style="color: #c5a880;"></i> Register
+        </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+            <i class="icon-sign-in mr-1" style="color: #c5a880;"></i> Sign In
+        </a>
     </li>
 }

@@ -17,5 +17,6 @@ namespace DataAccessLayer.Models
 
         // Navigation Properties
         public Customer? Customer { get; set; }
+        public Room? Room { get; set; }
     }
 }

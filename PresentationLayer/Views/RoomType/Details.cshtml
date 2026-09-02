@@ -1,50 +1,114 @@
-﻿@model DataAccessLayer.Models.RoomType
+@model DataAccessLayer.Models.RoomType
 
 @{
-    ViewData["Title"] = "Room Type Details";
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = $"{Model.Name} Details";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout" || User.IsInRole("Admin");
 }
 
-<h1>Room Type Details</h1>
+@if (!isAdmin)
+{
+    <section class="hero-wrap hero-wrap-2 luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate pb-5 text-center">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a asp-action="Index">Room Types <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>@Model.Name</span>
+                    </p>
+                    <h1 class="mb-3 bread">Category Specifications</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+}
 
-<hr />
+<div class="@(isAdmin ? "" : "container py-5")">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="luxury-card p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 pb-3 border-bottom">
+                    <div>
+                        <span class="text-uppercase text-muted font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Suite Classification</span>
+                        <h2 class="mb-0 font-weight-bold text-dark" style="font-family: 'Playfair Display', Georgia, serif;">@Model.Name</h2>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge-luxury-confirmed font-weight-bold">
+                                <i class="icon-check mr-1"></i> Active Offering
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge-luxury-cancelled font-weight-bold">
+                                <i class="icon-times mr-1"></i> Inactive
+                            </span>
+                        }
+                    </div>
+                </div>
 
-<dl class="row">
+                <div class="p-4 bg-light rounded mb-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap">
+                        <div>
+                            <span class="text-muted small text-uppercase font-weight-bold">Base Nightly Tariff</span>
+                            <h3 class="font-weight-bold mb-0" style="color: #8d703b;">@Model.PricePerNight.ToString("N2") EGP</h3>
+                        </div>
+                        <div class="mt-2 mt-md-0">
+                            <span class="badge badge-light border px-3 py-2 text-dark font-weight-bold">
+                                <i class="icon-users mr-1"></i> Max Capacity: @Model.Capacity Guests
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-    <dt class="col-sm-3">Name</dt>
-    <dd class="col-sm-9">@Model.Name</dd>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded">
+                            <span class="text-muted small d-block font-weight-bold text-uppercase">Maximum Adults</span>
+                            <strong class="text-dark font-weight-bold" style="font-size: 1.1rem;">@Model.MaxAdults Adults</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded">
+                            <span class="text-muted small d-block font-weight-bold text-uppercase">Maximum Children</span>
+                            <strong class="text-dark font-weight-bold" style="font-size: 1.1rem;">@Model.MaxChildren Children</strong>
+                        </div>
+                    </div>
+                </div>
 
-    <dt class="col-sm-3">Description</dt>
-    <dd class="col-sm-9">@Model.Description</dd>
+                <div class="mb-4">
+                    <span class="text-muted small d-block font-weight-bold text-uppercase mb-2">Category Description</span>
+                    <p class="text-dark mb-0" style="line-height: 1.6; font-size: 1rem;">
+                        @Model.Description
+                    </p>
+                </div>
 
-    <dt class="col-sm-3">Price Per Night</dt>
-    <dd class="col-sm-9">@Model.PricePerNight</dd>
+                <div class="text-muted small mb-4">
+                    <i class="icon-calendar mr-1"></i> Configured on: @Model.CreatedAt.ToString("MMM dd, yyyy")
+                </div>
 
-    <dt class="col-sm-3">Capacity</dt>
-    <dd class="col-sm-9">@Model.Capacity</dd>
-
-    <dt class="col-sm-3">Max Adults</dt>
-    <dd class="col-sm-9">@Model.MaxAdults</dd>
-
-    <dt class="col-sm-3">Max Children</dt>
-    <dd class="col-sm-9">@Model.MaxChildren</dd>
-
-    <dt class="col-sm-3">Created At</dt>
-    <dd class="col-sm-9">@Model.CreatedAt</dd>
-
-    <dt class="col-sm-3">Status</dt>
-    <dd class="col-sm-9">
-        @(Model.IsActive ? "Active" : "Inactive")
-    </dd>
-
-</dl>
-
-<a asp-action="Edit"
-   asp-route-id="@Model.Id"
-   class="btn btn-warning">
-    Edit
-</a>
-
-<a asp-action="Index"
-   class="btn btn-secondary">
-    Back to List
-</a>
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-luxury-outline">
+                        <i class="icon-arrow-left mr-1"></i> Back to Room Types
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-luxury-gold mr-2">
+                                <i class="icon-pencil mr-1"></i> Edit Category
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                <i class="icon-trash mr-1"></i> Delete
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

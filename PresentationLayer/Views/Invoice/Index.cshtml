@@ -1,0 +1,142 @@
+@model IEnumerable<DataAccessLayer.Models.Invoice>
+
+@{
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = "Resort Invoices";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout";
+}
+
+@if (!isAdmin)
+{
+    <!-- HERO BANNER -->
+    <section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container text-center position-relative" style="z-index: 2;">
+            <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>&bull;</span> <span class="text-white">Billing</span></p>
+            <h1 class="bread mb-2">Resort Invoices</h1>
+            <p class="subtitle">Official itemized billing statements and settlement records in EGP.</p>
+        </div>
+    </section>
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div>
+            <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Guest Billing &amp; Accounting</span>
+            <h2 class="font-weight-bold mb-1 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                Guest Invoices
+            </h2>
+            <p class="text-muted small mb-0">Billing statements, payments applied, and room service additions in Egyptian Pounds (EGP).</p>
+        </div>
+        @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+        {
+            <div class="mt-3 mt-md-0">
+                <a asp-action="Create" class="btn-luxury-gold">
+                    <i class="icon-plus mr-1"></i> Issue Invoice
+                </a>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var invoice in Model)
+            {
+                bool isFullyPaid = invoice.RemainingAmount <= 0;
+                bool isPartiallyPaid = invoice.PaidAmount > 0 && invoice.RemainingAmount > 0;
+
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="luxury-card h-100 p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.5px;">Statement</span>
+                                <h4 class="mb-0 font-weight-bold text-dark">@invoice.InvoiceNumber</h4>
+                            </div>
+
+                            @if (isFullyPaid)
+                            {
+                                <span class="badge-luxury-confirmed">
+                                    <i class="icon-check mr-1"></i> Paid
+                                </span>
+                            }
+                            else if (isPartiallyPaid)
+                            {
+                                <span class="badge-luxury-checkedin">
+                                    <i class="icon-clock-o mr-1"></i> Partial
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge-luxury-cancelled">
+                                    <i class="icon-exclamation mr-1"></i> Unpaid
+                                </span>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="text-muted small mb-1">Total Billable Amount</div>
+                            <h3 class="mb-0 font-weight-bold" style="color: #8d703b; font-family: 'Playfair Display', Georgia, serif;">
+                                @invoice.TotalAmount.ToString("N2") EGP
+                            </h3>
+                        </div>
+
+                        <div class="row mb-3 bg-light p-2 rounded mx-0">
+                            <div class="col-6">
+                                <div class="text-muted small">Paid to Date</div>
+                                <strong class="text-success">+@invoice.PaidAmount.ToString("N2") EGP</strong>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small">Remaining</div>
+                                <strong class="text-danger">@invoice.RemainingAmount.ToString("N2") EGP</strong>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 small">
+                            <div class="col-6">
+                                <span class="text-muted d-block">Reservation</span>
+                                <a asp-controller="Booking" asp-action="Details" asp-route-id="@invoice.BookingId" class="font-weight-bold" style="color: #8d703b;">
+                                    #HH-@invoice.BookingId.ToString("D5")
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted d-block">Issued On</span>
+                                <strong>@invoice.IssueDate.ToString("dd MMM yyyy")</strong>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Details" asp-route-id="@invoice.InvoiceId" class="btn btn-outline-secondary btn-sm">
+                                <i class="icon-eye mr-1"></i> Statement
+                            </a>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@invoice.InvoiceId" class="btn btn-outline-primary btn-sm" title="Add Room Services or Extra Charges">
+                                    <i class="icon-pencil mr-1"></i> Services
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="luxury-card text-center p-5">
+                    <div class="mb-3">
+                        <i class="icon-file-text" style="font-size: 50px; color: #8d703b;"></i>
+                    </div>
+                    <h3 style="font-family: 'Playfair Display', Georgia, serif;">No Invoices Found</h3>
+                    <p class="text-muted">No billing invoices have been created yet.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,40 +1,143 @@
 @model IEnumerable<BLLayer1.ViewModel.ReviewVM>
 
 @{
-    ViewData["Title"] = "Review List";
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = "Guest Reviews & Ratings";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout" || User.IsInRole("Admin");
 }
 
-<div class="container mt-4">
-    <h2>Reviews</h2>
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Add new Review</a>
-    </p>
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Customer</th>
-            <th>Booking</th>
-            <th>Review</th>
-            <th>Comment</th>
-            <th>Adding Date</th>
-            <th>procedure</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model) {
-            <tr>
-                <td>@item.CustomerName</td>
-                <td>@item.BookingDetails</td>
-                <td>@item.Rating / 5</td>
-                <td>@item.Comment</td>
-                <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ReviewId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.ReviewId" class="btn btn-sm btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.ReviewId" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
+@if (!isAdmin)
+{
+    <section class="hero-wrap hero-wrap-2 luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate pb-5 text-center">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a asp-controller="Home" asp-action="Index">Home <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Guest Reviews</span>
+                    </p>
+                    <h1 class="mb-3 bread">Guest Reviews &amp; Testimonials</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<div class="@(isAdmin ? "" : "container py-5")">
+    <div class="luxury-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 pb-3 border-bottom">
+            <div>
+                <span class="text-uppercase text-muted font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Quality &amp; Hospitality Feedback</span>
+                <h2 class="mb-0 font-weight-bold text-dark" style="font-family: 'Playfair Display', Georgia, serif;">Resort Guest Reviews</h2>
+            </div>
+            @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+            {
+                <a asp-action="Create" class="btn btn-luxury-gold mt-2 mt-md-0">
+                    <i class="icon-plus mr-1"></i> Record Guest Review
+                </a>
+            }
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i class="icon-star-o" style="font-size: 3rem; color: #c5a880;"></i>
+                </div>
+                <h4 class="font-weight-bold text-dark">No Reviews Recorded Yet</h4>
+                <p class="text-muted">Guest impressions and ratings will appear here as they are received.</p>
+                @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+                {
+                    <a asp-action="Create" class="btn btn-luxury-gold mt-2">
+                        <i class="icon-plus mr-1"></i> Add First Review
+                    </a>
+                }
+            </div>
         }
-        </tbody>
-    </table>
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-luxury align-middle">
+                    <thead>
+                        <tr>
+                            <th>Guest</th>
+                            <th>Stay Context</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th>Submitted On</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-3 text-white rounded-circle d-flex align-items-center justify-content-center font-weight-bold shadow-sm"
+                                             style="width: 38px; height: 38px; background: linear-gradient(135deg, #c5a880, #8d703b); font-size: 0.9rem;">
+                                            @(!string.IsNullOrEmpty(item.CustomerName) ? item.CustomerName[0].ToString().ToUpper() : "G")
+                                        </div>
+                                        <div>
+                                            <div class="font-weight-bold text-dark">@item.CustomerName</div>
+                                            <small class="text-muted">Verified Resident</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-light px-2 py-1 font-weight-bold text-muted border">
+                                        <i class="icon-calendar mr-1"></i> @item.BookingDetails
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="font-weight-bold mr-2 text-dark">@item.Rating.ToString("0.0")</span>
+                                        <div style="color: #c5a880; font-size: 0.9rem;">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= item.Rating)
+                                                {
+                                                    <span>&#9733;</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted" style="opacity: 0.3;">&#9733;</span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="mb-0 text-muted" style="max-width: 320px; font-style: italic; font-size: 0.9rem;">
+                                        "@item.Comment"
+                                    </p>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                </td>
+                                <td class="text-right text-nowrap">
+                                    <a asp-action="Details" asp-route-id="@item.ReviewId" class="btn btn-sm btn-outline-secondary mr-1" title="View Details">
+                                        <i class="icon-eye"></i> Details
+                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.ReviewId" class="btn btn-sm btn-outline-warning mr-1" title="Edit Review">
+                                            <i class="icon-pencil"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.ReviewId" class="btn btn-sm btn-outline-danger" title="Delete Review">
+                                            <i class="icon-trash"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 </div>

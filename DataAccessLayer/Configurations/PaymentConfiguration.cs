@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Models;
+using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -25,6 +25,8 @@ namespace DataAccessLayer.Configurations
 
             builder.Property(p => p.Notes)
                    .HasMaxLength(500);
+
+            builder.HasQueryFilter(p => p.Booking.IsActive);
 
             builder.HasOne(p => p.Booking)
                    .WithMany()

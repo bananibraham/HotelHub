@@ -1,7 +1,8 @@
-﻿using System.Linq.Expressions;
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DataAccessLayer.Repositories.Interfaces
 {
@@ -14,7 +15,7 @@ namespace DataAccessLayer.Repositories.Interfaces
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);
-        Task SaveChangesAsync();
-        Task DeleteAsync(int id);
+        Task<int> SaveChangesAsync();
+        Task<bool> DeleteAsync(int id);
     }
 }
