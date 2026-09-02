@@ -2,94 +2,217 @@
 
 @{
     ViewData["Title"] = "Payment Details";
+    bool isAdmin = User.IsInRole("Admin");
+    bool isReceptionist = User.IsInRole("Receptionist");
 }
 
-<h1>Payment Details</h1>
+<section class="hero-wrap hero-wrap-2"
+         style="background-image: url('@Url.Content("~/images/bg_1.jpg")');"
+         data-stellar-background-ratio="0.5">
 
-<hr />
+    <div class="overlay"></div>
 
-<dl class="row">
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
 
-    <dt class="col-sm-3">
-        Payment ID
-    </dt>
+                <p class="breadcrumbs">
+                    <span class="mr-2">
+                        <a asp-action="Index">
+                            Payments
+                            <i class="ion-ios-arrow-forward"></i>
+                        </a>
+                    </span>
 
-    <dd class="col-sm-9">
-        @Model.PaymentId
-    </dd>
+                    <span>Details</span>
+                </p>
 
+                <h1 class="mb-3 bread">Payment Details</h1>
 
-    <dt class="col-sm-3">
-        Booking ID
-    </dt>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <dd class="col-sm-9">
-        @Model.BookingId
-    </dd>
+<section class="ftco-section bg-light">
+    <div class="container">
 
+        <div class="row justify-content-center">
 
-    <dt class="col-sm-3">
-        Amount
-    </dt>
+            <div class="col-lg-9">
 
-    <dd class="col-sm-9">
-        @Model.Amount
-    </dd>
+                <div class="card border-0 shadow-sm">
 
+                    <div class="card-body p-4 p-md-5">
 
-    <dt class="col-sm-3">
-        Payment Method
-    </dt>
+                        <div class="text-center mb-5">
 
-    <dd class="col-sm-9">
-        @Model.PaymentMethod
-    </dd>
+                            <div class="mb-3">
+                                <i class="icon-credit-card"
+                                   style="font-size:55px;color:#8d703b;"></i>
+                            </div>
 
+                            <span class="subheading">
+                                Payment Transaction
+                            </span>
 
-    <dt class="col-sm-3">
-        Payment Date
-    </dt>
+                            <h2>
+                                Payment #@Model.PaymentId
+                            </h2>
 
-    <dd class="col-sm-9">
-        @Model.PaymentDate
-    </dd>
+                            <h3 style="color:#8d703b;">
+                                @Model.Amount.ToString("N2") EGP
+                            </h3>
 
+                        </div>
 
-    <dt class="col-sm-3">
-        Transaction ID
-    </dt>
+                        <div class="row">
 
-    <dd class="col-sm-9">
-        @Model.TransactionId
-    </dd>
+                            <div class="col-md-6 mb-4">
 
+                                <div class="p-4 bg-light h-100">
 
-    <dt class="col-sm-3">
-        Notes
-    </dt>
+                                    <span class="text-muted small">
+                                        BOOKING
+                                    </span>
 
-    <dd class="col-sm-9">
-        @Model.Notes
-    </dd>
+                                    <h4 class="mt-2">
+                                        #@Model.BookingId
+                                    </h4>
 
+                                </div>
 
-    <dt class="col-sm-3">
-        Created At
-    </dt>
+                            </div>
 
-    <dd class="col-sm-9">
-        @Model.CreatedAt
-    </dd>
+                            <div class="col-md-6 mb-4">
 
-</dl>
+                                <div class="p-4 bg-light h-100">
 
-<a asp-action="Edit"
-   asp-route-id="@Model.PaymentId"
-   class="btn btn-warning">
-    Edit
-</a>
+                                    <span class="text-muted small">
+                                        PAYMENT METHOD
+                                    </span>
 
-<a asp-action="Index"
-   class="btn btn-secondary">
-    Back
-</a>
+                                    <h4 class="mt-2">
+                                        @Model.PaymentMethod
+                                    </h4>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="p-4 bg-light h-100">
+
+                                    <span class="text-muted small">
+                                        PAYMENT DATE
+                                    </span>
+
+                                    <h4 class="mt-2">
+                                        @Model.PaymentDate.ToString("dd MMM yyyy")
+                                    </h4>
+
+                                    <small class="text-muted">
+                                        @Model.PaymentDate.ToString("hh:mm tt")
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="p-4 bg-light h-100">
+
+                                    <span class="text-muted small">
+                                        CREATED AT
+                                    </span>
+
+                                    <h4 class="mt-2">
+                                        @Model.CreatedAt.ToString("dd MMM yyyy")
+                                    </h4>
+
+                                    <small class="text-muted">
+                                        @Model.CreatedAt.ToString("hh:mm tt")
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.TransactionId))
+                        {
+                            <div class="mb-4">
+
+                                <span class="text-muted small">
+                                    TRANSACTION ID
+                                </span>
+
+                                <div class="p-3 bg-light mt-2">
+                                    @Model.TransactionId
+                                </div>
+
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                        {
+                            <div class="mb-4">
+
+                                <span class="text-muted small">
+                                    NOTES
+                                </span>
+
+                                <div class="p-3 bg-light mt-2">
+                                    @Model.Notes
+                                </div>
+
+                            </div>
+                        }
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-between flex-wrap">
+
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary px-4 py-3 mb-2">
+                                <i class="icon-arrow-left mr-2"></i>
+                                Back
+                            </a>
+
+                            <div>
+
+                                @if (isAdmin || isReceptionist)
+                                {
+                                    <a asp-action="Edit"
+                                       asp-route-id="@Model.PaymentId"
+                                       class="btn btn-primary px-4 py-3 mr-2 mb-2">
+                                        <i class="icon-pencil mr-2"></i>
+                                        Edit
+                                    </a>
+                                }
+
+                                @if (isAdmin)
+                                {
+                                    <a asp-action="Delete"
+                                       asp-route-id="@Model.PaymentId"
+                                       class="btn btn-outline-danger px-4 py-3 mb-2">
+                                        <i class="icon-trash mr-2"></i>
+                                        Delete
+                                    </a>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>

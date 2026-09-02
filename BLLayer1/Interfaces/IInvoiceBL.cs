@@ -12,6 +12,8 @@ namespace BLLayer1.Interfaces
 
         Task<Invoice?> GetByIdAsync(int id);
 
+        Task<IEnumerable<Booking>> GetBookingsAsync();
+
         Task<bool> CreateAsync(InvoiceCreateVm invoiceVm);
 
         Task<bool> UpdateAsync(Invoice invoice);

@@ -12,13 +12,16 @@ namespace BLLayer1.BLogic
     {
         private readonly IBasicOperation<Payment> _paymentRepository;
         private readonly IBasicOperation<Booking> _bookingRepository;
+        private readonly IBasicOperation<Invoice> _invoiceRepository;
 
         public PaymentBL(
             IBasicOperation<Payment> paymentRepository,
-            IBasicOperation<Booking> bookingRepository)
+            IBasicOperation<Booking> bookingRepository,
+            IBasicOperation<Invoice> invoiceRepository)
         {
             _paymentRepository = paymentRepository;
             _bookingRepository = bookingRepository;
+            _invoiceRepository = invoiceRepository;
         }
 
         public async Task<IEnumerable<Payment>> GetAllAsync()
@@ -31,6 +34,11 @@ namespace BLLayer1.BLogic
             return await _paymentRepository.GetByIdAsync(id);
         }
 
+        public async Task<IEnumerable<Booking>> GetBookingsAsync()
+        {
+            return await _bookingRepository.GetAllAsync();
+        }
+
         public async Task<bool> CreateAsync(PaymentCreateVm paymentVm)
         {
             if (paymentVm.Amount <= 0)
@@ -38,13 +46,16 @@ namespace BLLayer1.BLogic
                 return false;
             }
 
-            Booking? booking = await _bookingRepository.GetByIdAsync(paymentVm.BookingId);
+            Booking? booking =
+                await _bookingRepository.GetByIdAsync(paymentVm.BookingId);
+
             if (booking == null)
             {
                 return false;
             }
 
-            IEnumerable<Payment> payments = await _paymentRepository.GetAllAsync();
+            IEnumerable<Payment> payments =
+                await _paymentRepository.GetAllAsync();
 
             decimal totalPaid = payments
                 .Where(p => p.BookingId == paymentVm.BookingId)
@@ -69,9 +80,18 @@ namespace BLLayer1.BLogic
             };
 
             await _paymentRepository.AddAsync(payment);
-            int rowsAffected = await _paymentRepository.SaveChangesAsync();
 
-            return rowsAffected > 0;
+            int rowsAffected =
+                await _paymentRepository.SaveChangesAsync();
+
+            if (rowsAffected <= 0)
+            {
+                return false;
+            }
+
+            await RecalculateInvoiceAsync(paymentVm.BookingId);
+
+            return true;
         }
 
         public async Task<bool> UpdateAsync(Payment payment)
@@ -81,19 +101,26 @@ namespace BLLayer1.BLogic
                 return false;
             }
 
-            Payment? existingPayment = await _paymentRepository.GetByIdAsync(payment.PaymentId);
+            Payment? existingPayment =
+                await _paymentRepository.GetByIdAsync(payment.PaymentId);
+
             if (existingPayment == null)
             {
                 return false;
             }
 
-            Booking? booking = await _bookingRepository.GetByIdAsync(payment.BookingId);
+            int oldBookingId = existingPayment.BookingId;
+
+            Booking? booking =
+                await _bookingRepository.GetByIdAsync(payment.BookingId);
+
             if (booking == null)
             {
                 return false;
             }
 
-            IEnumerable<Payment> payments = await _paymentRepository.GetAllAsync();
+            IEnumerable<Payment> payments =
+                await _paymentRepository.GetAllAsync();
 
             decimal otherPaymentsTotal = payments
                 .Where(p =>
@@ -101,28 +128,102 @@ namespace BLLayer1.BLogic
                     p.PaymentId != payment.PaymentId)
                 .Sum(p => p.Amount);
 
-            decimal newTotalPaid = otherPaymentsTotal + payment.Amount;
+            decimal newTotalPaid =
+                otherPaymentsTotal + payment.Amount;
 
             if (newTotalPaid > booking.TotalPrice)
             {
                 return false;
             }
 
-            _paymentRepository.Update(payment);
-            int rowsAffected = await _paymentRepository.SaveChangesAsync();
+            existingPayment.BookingId = payment.BookingId;
+            existingPayment.Amount = payment.Amount;
+            existingPayment.PaymentMethod = payment.PaymentMethod;
+            existingPayment.PaymentDate = payment.PaymentDate;
+            existingPayment.TransactionId = payment.TransactionId;
+            existingPayment.Notes = payment.Notes;
 
-            return rowsAffected > 0;
+            _paymentRepository.Update(existingPayment);
+
+            int rowsAffected =
+                await _paymentRepository.SaveChangesAsync();
+
+            if (rowsAffected <= 0)
+            {
+                return false;
+            }
+
+            await RecalculateInvoiceAsync(oldBookingId);
+
+            if (oldBookingId != payment.BookingId)
+            {
+                await RecalculateInvoiceAsync(payment.BookingId);
+            }
+
+            return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            Payment? payment = await _paymentRepository.GetByIdAsync(id);
+            Payment? payment =
+                await _paymentRepository.GetByIdAsync(id);
+
             if (payment == null)
             {
                 return false;
             }
 
-            return await _paymentRepository.DeleteAsync(id);
+            int bookingId = payment.BookingId;
+
+            bool result =
+                await _paymentRepository.DeleteAsync(id);
+
+            if (!result)
+            {
+                return false;
+            }
+
+            await RecalculateInvoiceAsync(bookingId);
+
+            return true;
+        }
+
+        private async Task RecalculateInvoiceAsync(int bookingId)
+        {
+            Booking? booking =
+                await _bookingRepository.GetByIdAsync(bookingId);
+
+            if (booking == null)
+            {
+                return;
+            }
+
+            IEnumerable<Invoice> invoices =
+                await _invoiceRepository.GetAllAsync();
+
+            Invoice? invoice =
+                invoices.FirstOrDefault(i => i.BookingId == bookingId);
+
+            if (invoice == null)
+            {
+                return;
+            }
+
+            IEnumerable<Payment> payments =
+                await _paymentRepository.GetAllAsync();
+
+            decimal paidAmount = payments
+                .Where(p => p.BookingId == bookingId)
+                .Sum(p => p.Amount);
+
+            invoice.TotalAmount = booking.TotalPrice;
+            invoice.PaidAmount = paidAmount;
+            invoice.RemainingAmount =
+                booking.TotalPrice - paidAmount;
+
+            _invoiceRepository.Update(invoice);
+
+            await _invoiceRepository.SaveChangesAsync();
         }
     }
 }
