@@ -8,32 +8,32 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace PresentationLayer.Controllers
 {
     [Authorize(Roles = "Admin,Receptionist")]
-    public class PaymentController : Controller
+    public class InvoiceController : Controller
     {
-        private readonly IPaymentBL _paymentBL;
+        private readonly IInvoiceBL _invoiceBL;
 
-        public PaymentController(IPaymentBL paymentBL)
+        public InvoiceController(IInvoiceBL invoiceBL)
         {
-            _paymentBL = paymentBL;
+            _invoiceBL = invoiceBL;
         }
 
         public async Task<IActionResult> Index()
         {
-            var payments = await _paymentBL.GetAllAsync();
+            var invoices = await _invoiceBL.GetAllAsync();
 
-            return View(payments);
+            return View(invoices);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            Payment? payment = await _paymentBL.GetByIdAsync(id);
+            Invoice? invoice = await _invoiceBL.GetByIdAsync(id);
 
-            if (payment == null)
+            if (invoice == null)
             {
                 return NotFound();
             }
 
-            return View(payment);
+            return View(invoice);
         }
 
         [HttpGet]
@@ -41,37 +41,37 @@ namespace PresentationLayer.Controllers
         {
             await LoadBookingsAsync();
 
-            return View(new PaymentCreateVm
+            return View(new InvoiceCreateVm
             {
-                PaymentDate = DateTime.Now
+                IssueDate = DateTime.Now
             });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PaymentCreateVm paymentVm)
+        public async Task<IActionResult> Create(InvoiceCreateVm invoiceVm)
         {
             if (!ModelState.IsValid)
             {
-                await LoadBookingsAsync(paymentVm.BookingId);
-                return View(paymentVm);
+                await LoadBookingsAsync(invoiceVm.BookingId);
+                return View(invoiceVm);
             }
 
-            bool result = await _paymentBL.CreateAsync(paymentVm);
+            bool result = await _invoiceBL.CreateAsync(invoiceVm);
 
             if (!result)
             {
                 ModelState.AddModelError(
                     "",
-                    "Payment could not be created. Make sure the booking exists and the total payments do not exceed the booking price."
+                    "Invoice could not be created. Make sure the booking exists, the invoice does not already exist, and the payment amount is valid."
                 );
 
-                await LoadBookingsAsync(paymentVm.BookingId);
+                await LoadBookingsAsync(invoiceVm.BookingId);
 
-                return View(paymentVm);
+                return View(invoiceVm);
             }
 
-            TempData["Success"] = "Payment created successfully.";
+            TempData["Success"] = "Invoice created successfully.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -79,43 +79,43 @@ namespace PresentationLayer.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            Payment? payment = await _paymentBL.GetByIdAsync(id);
+            Invoice? invoice = await _invoiceBL.GetByIdAsync(id);
 
-            if (payment == null)
+            if (invoice == null)
             {
                 return NotFound();
             }
 
-            await LoadBookingsAsync(payment.BookingId);
+            await LoadBookingsAsync(invoice.BookingId);
 
-            return View(payment);
+            return View(invoice);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Payment payment)
+        public async Task<IActionResult> Edit(Invoice invoice)
         {
             if (!ModelState.IsValid)
             {
-                await LoadBookingsAsync(payment.BookingId);
-                return View(payment);
+                await LoadBookingsAsync(invoice.BookingId);
+                return View(invoice);
             }
 
-            bool result = await _paymentBL.UpdateAsync(payment);
+            bool result = await _invoiceBL.UpdateAsync(invoice);
 
             if (!result)
             {
                 ModelState.AddModelError(
                     "",
-                    "Payment could not be updated. Make sure the booking exists and the total payments do not exceed the booking price."
+                    "Invoice could not be updated. Make sure the booking exists and the payment total is valid."
                 );
 
-                await LoadBookingsAsync(payment.BookingId);
+                await LoadBookingsAsync(invoice.BookingId);
 
-                return View(payment);
+                return View(invoice);
             }
 
-            TempData["Success"] = "Payment updated successfully.";
+            TempData["Success"] = "Invoice updated successfully.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -124,14 +124,14 @@ namespace PresentationLayer.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
-            Payment? payment = await _paymentBL.GetByIdAsync(id);
+            Invoice? invoice = await _invoiceBL.GetByIdAsync(id);
 
-            if (payment == null)
+            if (invoice == null)
             {
                 return NotFound();
             }
 
-            return View(payment);
+            return View(invoice);
         }
 
         [HttpPost]
@@ -140,21 +140,21 @@ namespace PresentationLayer.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            bool result = await _paymentBL.DeleteAsync(id);
+            bool result = await _invoiceBL.DeleteAsync(id);
 
             if (!result)
             {
                 return NotFound();
             }
 
-            TempData["Success"] = "Payment deleted successfully.";
+            TempData["Success"] = "Invoice deleted successfully.";
 
             return RedirectToAction(nameof(Index));
         }
 
         private async Task LoadBookingsAsync(int? selectedBookingId = null)
         {
-            var bookings = await _paymentBL.GetBookingsAsync();
+            var bookings = await _invoiceBL.GetBookingsAsync();
 
             ViewBag.Bookings = bookings
                 .Select(b => new SelectListItem

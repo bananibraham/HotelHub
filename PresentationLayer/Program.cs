@@ -16,9 +16,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped(typeof(IBasicOperation<>), typeof(BasicOperation<>));
 builder.Services.AddScoped<ICustomerBL, CustomerBL>();
 builder.Services.AddScoped<IPaymentBL, PaymentBL>();
+builder.Services.AddScoped<IInvoiceBL, InvoiceBL>();
 builder.Services.AddScoped<IReviewBL, ReviewBL>();
 builder.Services.AddScoped<IBookingBL, BookingBL>();
-
 builder.Services.AddScoped<IRoomTypeBL, RoomTypeBL>();
 builder.Services.AddScoped<IRoomBL, RoomBL>();
 

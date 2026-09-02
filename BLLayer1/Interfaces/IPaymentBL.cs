@@ -12,6 +12,8 @@ namespace BLLayer1.Interfaces
 
         Task<Payment?> GetByIdAsync(int id);
 
+        Task<IEnumerable<Booking>> GetBookingsAsync();
+
         Task<bool> CreateAsync(PaymentCreateVm paymentVm);
 
         Task<bool> UpdateAsync(Payment payment);

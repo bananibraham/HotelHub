@@ -4,117 +4,243 @@
     ViewData["Title"] = "Edit Payment";
 }
 
-<h1>Edit Payment</h1>
+<section class="hero-wrap hero-wrap-2"
+         style="background-image: url('@Url.Content("~/images/bg_1.jpg")');"
+         data-stellar-background-ratio="0.5">
 
-<form asp-action="Edit" method="post">
+    <div class="overlay"></div>
 
-    <input type="hidden"
-           asp-for="PaymentId" />
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
 
-    <input type="hidden"
-           asp-for="CreatedAt" />
+                <p class="breadcrumbs">
+                    <span class="mr-2">
+                        <a asp-action="Index">
+                            Payments
+                            <i class="ion-ios-arrow-forward"></i>
+                        </a>
+                    </span>
 
+                    <span>Edit</span>
+                </p>
 
-    <div asp-validation-summary="ModelOnly"
-         class="text-danger">
+                <h1 class="mb-3 bread">Edit Payment</h1>
+
+            </div>
+        </div>
     </div>
+</section>
 
+<section class="ftco-section bg-light">
+    <div class="container">
 
-    <div class="mb-3">
+        <div class="row justify-content-center">
 
-        <label asp-for="BookingId"
-               class="form-label">
-        </label>
+            <div class="col-lg-8">
 
-        <input asp-for="BookingId"
-               class="form-control" />
+                <div class="card border-0 shadow-sm">
 
-        <span asp-validation-for="BookingId"
-              class="text-danger">
-        </span>
+                    <div class="card-body p-4 p-md-5">
+
+                        <div class="d-flex align-items-center mb-4">
+
+                            <div class="mr-3">
+                                <i class="icon-pencil"
+                                   style="font-size:40px;color:#8d703b;"></i>
+                            </div>
+
+                            <div>
+                                <span class="subheading">
+                                    Payment #@Model.PaymentId
+                                </span>
+
+                                <h2 class="mb-0">
+                                    Update Payment
+                                </h2>
+                            </div>
+
+                        </div>
+
+                        <form asp-action="Edit" method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <input asp-for="PaymentId" type="hidden" />
+                            <input asp-for="CreatedAt" type="hidden" />
+
+                            <div asp-validation-summary="ModelOnly"
+                                 class="alert alert-danger">
+                            </div>
+
+                            <div class="form-group">
+
+                                <label asp-for="BookingId">
+                                    Booking
+                                </label>
+
+                                <select asp-for="BookingId"
+                                        asp-items="ViewBag.Bookings"
+                                        class="form-control">
+
+                                    <option value="">
+                                        -- Select Booking --
+                                    </option>
+
+                                </select>
+
+                                <span asp-validation-for="BookingId"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <div class="form-row">
+
+                                <div class="form-group col-md-6">
+
+                                    <label asp-for="Amount">
+                                        Amount
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <input asp-for="Amount"
+                                               class="form-control"
+                                               type="number"
+                                               min="0.01"
+                                               step="0.01" />
+
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                EGP
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                    <span asp-validation-for="Amount"
+                                          class="text-danger">
+                                    </span>
+
+                                </div>
+
+                                <div class="form-group col-md-6">
+
+                                    <label asp-for="PaymentMethod">
+                                        Payment Method
+                                    </label>
+
+                                    <select asp-for="PaymentMethod"
+                                            class="form-control">
+
+                                        <option value="Cash">
+                                            Cash
+                                        </option>
+
+                                        <option value="Credit Card">
+                                            Credit Card
+                                        </option>
+
+                                        <option value="Debit Card">
+                                            Debit Card
+                                        </option>
+
+                                        <option value="Bank Transfer">
+                                            Bank Transfer
+                                        </option>
+
+                                        <option value="Online">
+                                            Online
+                                        </option>
+
+                                    </select>
+
+                                    <span asp-validation-for="PaymentMethod"
+                                          class="text-danger">
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label asp-for="PaymentDate">
+                                    Payment Date
+                                </label>
+
+                                <input asp-for="PaymentDate"
+                                       type="datetime-local"
+                                       class="form-control" />
+
+                                <span asp-validation-for="PaymentDate"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label asp-for="TransactionId">
+                                    Transaction ID
+                                </label>
+
+                                <input asp-for="TransactionId"
+                                       class="form-control" />
+
+                                <span asp-validation-for="TransactionId"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label asp-for="Notes">
+                                    Notes
+                                </label>
+
+                                <textarea asp-for="Notes"
+                                          class="form-control"
+                                          rows="4"></textarea>
+
+                                <span asp-validation-for="Notes"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+
+                                <a asp-action="Details"
+                                   asp-route-id="@Model.PaymentId"
+                                   class="btn btn-outline-secondary px-4 py-3">
+                                    <i class="icon-arrow-left mr-2"></i>
+                                    Cancel
+                                </a>
+
+                                <button type="submit"
+                                        class="btn btn-primary px-4 py-3">
+                                    <i class="icon-check mr-2"></i>
+                                    Save Changes
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
     </div>
+</section>
 
-
-    <div class="mb-3">
-
-        <label asp-for="Amount"
-               class="form-label">
-        </label>
-
-        <input asp-for="Amount"
-               class="form-control" />
-
-        <span asp-validation-for="Amount"
-              class="text-danger">
-        </span>
-
-    </div>
-
-
-    <div class="mb-3">
-
-        <label asp-for="PaymentMethod"
-               class="form-label">
-        </label>
-
-        <input asp-for="PaymentMethod"
-               class="form-control" />
-
-    </div>
-
-
-    <div class="mb-3">
-
-        <label asp-for="PaymentDate"
-               class="form-label">
-        </label>
-
-        <input asp-for="PaymentDate"
-               type="datetime-local"
-               class="form-control" />
-
-    </div>
-
-
-    <div class="mb-3">
-
-        <label asp-for="TransactionId"
-               class="form-label">
-        </label>
-
-        <input asp-for="TransactionId"
-               class="form-control" />
-
-    </div>
-
-
-    <div class="mb-3">
-
-        <label asp-for="Notes"
-               class="form-label">
-        </label>
-
-        <textarea asp-for="Notes"
-                  class="form-control">
-        </textarea>
-
-    </div>
-
-
-    <button type="submit"
-            class="btn btn-primary">
-        Save Changes
-    </button>
-
-    <a asp-action="Index"
-       class="btn btn-secondary">
-        Back
-    </a>
-
-</form>
-
-@section Scripts
-{
-    <partial name="_ValidationScriptsPartial" />
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -2,65 +2,217 @@
 
 @{
     ViewData["Title"] = "Payments";
+    bool isAdmin = User.IsInRole("Admin");
+    bool isReceptionist = User.IsInRole("Receptionist");
 }
 
-<h1>Payments</h1>
+<section class="hero-wrap hero-wrap-2"
+         style="background-image: url('@Url.Content("~/images/bg_1.jpg")');"
+         data-stellar-background-ratio="0.5">
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
+    <div class="overlay"></div>
+
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+                <p class="breadcrumbs">
+                    <span class="mr-2">
+                        <a asp-controller="Home" asp-action="Index">
+                            Home <i class="ion-ios-arrow-forward"></i>
+                        </a>
+                    </span>
+                    <span>Payments</span>
+                </p>
+
+                <h1 class="mb-3 bread">Payment Management</h1>
+            </div>
+        </div>
     </div>
-}
+</section>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">
-        Create Payment
-    </a>
-</p>
+<section class="ftco-section bg-light">
+    <div class="container">
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Payment ID</th>
-            <th>Booking ID</th>
-            <th>Amount</th>
-            <th>Payment Method</th>
-            <th>Payment Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model)
+        @if (TempData["Success"] != null)
         {
-            <tr>
-                <td>@item.PaymentId</td>
-                <td>@item.BookingId</td>
-                <td>@item.Amount</td>
-                <td>@item.PaymentMethod</td>
-                <td>@item.PaymentDate</td>
+            <div class="alert alert-success alert-dismissible fade show shadow-sm"
+                 role="alert">
+                <i class="icon-check mr-2"></i>
+                @TempData["Success"]
 
-                <td>
-                    <a asp-action="Details"
-                       asp-route-id="@item.PaymentId"
-                       class="btn btn-info btn-sm">
-                        Details
-                    </a>
-
-                    <a asp-action="Edit"
-                       asp-route-id="@item.PaymentId"
-                       class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <a asp-action="Delete"
-                       asp-route-id="@item.PaymentId"
-                       class="btn btn-danger btn-sm">
-                        Delete
-                    </a>
-                </td>
-            </tr>
+                <button type="button"
+                        class="close"
+                        data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
         }
-    </tbody>
-</table>
+
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <span class="subheading">Financial Management</span>
+                <h2 class="mb-2">Payments</h2>
+                <p class="text-muted mb-0">
+                    Manage hotel payments and keep booking balances accurate.
+                </p>
+            </div>
+
+            <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                @if (isAdmin || isReceptionist)
+                {
+                    <a asp-action="Create"
+                       class="btn btn-primary px-4 py-3">
+                        <i class="icon-plus mr-2"></i>
+                        Add Payment
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+
+            @if (Model != null && Model.Any())
+            {
+                foreach (var payment in Model)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+
+                            <div class="card-body p-4">
+
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <span class="text-muted small">
+                                            PAYMENT
+                                        </span>
+
+                                        <h4 class="mb-0">
+                                            #@payment.PaymentId
+                                        </h4>
+                                    </div>
+
+                                    <span class="badge badge-light px-3 py-2">
+                                        <i class="icon-credit-card mr-1"></i>
+                                        @payment.PaymentMethod
+                                    </span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="text-muted small mb-1">
+                                        Amount Paid
+                                    </div>
+
+                                    <h3 class="mb-0"
+                                        style="color:#8d703b;">
+                                        @payment.Amount.ToString("N2")
+                                    </h3>
+                                </div>
+
+                                <div class="row mb-3">
+
+                                    <div class="col-6">
+                                        <div class="text-muted small">
+                                            Booking
+                                        </div>
+
+                                        <strong>
+                                            #@payment.BookingId
+                                        </strong>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="text-muted small">
+                                            Payment Date
+                                        </div>
+
+                                        <strong>
+                                            @payment.PaymentDate.ToString("dd MMM yyyy")
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(payment.TransactionId))
+                                {
+                                    <div class="mb-3">
+                                        <div class="text-muted small">
+                                            Transaction ID
+                                        </div>
+
+                                        <div class="text-truncate">
+                                            @payment.TransactionId
+                                        </div>
+                                    </div>
+                                }
+
+                                <hr />
+
+                                <div class="d-flex flex-wrap">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@payment.PaymentId"
+                                       class="btn btn-outline-secondary btn-sm mr-2 mb-2">
+                                        <i class="icon-eye mr-1"></i>
+                                        Details
+                                    </a>
+
+                                    @if (isAdmin || isReceptionist)
+                                    {
+                                        <a asp-action="Edit"
+                                           asp-route-id="@payment.PaymentId"
+                                           class="btn btn-outline-primary btn-sm mr-2 mb-2">
+                                            <i class="icon-pencil mr-1"></i>
+                                            Edit
+                                        </a>
+                                    }
+
+                                    @if (isAdmin)
+                                    {
+                                        <a asp-action="Delete"
+                                           asp-route-id="@payment.PaymentId"
+                                           class="btn btn-outline-danger btn-sm mb-2">
+                                            <i class="icon-trash mr-1"></i>
+                                            Delete
+                                        </a>
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm text-center p-5">
+
+                        <div class="mb-3">
+                            <i class="icon-credit-card"
+                               style="font-size:50px;color:#8d703b;"></i>
+                        </div>
+
+                        <h3>No Payments Found</h3>
+
+                        <p class="text-muted">
+                            There are currently no payment records.
+                        </p>
+
+                        @if (isAdmin || isReceptionist)
+                        {
+                            <a asp-action="Create"
+                               class="btn btn-primary px-4 py-3">
+                                <i class="icon-plus mr-2"></i>
+                                Create First Payment
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</section>
