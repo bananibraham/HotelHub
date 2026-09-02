@@ -1,20 +1,20 @@
-@model IEnumerable<BLLayer1.ViewModel.ReviewVM>
+@model IEnumerable<BLLayer1.ViewModel.CustomerVM>
 
 @{
-    ViewData["Title"] = "Review Management";
+    ViewData["Title"] = "Customer Management";
 }
 
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
             <h2>
-                <i class="fas fa-star"></i> Review Management
+                <i class="fas fa-users"></i> Customer Management
             </h2>
-            <p class="text-muted">Manage all customer reviews and ratings</p>
+            <p class="text-muted">Manage all customers in the system</p>
         </div>
         <div class="col-md-4 text-end">
             <a asp-action="Create" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus"></i> Add New Review
+                <i class="fas fa-plus"></i> Add New Customer
             </a>
         </div>
     </div>
@@ -35,22 +35,49 @@
         </div>
     }
 
-    <!-- Reviews Table -->
+    <!-- Search Bar -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-9">
+                    <input type="text" name="search" value="@ViewData["CurrentFilter"]" 
+                           class="form-control form-control-lg" 
+                           placeholder="Search by name, email, phone, or national ID...">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-outline-primary btn-lg w-100">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Table -->
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">
-                <i class="fas fa-list"></i> Reviews List (@Model.Count() records)
+                <i class="fas fa-list"></i> Customer List (@Model.Count() records)
             </h5>
         </div>
         <div class="card-body">
             @if (!Model.Any())
             {
                 <div class="text-center py-5">
-                    <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">No Reviews Found</h4>
-                    <p class="text-muted">Get started by adding your first review!</p>
+                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Customers Found</h4>
+                    <p class="text-muted">
+                        @if (ViewData["CurrentFilter"] != null)
+                        {
+                            <span>No customers match your search criteria.</span>
+                        }
+                        else
+                        {
+                            <span>Get started by adding your first customer!</span>
+                        }
+                    </p>
                     <a asp-action="Create" class="btn btn-primary mt-3">
-                        <i class="fas fa-plus"></i> Add First Review
+                        <i class="fas fa-plus"></i> Add First Customer
                     </a>
                 </div>
             }
@@ -61,11 +88,12 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>ID</th>
-                                <th>Customer</th>
-                                <th>Booking</th>
-                                <th>Rating</th>
-                                <th>Comment</th>
-                                <th>Created At</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>National ID</th>
+                                <th>City</th>
+                                <th>Status</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -73,48 +101,45 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td><span class="badge bg-secondary">#@item.ReviewId</span></td>
+                                    <td><span class="badge bg-secondary">#@item.CustomerId</span></td>
+                                    <td><strong>@item.FullName</strong></td>
                                     <td>
-                                        <strong>
-                                            <i class="fas fa-user"></i> @item.CustomerName
-                                        </strong>
+                                        <a href="mailto:@item.Email" class="text-decoration-none">
+                                            <i class="fas fa-envelope"></i> @item.Email
+                                        </a>
                                     </td>
                                     <td>
-                                        @if (!string.IsNullOrEmpty(item.BookingDetails))
+                                        <a href="tel:@item.Phone" class="text-decoration-none">
+                                            <i class="fas fa-phone"></i> @item.Phone
+                                        </a>
+                                    </td>
+                                    <td><code>@item.NationalId</code></td>
+                                    <td>@item.City, @item.Country</td>
+                                    <td>
+                                        @if (item.IsActive)
                                         {
-                                            <span class="badge bg-info">
-                                                <i class="fas fa-calendar-check"></i> @item.BookingDetails
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check"></i> Active
                                             </span>
                                         }
                                         else
                                         {
-                                            <span class="text-muted">No Booking</span>
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times"></i> Inactive
+                                            </span>
                                         }
-                                    </td>
-                                    <td>
-                                        @{
-                                            var stars = new string('★', item.Rating) + new string('☆', 5 - item.Rating);
-                                        }
-                                        <span class="text-warning" style="font-size: 1.2em;">@stars</span>
-                                        <small class="text-muted">(@item.Rating/5)</small>
-                                    </td>
-                                    <td style="max-width: 300px;">
-                                        <p class="mb-0 text-truncate" title="@item.Comment">@item.Comment</p>
-                                    </td>
-                                    <td>
-                                        <small>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
-                                            <a asp-action="Details" asp-route-id="@item.ReviewId" 
+                                            <a asp-action="Details" asp-route-id="@item.CustomerId" 
                                                class="btn btn-sm btn-info" title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a asp-action="Edit" asp-route-id="@item.ReviewId" 
+                                            <a asp-action="Edit" asp-route-id="@item.CustomerId" 
                                                class="btn btn-sm btn-warning" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a asp-action="Delete" asp-route-id="@item.ReviewId" 
+                                            <a asp-action="Delete" asp-route-id="@item.CustomerId" 
                                                class="btn btn-sm btn-danger" title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </a>
@@ -140,11 +165,6 @@
         }
         .card {
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        .text-truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
     </style>
 }

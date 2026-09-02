@@ -34,8 +34,12 @@ namespace PresentationLayer.Controllers
         // GET: Review/Create
         public async Task<IActionResult> Create()
         {
-            await PopulateDropdownsAsync();
-            return View();
+            var vm = new ReviewVM
+            {
+                Customers = await _customerBL.GetActiveCustomersAsSelectListAsync(),
+                Bookings = new List<SelectListItem>() // Empty initially, will be populated via AJAX
+            };
+            return View(vm);
         }
 
         // POST: Review/Create
@@ -45,10 +49,22 @@ namespace PresentationLayer.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _reviewBL.CreateAsync(reviewVm);
-                return RedirectToAction(nameof(Index));
+                var result = await _reviewBL.CreateAsync(reviewVm);
+                
+                if (result)
+                {
+                    TempData["Success"] = "Review added successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                
+                ModelState.AddModelError("", "Failed to add review. Please ensure the booking belongs to the selected customer.");
             }
-            await PopulateDropdownsAsync(reviewVm.CustomerId);
+            
+            reviewVm.Customers = await _customerBL.GetActiveCustomersAsSelectListAsync();
+            reviewVm.Bookings = reviewVm.CustomerId > 0 
+                ? await _reviewBL.GetBookingsByCustomerAsSelectListAsync(reviewVm.CustomerId)
+                : new List<SelectListItem>();
+            
             return View(reviewVm);
         }
 
@@ -58,7 +74,11 @@ namespace PresentationLayer.Controllers
             var review = await _reviewBL.GetByIdAsync(id);
             if (review == null) return NotFound();
 
-            await PopulateDropdownsAsync(review.CustomerId);
+            review.Customers = await _customerBL.GetActiveCustomersAsSelectListAsync();
+            review.Bookings = review.CustomerId > 0 
+                ? await _reviewBL.GetBookingsByCustomerAsSelectListAsync(review.CustomerId, review.BookingId)
+                : new List<SelectListItem>();
+            
             return View(review);
         }
 
@@ -71,10 +91,22 @@ namespace PresentationLayer.Controllers
 
             if (ModelState.IsValid)
             {
-                await _reviewBL.UpdateAsync(reviewVm);
-                return RedirectToAction(nameof(Index));
+                var result = await _reviewBL.UpdateAsync(reviewVm);
+                
+                if (result)
+                {
+                    TempData["Success"] = "Review updated successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                
+                ModelState.AddModelError("", "Failed to update review. Please ensure the booking belongs to the selected customer.");
             }
-            await PopulateDropdownsAsync(reviewVm.CustomerId);
+            
+            reviewVm.Customers = await _customerBL.GetActiveCustomersAsSelectListAsync();
+            reviewVm.Bookings = reviewVm.CustomerId > 0 
+                ? await _reviewBL.GetBookingsByCustomerAsSelectListAsync(reviewVm.CustomerId, reviewVm.BookingId)
+                : new List<SelectListItem>();
+            
             return View(reviewVm);
         }
 
@@ -91,14 +123,31 @@ namespace PresentationLayer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _reviewBL.DeleteAsync(id);
+            var result = await _reviewBL.DeleteAsync(id);
+            
+            if (result)
+            {
+                TempData["Success"] = "Review deleted successfully!";
+            }
+            else
+            {
+                TempData["Error"] = "Failed to delete review.";
+            }
+            
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task PopulateDropdownsAsync(int? selectedCustomerId = null)
+        // AJAX Endpoint: Get bookings for selected customer
+        [HttpGet]
+        public async Task<IActionResult> GetBookingsByCustomer(int customerId)
         {
-            var customers = await _customerBL.GetAllAsync();
-            ViewBag.Customers = new SelectList(customers, "CustomerId", "FullName", selectedCustomerId);
+            if (customerId <= 0)
+            {
+                return Json(new List<SelectListItem>());
+            }
+
+            var bookings = await _reviewBL.GetBookingsByCustomerAsSelectListAsync(customerId);
+            return Json(bookings);
         }
     }
 }

@@ -5,26 +5,90 @@
 }
 
 <div class="container mt-4">
-    <h2>Review Details</h2>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-3">Customer</dt>
-        <dd class="col-sm-9">@Model.CustomerName</dd>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-star"></i> Review Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Customer & Booking -->
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-user"></i> Customer & Booking Information
+                    </h5>
+                    
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-bold">Review ID</dt>
+                        <dd class="col-sm-9"><span class="badge bg-secondary">#@Model.ReviewId</span></dd>
 
-        <dt class="col-sm-3">booking</dt>
-        <dd class="col-sm-9">@Model.BookingDetails</dd>
+                        <dt class="col-sm-3 fw-bold">Customer</dt>
+                        <dd class="col-sm-9">
+                            <i class="fas fa-user"></i> <strong>@Model.CustomerName</strong>
+                        </dd>
 
-        <dt class="col-sm-3">Rate</dt>
-        <dd class="col-sm-9">@Model.Rating / 5</dd>
+                        <dt class="col-sm-3 fw-bold">Booking</dt>
+                        <dd class="col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.BookingDetails))
+                            {
+                                <span class="badge bg-info">
+                                    <i class="fas fa-calendar-check"></i> @Model.BookingDetails
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No Booking</span>
+                            }
+                        </dd>
+                    </dl>
 
-        <dt class="col-sm-3">Comment</dt>
-        <dd class="col-sm-9">@Model.Comment</dd>
+                    <!-- Review Content -->
+                    <h5 class="text-primary mb-3 mt-4">
+                        <i class="fas fa-comment-dots"></i> Review Content
+                    </h5>
+                    
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-bold">Rating</dt>
+                        <dd class="col-sm-9">
+                            @{
+                                var stars = new string('★', Model.Rating) + new string('☆', 5 - Model.Rating);
+                            }
+                            <span class="text-warning" style="font-size: 1.5em;">@stars</span>
+                            <span class="badge bg-warning text-dark ms-2">@Model.Rating/5</span>
+                        </dd>
 
-        <dt class="col-sm-3">Creation Date</dt>
-        <dd class="col-sm-9">@Model.CreatedAt</dd>
-    </dl>
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model.ReviewId" class="btn btn-warning">edit</a>
-        <a asp-action="Index" class="btn btn-secondary">Back to menu</a>
+                        <dt class="col-sm-3 fw-bold">Comment</dt>
+                        <dd class="col-sm-9">
+                            <div class="border p-3 rounded bg-light">
+                                @Model.Comment
+                            </div>
+                        </dd>
+
+                        <dt class="col-sm-3 fw-bold">Created At</dt>
+                        <dd class="col-sm-9">
+                            <i class="fas fa-calendar"></i> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                        </dd>
+                    </dl>
+
+                    <hr />
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.ReviewId" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Edit Review
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.ReviewId" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

@@ -1,45 +1,171 @@
 @model BLLayer1.ViewModel.ReviewVM
 
 @{
-    ViewData["Title"] = "Add Review";
+    ViewData["Title"] = "Create Review";
 }
 
 <div class="container mt-4">
-    <h2>Add new Review</h2>
-    <hr />
     <div class="row">
-        <div class="col-md-6">
-            <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group mb-3">
-                    <label asp-for="CustomerId" class="control-label"></label>
-                    <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.Customers">
-                        <option value="">--choose customer--</option>
-                    </select>
-                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-star"></i> Add New Review
+                    </h3>
                 </div>
-                <div class="form-group mb-3">
-                    <label asp-for="BookingId" class="control-label"></label>
-                    <input asp-for="BookingId" class="form-control" type="number" placeholder="BookingId" />
-                    <span asp-validation-for="BookingId" class="text-danger"></span>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="reviewForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Customer & Booking -->
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-user"></i> Customer & Booking Information
+                        </h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="CustomerId" class="form-label fw-bold"></label>
+                                <select asp-for="CustomerId" class="form-select" id="customerSelect"
+                                        asp-items="Model.Customers">
+                                    <option value="">-- Select Customer --</option>
+                                </select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="BookingId" class="form-label fw-bold"></label>
+                                <select asp-for="BookingId" class="form-select" id="bookingSelect">
+                                    <option value="">-- Select Customer First --</option>
+                                </select>
+                                <span asp-validation-for="BookingId" class="text-danger"></span>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Optional - Leave empty for general review
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Review Content -->
+                        <h5 class="text-primary mb-3 mt-4">
+                            <i class="fas fa-comment-dots"></i> Review Content
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Rating" class="form-label fw-bold"></label>
+                            <div class="rating-stars d-flex align-items-center">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="star @(i <= 3 ? "active" : "")" 
+                                          data-rating="@i" 
+                                          style="cursor: pointer; font-size: 2em; color: #ddd;">
+                                        ★
+                                    </span>
+                                }
+                                <input type="hidden" asp-for="Rating" id="ratingInput" value="3" />
+                                <span class="ms-3 badge bg-warning text-dark" id="ratingBadge">3/5</span>
+                            </div>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Comment" class="form-label fw-bold"></label>
+                            <textarea asp-for="Comment" class="form-control" rows="4" 
+                                      placeholder="Write your review here... (minimum 10 characters)"></textarea>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Save Review
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Rating" class="control-label"></label>
-                    <input asp-for="Rating" class="form-control" type="number" min="1" max="5" />
-                    <span asp-validation-for="Rating" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Comment" class="control-label"></label>
-                    <textarea asp-for="Comment" class="form-control" rows="4"></textarea>
-                    <span asp-validation-for="Comment" class="text-danger"></span>
-                </div>
-                <button type="submit" class="btn btn-success">save</button>
-                <a asp-action="Index" class="btn btn-secondary">cancel</a>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // AJAX: Load bookings when customer changes
+            $('#customerSelect').change(function() {
+                var customerId = $(this).val();
+                var bookingSelect = $('#bookingSelect');
+                
+                // Reset booking dropdown
+                bookingSelect.empty().append('<option value="">Loading...</option>');
+                
+                if (customerId) {
+                    $.ajax({
+                        url: '@Url.Action("GetBookingsByCustomer", "Review")',
+                        type: 'GET',
+                        data: { customerId: customerId },
+                        success: function(data) {
+                            bookingSelect.empty();
+                            bookingSelect.append('<option value="">-- No Booking (Optional) --</option>');
+                            
+                            if (data && data.length > 0) {
+                                $.each(data, function(index, item) {
+                                    bookingSelect.append(
+                                        '<option value="' + item.value + '">' + item.text + '</option>'
+                                    );
+                                });
+                            } else {
+                                bookingSelect.append(
+                                    '<option value="" disabled>No bookings for this customer</option>'
+                                );
+                            }
+                        },
+                        error: function() {
+                            bookingSelect.empty().append(
+                                '<option value="">Error loading bookings</option>'
+                            );
+                        }
+                    });
+                } else {
+                    bookingSelect.empty().append(
+                        '<option value="">-- Select Customer First --</option>'
+                    );
+                }
+            });
+
+            // Star rating interactive
+            $('.star').hover(function() {
+                var rating = $(this).data('rating');
+                $('.star').each(function(index) {
+                    $(this).css('color', index < rating ? '#ffc107' : '#ddd');
+                });
+            }, function() {
+                // On mouse out, keep the selected rating
+                var currentRating = $('#ratingInput').val();
+                $('.star').each(function(index) {
+                    $(this).css('color', index < currentRating ? '#ffc107' : '#ddd');
+                });
+            });
+
+            $('.star').click(function() {
+                var rating = $(this).data('rating');
+                $('#ratingInput').val(rating);
+                $('#ratingBadge').text(rating + '/5');
+                
+                $('.star').each(function(index) {
+                    $(this).css('color', index < rating ? '#ffc107' : '#ddd');
+                });
+            });
+
+            // Initialize stars
+            var initialRating = $('#ratingInput').val() || 3;
+            $('.star').each(function(index) {
+                $(this).css('color', index < initialRating ? '#ffc107' : '#ddd');
+            });
+        });
+    </script>
 }
