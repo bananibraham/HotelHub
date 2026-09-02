@@ -16,7 +16,7 @@ namespace BLLayer1.BLogic
 
         public async Task<IEnumerable<ReviewVM>> GetAllAsync()
         {
-            var reviews = await _reviewRepo.GetAllAsync();
+            var reviews = await _reviewRepo.GetAllWithIncludesAsync(r => r.Customer!, r => r.Booking!);
             return reviews.Select(r => new ReviewVM
             {
                 ReviewId = r.ReviewId,
@@ -24,13 +24,15 @@ namespace BLLayer1.BLogic
                 BookingId = r.BookingId,
                 Rating = r.Rating,
                 Comment = r.Comment,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                CustomerName = r.Customer != null ? r.Customer.FullName : "غير معروف",
+                BookingDetails = r.BookingId.HasValue ? $"حجز #{r.BookingId}" : "بدون حجز"
             });
         }
 
         public async Task<ReviewVM?> GetByIdAsync(int id)
         {
-            var r = await _reviewRepo.GetByIdAsync(id);
+            var r = await _reviewRepo.GetByIdWithIncludesAsync(x => x.ReviewId == id, r => r.Customer!, r => r.Booking!);
             if (r == null) return null;
 
             return new ReviewVM
@@ -40,7 +42,9 @@ namespace BLLayer1.BLogic
                 BookingId = r.BookingId,
                 Rating = r.Rating,
                 Comment = r.Comment,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                CustomerName = r.Customer != null ? r.Customer.FullName : "غير معروف",
+                BookingDetails = r.BookingId.HasValue ? $"حجز #{r.BookingId}" : "بدون حجز"
             };
         }
 

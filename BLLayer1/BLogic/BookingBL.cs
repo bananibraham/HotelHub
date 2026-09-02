@@ -131,7 +131,6 @@ namespace BLLayer1.BLogic
             var booking = await _bookingRepo.GetByIdAsync(id);
             if (booking == null) return false;
 
-            // Soft delete according to project conventions
             booking.IsActive = false;
             _bookingRepo.Update(booking);
             await _bookingRepo.SaveChangesAsync();
@@ -147,6 +146,66 @@ namespace BLLayer1.BLogic
             _bookingRepo.Update(booking);
             await _bookingRepo.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<(bool Success, string Message)> CheckInAsync(int id)
+        {
+            var booking = await _bookingRepo.GetByIdAsync(id);
+            if (booking == null || !booking.IsActive)
+            {
+                return (false, "Booking not found or inactive.");
+            }
+
+            if (booking.Status == "Cancelled")
+            {
+                return (false, "Cannot check in a cancelled booking.");
+            }
+
+            if (booking.Status == "CheckedIn")
+            {
+                return (false, "This booking is already checked in.");
+            }
+
+            if (booking.Status == "CheckedOut")
+            {
+                return (false, "This booking has already been checked out.");
+            }
+
+            booking.Status = "CheckedIn";
+            _bookingRepo.Update(booking);
+            await _bookingRepo.SaveChangesAsync();
+
+            return (true, $"Booking #{id} successfully checked in.");
+        }
+
+        public async Task<(bool Success, string Message)> CheckOutAsync(int id)
+        {
+            var booking = await _bookingRepo.GetByIdAsync(id);
+            if (booking == null || !booking.IsActive)
+            {
+                return (false, "Booking not found or inactive.");
+            }
+
+            if (booking.Status == "Cancelled")
+            {
+                return (false, "Cannot check out a cancelled booking.");
+            }
+
+            if (booking.Status == "CheckedOut")
+            {
+                return (false, "This booking is already checked out.");
+            }
+
+            if (booking.Status != "CheckedIn")
+            {
+                return (false, "Guest must be checked in before performing check-out.");
+            }
+
+            booking.Status = "CheckedOut";
+            _bookingRepo.Update(booking);
+            await _bookingRepo.SaveChangesAsync();
+
+            return (true, $"Booking #{id} successfully checked out.");
         }
     }
 }

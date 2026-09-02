@@ -22,12 +22,7 @@ namespace BLLayer1.BLogic
                 CustomerId = c.CustomerId,
                 FullName = c.FullName,
                 Email = c.Email,
-                Phone = c.Phone,
-                NationalId = c.NationalId,
-                Address = c.Address,
-                City = c.City,
-                Country = c.Country,
-                IsActive = c.IsActive
+                Phone = c.Phone
             });
         }
 
@@ -41,12 +36,7 @@ namespace BLLayer1.BLogic
                 CustomerId = c.CustomerId,
                 FullName = c.FullName,
                 Email = c.Email,
-                Phone = c.Phone,
-                NationalId = c.NationalId,
-                Address = c.Address,
-                City = c.City,
-                Country = c.Country,
-                IsActive = c.IsActive
+                Phone = c.Phone
             };
         }
 
@@ -56,13 +46,7 @@ namespace BLLayer1.BLogic
             {
                 FullName = vm.FullName,
                 Email = vm.Email,
-                Phone = vm.Phone,
-                NationalId = vm.NationalId,
-                Address = vm.Address,
-                City = vm.City,
-                Country = vm.Country,
-                CreatedAt = DateTime.Now,
-                IsActive = true
+                Phone = vm.Phone
             };
 
             await _customerRepo.AddAsync(customer);
@@ -77,10 +61,6 @@ namespace BLLayer1.BLogic
                 customer.FullName = vm.FullName;
                 customer.Email = vm.Email;
                 customer.Phone = vm.Phone;
-                customer.NationalId = vm.NationalId;
-                customer.Address = vm.Address;
-                customer.City = vm.City;
-                customer.Country = vm.Country;
 
                 _customerRepo.Update(customer);
                 await _customerRepo.SaveChangesAsync();

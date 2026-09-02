@@ -1,3 +1,6 @@
+﻿using System.Linq.Expressions;
+using DataAccessLayer.Repositories.Interfaces;
+using HotelHub.Data;
 ﻿using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using HotelHub.Data;
@@ -16,43 +19,42 @@ namespace DataAccessLayer.Repositories.Classes
             _context = context;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await _context.Set<T>().ToListAsync();
-        }
+        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<IEnumerable<T>> GetAllWithIncludesAsync(params Expression<Func<T, object>>[] includes)
         {
-            return await _context.Set<T>().FindAsync(id);
-        }
-
-        public async Task AddAsync(T entity)
-        {
-            await _context.Set<T>().AddAsync(entity);
-        }
-
-        public void Update(T entity)
-        {
-            _context.Set<T>().Update(entity);
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            T? entity = await GetByIdAsync(id);
-
-            if (entity == null)
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
             {
-                return false;
+                query = query.Include(include);
             }
-
-            _context.Set<T>().Remove(entity);
-
-            return await _context.SaveChangesAsync() > 0;
+            return await query.ToListAsync();
         }
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+
+        public async Task<T?> GetByIdWithIncludesAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
-            return await _context.SaveChangesAsync();
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+        public void Update(T entity) => _dbSet.Update(entity);
+        public void Delete(T entity) => _dbSet.Remove(entity);
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+            }
         }
     }
 }

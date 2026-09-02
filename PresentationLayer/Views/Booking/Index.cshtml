@@ -30,12 +30,21 @@
                 </button>
             </div>
         }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
 
         <div class="card shadow-sm border-0 p-4 mb-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="h4 mb-1 text-primary">All Hotel Bookings</h2>
-                    <p class="text-muted small mb-0">Manage guest reservations, view stay details, edit, cancel, and create new bookings.</p>
+                    <p class="text-muted small mb-0">Manage guest reservations, view stay details, check in, check out, edit, cancel, and create new bookings.</p>
                 </div>
                 <a asp-action="Create" class="btn btn-primary px-4 py-2">
                     <i class="icon-plus"></i> New Booking
@@ -53,7 +62,7 @@
                             <th>Check-out</th>
                             <th>Total Price</th>
                             <th>Status</th>
-                            <th class="text-center" style="min-width: 220px;">Actions</th>
+                            <th class="text-center" style="min-width: 260px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -108,13 +117,31 @@
                                     </td>
                                     <td class="text-center align-middle">
                                         <div class="booking-actions">
+                                            @if (item.Status == "Pending" || item.Status == "Confirmed")
+                                            {
+                                                <form asp-action="CheckIn" asp-route-id="@item.BookingId" method="post" class="d-inline" onsubmit="return confirm('Confirm check-in for Guest @item.CustomerName (Booking #@item.BookingId)?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="action-btn action-checkin" title="Check In Guest">
+                                                        <span class="icon-sign-in"></span> Check-In
+                                                    </button>
+                                                </form>
+                                            }
+                                            @if (item.Status == "CheckedIn")
+                                            {
+                                                <form asp-action="CheckOut" asp-route-id="@item.BookingId" method="post" class="d-inline" onsubmit="return confirm('Confirm check-out for Guest @item.CustomerName (Booking #@item.BookingId)?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="action-btn action-checkout" title="Check Out Guest">
+                                                        <span class="icon-sign-out"></span> Check-Out
+                                                    </button>
+                                                </form>
+                                            }
                                             <a asp-action="Details" asp-route-id="@item.BookingId" class="action-btn action-details" title="View Details">
                                                 <span class="icon-eye"></span> Details
                                             </a>
                                             <a asp-action="Edit" asp-route-id="@item.BookingId" class="action-btn action-edit" title="Edit Booking">
                                                 <span class="icon-pencil"></span> Edit
                                             </a>
-                                            @if (item.Status != "Cancelled")
+                                            @if (item.Status != "Cancelled" && item.Status != "CheckedOut")
                                             {
                                                 <form asp-action="Cancel" asp-route-id="@item.BookingId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel Booking #@item.BookingId?');">
                                                     @Html.AntiForgeryToken()
@@ -168,6 +195,26 @@
 
     .action-btn span[class^="icon-"] {
         font-size: 0.82rem;
+    }
+
+    /* Check-In — muted emerald green */
+    .action-checkin {
+        color: #2e7d32;
+        border-color: #2e7d32;
+    }
+    .action-checkin:hover {
+        background: #2e7d32;
+        color: #fff;
+    }
+
+    /* Check-Out — muted deep purple */
+    .action-checkout {
+        color: #6a1b9a;
+        border-color: #6a1b9a;
+    }
+    .action-checkout:hover {
+        background: #6a1b9a;
+        color: #fff;
     }
 
     /* Details — muted slate blue */
