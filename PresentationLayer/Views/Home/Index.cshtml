@@ -41,62 +41,68 @@
         <div class="row">
             <div class="col-lg-12">
                 <form asp-controller="Booking" asp-action="AvailableRooms" method="get" class="booking-form shadow-lg" style="background: #ffffff; border-radius: 16px; border: 1px solid rgba(141, 112, 59, 0.2); padding: 15px 25px;">
-                    <div class="row align-items-center">
-                        <div class="col-md-3 d-flex">
-                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
-                                <div class="wrap w-100">
-                                    <label for="checkin_date" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
-                                        <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-in Date
-                                    </label>
-                                    <input type="date" id="checkin_date" name="checkIn" class="luxury-input w-100" value="@DateTime.Today.ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                                </div>
+                    <div class="row align-items-end">
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3 mb-lg-0">
+                            <div class="form-group mb-0">
+                                <label for="checkin_date" class="small font-weight-bold text-uppercase text-muted mb-2 d-block text-nowrap" style="letter-spacing: 1px; line-height: 1.2;">
+                                    <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-in Date
+                                </label>
+                                <input type="date" id="checkin_date" name="checkIn" class="luxury-input w-100" value="@DateTime.Today.ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
                             </div>
                         </div>
-                        <div class="col-md-3 d-flex">
-                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
-                                <div class="wrap w-100">
-                                    <label for="checkout_date" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
-                                        <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-out Date
-                                    </label>
-                                    <input type="date" id="checkout_date" name="checkOut" class="luxury-input w-100" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
-                                </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3 mb-lg-0">
+                            <div class="form-group mb-0">
+                                <label for="checkout_date" class="small font-weight-bold text-uppercase text-muted mb-2 d-block text-nowrap" style="letter-spacing: 1px; line-height: 1.2;">
+                                    <i class="icon-calendar mr-1" style="color: #8d703b;"></i> Check-out Date
+                                </label>
+                                <input type="date" id="checkout_date" name="checkOut" class="luxury-input w-100" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
                             </div>
                         </div>
-                        <div class="col-md d-flex">
-                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
-                                <div class="wrap w-100">
-                                    <label for="room_type" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
-                                        <i class="icon-bed mr-1" style="color: #8d703b;"></i> Classification
-                                    </label>
-                                    <select name="roomTypeId" id="room_type" class="luxury-input w-100">
-                                        <option value="">All Room Types</option>
-                                        @foreach (var rt in roomTypes)
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3 mb-lg-0">
+                            <div class="form-group mb-0">
+                                <label for="room_type" class="small font-weight-bold text-uppercase text-muted mb-2 d-block text-nowrap" style="letter-spacing: 1px; line-height: 1.2;">
+                                    <i class="icon-bed mr-1" style="color: #8d703b;"></i> Classification
+                                </label>
+                                <select name="selection" id="room_type" class="luxury-input w-100">
+                                    <option value="all">All Types</option>
+                                    <optgroup label="Room Types">
+                                        @if (roomTypes != null)
                                         {
-                                            <option value="@rt.Id">@rt.Name</option>
+                                            foreach (var rt in roomTypes)
+                                            {
+                                                <option value="type_@rt.Id">@rt.Name</option>
+                                            }
                                         }
-                                    </select>
-                                </div>
+                                    </optgroup>
+                                    <optgroup label="Specific Rooms">
+                                        @if (Model != null)
+                                        {
+                                            foreach (var room in Model.OrderBy(r => r.RoomNumber))
+                                            {
+                                                <option value="room_@room.Id">Room @room.RoomNumber (@(room.RoomType?.Name ?? "Standard"))</option>
+                                            }
+                                        }
+                                    </optgroup>
+                                </select>
                             </div>
                         </div>
-                        <div class="col-md d-flex">
-                            <div class="form-group p-3 align-self-stretch d-flex align-items-end w-100">
-                                <div class="wrap w-100">
-                                    <label for="customer_count" class="small font-weight-bold text-uppercase text-muted mb-2 d-block" style="letter-spacing: 1px;">
-                                        <i class="icon-users mr-1" style="color: #8d703b;"></i> Guests
-                                    </label>
-                                    <select name="guestCount" id="customer_count" class="luxury-input w-100">
-                                        <option value="1">1 Guest</option>
-                                        <option value="2" selected>2 Guests</option>
-                                        <option value="3">3 Guests</option>
-                                        <option value="4">4 Guests</option>
-                                        <option value="5">5+ Guests</option>
-                                    </select>
-                                </div>
+                        <div class="col-lg-2 col-md-6 col-sm-6 mb-3 mb-lg-0">
+                            <div class="form-group mb-0">
+                                <label for="customer_count" class="small font-weight-bold text-uppercase text-muted mb-2 d-block text-nowrap" style="letter-spacing: 1px; line-height: 1.2;">
+                                    <i class="icon-users mr-1" style="color: #8d703b;"></i> Guests
+                                </label>
+                                <select name="guestCount" id="customer_count" class="luxury-input w-100">
+                                    <option value="1">1 Guest</option>
+                                    <option value="2" selected>2 Guests</option>
+                                    <option value="3">3 Guests</option>
+                                    <option value="4">4 Guests</option>
+                                    <option value="5">5+ Guests</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="col-md d-flex">
-                            <div class="form-group d-flex align-self-stretch w-100 p-3 mb-0">
-                                <button type="submit" class="btn-luxury-gold w-100 align-self-stretch font-weight-bold" style="border-radius: 8px;">
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="form-group mb-0">
+                                <button type="submit" class="btn-luxury-gold w-100 font-weight-bold" style="height: 50px; border-radius: 8px;">
                                     Check Availability
                                 </button>
                             </div>

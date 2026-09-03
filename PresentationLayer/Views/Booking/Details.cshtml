@@ -118,11 +118,30 @@
                             <span class="h3 font-weight-bold mb-0" style="color: #8d703b; font-family: 'Playfair Display', Georgia, serif;">
                                 @Model.TotalPrice.ToString("N2") EGP
                             </span>
+                            @if (Model.PaidAmount > 0)
+                            {
+                                <div class="small text-muted mt-1">Paid: @Model.PaidAmount.ToString("N2") EGP &bull; Remaining: @Model.RemainingAmount.ToString("N2") EGP</div>
+                            }
                         </div>
                         <div class="mt-2 mt-md-0">
-                            <a asp-controller="Payment" asp-action="Checkout" asp-route-bookingId="@Model.BookingId" class="btn-luxury-gold py-2 px-4">
-                                <i class="icon-credit-card mr-2"></i> Payment / Settle
-                            </a>
+                            @if (Model.IsPaid)
+                            {
+                                <span class="badge badge-success px-3 py-2 text-uppercase" style="font-size: 0.95rem; border-radius: 8px;">
+                                    <i class="icon-check-circle mr-1"></i> Paid in Full
+                                </span>
+                            }
+                            else if (Model.Status != "Cancelled")
+                            {
+                                <a asp-controller="Payment" asp-action="Checkout" asp-route-bookingId="@Model.BookingId" class="btn-luxury-gold py-2 px-4">
+                                    <i class="icon-credit-card mr-2"></i> Payment / Settle
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary px-3 py-2 text-uppercase" style="font-size: 0.95rem; border-radius: 8px;">
+                                    Cancelled Reservation
+                                </span>
+                            }
                         </div>
                     </div>
 
@@ -132,7 +151,16 @@
                             <i class="icon-arrow-left mr-1"></i> Back to Reservations
                         </a>
                         <div class="d-inline-flex flex-wrap" style="gap: 6px;">
-                            @if (Model.Status == "Pending" || Model.Status == "Confirmed")
+                            @if (Model.Status == "Pending")
+                            {
+                                <form asp-action="Confirm" asp-route-id="@Model.BookingId" method="post" class="d-inline" onsubmit="return confirm('Confirm this booking?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-success px-3">
+                                        <i class="icon-check mr-1"></i> Confirm
+                                    </button>
+                                </form>
+                            }
+                            @if (Model.Status == "Confirmed" && Model.CheckInDate.Date <= DateTime.Today && Model.CheckOutDate.Date >= DateTime.Today)
                             {
                                 <form asp-action="CheckIn" asp-route-id="@Model.BookingId" method="post" class="d-inline" onsubmit="return confirm('Confirm check-in for this booking?');">
                                     @Html.AntiForgeryToken()
@@ -150,9 +178,12 @@
                                     </button>
                                 </form>
                             }
-                            <a asp-action="Edit" asp-route-id="@Model.BookingId" class="btn btn-sm btn-outline-primary px-3">
-                                <i class="icon-pencil mr-1"></i> Edit
-                            </a>
+                            @if (Model.Status != "CheckedOut" && Model.Status != "Cancelled")
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model.BookingId" class="btn btn-sm btn-outline-primary px-3">
+                                    <i class="icon-pencil mr-1"></i> Edit
+                                </a>
+                            }
                             @if (Model.Status != "Cancelled" && Model.Status != "CheckedOut")
                             {
                                 <form asp-action="Cancel" asp-route-id="@Model.BookingId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this reservation?');">

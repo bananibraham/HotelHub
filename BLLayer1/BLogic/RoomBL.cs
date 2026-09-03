@@ -35,12 +35,16 @@ namespace BLLayer1.BLogic
             return !allRooms.Any(r => r.RoomNumber == roomNumber && (!excludeId.HasValue || r.Id != excludeId.Value));
         }
 
-        public async Task<IEnumerable<Room>> GetAvailableRoomsAsync(DateTime checkIn, DateTime checkOut, int? roomTypeId = null, int? capacity = null)
+        public async Task<IEnumerable<Room>> GetAvailableRoomsAsync(DateTime checkIn, DateTime checkOut, int? roomTypeId = null, int? roomId = null, int? capacity = null)
         {
             var rooms = await _repository.GetAllWithIncludesAsync(r => r.RoomType!);
             var availableRooms = rooms.Where(r => r.IsActive && !string.Equals(r.Status, "UnderMaintenance", StringComparison.OrdinalIgnoreCase));
 
-            if (roomTypeId.HasValue && roomTypeId.Value > 0)
+            if (roomId.HasValue && roomId.Value > 0)
+            {
+                availableRooms = availableRooms.Where(r => r.Id == roomId.Value);
+            }
+            else if (roomTypeId.HasValue && roomTypeId.Value > 0)
             {
                 availableRooms = availableRooms.Where(r => r.RoomTypeId == roomTypeId.Value);
             }
@@ -60,6 +64,25 @@ namespace BLLayer1.BLogic
                 .ToHashSet();
 
             return availableRooms.Where(r => !overlappingRoomIds.Contains(r.Id)).ToList();
+        }
+
+        public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut, int? excludeBookingId = null)
+        {
+            var room = await _repository.GetByIdAsync(roomId);
+            if (room == null || !room.IsActive || string.Equals(room.Status, "UnderMaintenance", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            var bookings = await _bookingRepo.GetAllAsync();
+            bool hasOverlap = bookings.Any(b => b.IsActive 
+                                                && b.RoomId == roomId 
+                                                && !string.Equals(b.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)
+                                                && (!excludeBookingId.HasValue || b.BookingId != excludeBookingId.Value)
+                                                && b.CheckInDate < checkOut 
+                                                && b.CheckOutDate > checkIn);
+
+            return !hasOverlap;
         }
 
         public async Task<bool> CreateAsync(Room room)
