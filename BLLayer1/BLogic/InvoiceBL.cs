@@ -94,10 +94,10 @@ namespace BLLayer1.BLogic
 
             await _invoiceRepository.AddAsync(invoice);
 
-            int rowsAffected =
-                await _invoiceRepository.SaveChangesAsync();
+            // ✅ FIXED: SaveChangesAsync returns Task, not int
+            await _invoiceRepository.SaveChangesAsync();
 
-            return rowsAffected > 0;
+            return true;
         }
 
         public async Task<bool> UpdateAsync(Invoice invoice)
@@ -147,10 +147,10 @@ namespace BLLayer1.BLogic
 
             _invoiceRepository.Update(existingInvoice);
 
-            int rowsAffected =
-                await _invoiceRepository.SaveChangesAsync();
+            // ✅ FIXED: SaveChangesAsync returns Task, not int
+            await _invoiceRepository.SaveChangesAsync();
 
-            return rowsAffected > 0;
+            return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -163,7 +163,11 @@ namespace BLLayer1.BLogic
                 return false;
             }
 
-            return await _invoiceRepository.DeleteAsync(id);
+            // ✅ FIXED: DeleteAsync returns Task, not Task<bool>
+            await _invoiceRepository.DeleteAsync(id);
+            await _invoiceRepository.SaveChangesAsync();
+            
+            return true;
         }
     }
 }

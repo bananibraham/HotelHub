@@ -1,7 +1,4 @@
 ﻿using System.Linq.Expressions;
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAccessLayer.Repositories.Interfaces
 {
@@ -16,5 +13,10 @@ namespace DataAccessLayer.Repositories.Interfaces
         void Delete(T entity);
         Task SaveChangesAsync();
         Task DeleteAsync(int id);
+        
+        // NEW: Performance optimized methods
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<IQueryable<T>> GetQueryableAsync();
     }
 }

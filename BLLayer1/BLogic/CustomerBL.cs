@@ -53,15 +53,15 @@ namespace BLLayer1.BLogic
 
         public async Task<bool> CreateAsync(CustomerVM vm)
         {
-            // Validation: Check for duplicate email or national ID
+            // ✅ Performance optimized validation
             if (await EmailExistsAsync(vm.Email))
             {
-                return false; // Email already exists
+                return false;
             }
             
             if (await NationalIdExistsAsync(vm.NationalId))
             {
-                return false; // National ID already exists
+                return false;
             }
 
             var customer = new Customer
@@ -87,7 +87,7 @@ namespace BLLayer1.BLogic
             var customer = await _customerRepo.GetByIdAsync(vm.CustomerId);
             if (customer == null) return false;
 
-            // Validation: Check for duplicate email or national ID (excluding current customer)
+            // ✅ Performance optimized validation
             if (await EmailExistsAsync(vm.Email, vm.CustomerId))
             {
                 return false;
@@ -117,37 +117,36 @@ namespace BLLayer1.BLogic
             var customer = await _customerRepo.GetByIdAsync(id);
             if (customer == null) return false;
 
-            // Soft delete: just mark as inactive
             customer.IsActive = false;
             _customerRepo.Update(customer);
             await _customerRepo.SaveChangesAsync();
             return true;
         }
 
+        // ✅ Performance optimized: Uses AnyAsync instead of GetAllAsync
         public async Task<bool> EmailExistsAsync(string email, int? excludeCustomerId = null)
         {
-            var customers = await _customerRepo.GetAllAsync();
-            var query = customers.Where(c => c.Email.ToLower() == email.ToLower());
-            
             if (excludeCustomerId.HasValue)
             {
-                query = query.Where(c => c.CustomerId != excludeCustomerId.Value);
+                return await _customerRepo.AnyAsync(c => 
+                    c.Email.ToLower() == email.ToLower() && 
+                    c.CustomerId != excludeCustomerId.Value);
             }
             
-            return query.Any();
+            return await _customerRepo.AnyAsync(c => c.Email.ToLower() == email.ToLower());
         }
 
+        // ✅ Performance optimized: Uses AnyAsync instead of GetAllAsync
         public async Task<bool> NationalIdExistsAsync(string nationalId, int? excludeCustomerId = null)
         {
-            var customers = await _customerRepo.GetAllAsync();
-            var query = customers.Where(c => c.NationalId == nationalId);
-            
             if (excludeCustomerId.HasValue)
             {
-                query = query.Where(c => c.CustomerId != excludeCustomerId.Value);
+                return await _customerRepo.AnyAsync(c => 
+                    c.NationalId == nationalId && 
+                    c.CustomerId != excludeCustomerId.Value);
             }
             
-            return query.Any();
+            return await _customerRepo.AnyAsync(c => c.NationalId == nationalId);
         }
 
         public async Task<IEnumerable<SelectListItem>> GetActiveCustomersAsSelectListAsync()

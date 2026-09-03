@@ -1,22 +1,19 @@
 ﻿using System.Linq.Expressions;
 using DataAccessLayer.Repositories.Interfaces;
 using HotelHub.Data;
-﻿using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using HotelHub.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAccessLayer.Repositories.Classes
 {
     public class BasicOperation<T> : IBasicOperation<T> where T : class
     {
         private readonly ApplicationDbContext _context;
+        private readonly DbSet<T> _dbSet; // ✅ FIXED: Added the missing declaration
 
         public BasicOperation(ApplicationDbContext context)
         {
             _context = context;
+            _dbSet = context.Set<T>(); // ✅ FIXED: Initialize the DbSet
         }
 
         public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
@@ -55,6 +52,22 @@ namespace DataAccessLayer.Repositories.Classes
             {
                 _dbSet.Remove(entity);
             }
+        }
+
+        // ✅ NEW: Performance optimized methods
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
+        }
+
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
+        public Task<IQueryable<T>> GetQueryableAsync()
+        {
+            return Task.FromResult(_dbSet.AsQueryable());
         }
     }
 }

@@ -81,13 +81,8 @@ namespace BLLayer1.BLogic
 
             await _paymentRepository.AddAsync(payment);
 
-            int rowsAffected =
-                await _paymentRepository.SaveChangesAsync();
-
-            if (rowsAffected <= 0)
-            {
-                return false;
-            }
+            // ✅ FIXED: SaveChangesAsync returns Task, not int
+            await _paymentRepository.SaveChangesAsync();
 
             await RecalculateInvoiceAsync(paymentVm.BookingId);
 
@@ -145,13 +140,8 @@ namespace BLLayer1.BLogic
 
             _paymentRepository.Update(existingPayment);
 
-            int rowsAffected =
-                await _paymentRepository.SaveChangesAsync();
-
-            if (rowsAffected <= 0)
-            {
-                return false;
-            }
+            // ✅ FIXED: SaveChangesAsync returns Task, not int
+            await _paymentRepository.SaveChangesAsync();
 
             await RecalculateInvoiceAsync(oldBookingId);
 
@@ -175,13 +165,9 @@ namespace BLLayer1.BLogic
 
             int bookingId = payment.BookingId;
 
-            bool result =
-                await _paymentRepository.DeleteAsync(id);
-
-            if (!result)
-            {
-                return false;
-            }
+            // ✅ FIXED: DeleteAsync returns Task, not Task<bool>
+            await _paymentRepository.DeleteAsync(id);
+            await _paymentRepository.SaveChangesAsync();
 
             await RecalculateInvoiceAsync(bookingId);
 

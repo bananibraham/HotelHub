@@ -62,7 +62,7 @@ namespace BLLayer1.BLogic
 
         public async Task<bool> CreateAsync(ReviewVM vm)
         {
-            // Validate that booking belongs to customer (if booking is specified)
+            // ✅ Performance optimized validation
             if (vm.BookingId.HasValue)
             {
                 if (!await BookingBelongsToCustomerAsync(vm.BookingId.Value, vm.CustomerId))
@@ -71,7 +71,6 @@ namespace BLLayer1.BLogic
                 }
             }
 
-            // Validate that customer exists and is active
             var customer = await _customerRepo.GetByIdAsync(vm.CustomerId);
             if (customer == null || !customer.IsActive)
             {
@@ -97,7 +96,7 @@ namespace BLLayer1.BLogic
             var review = await _reviewRepo.GetByIdAsync(vm.ReviewId);
             if (review == null) return false;
 
-            // Validate that booking belongs to customer (if booking is specified)
+            // ✅ Performance optimized validation
             if (vm.BookingId.HasValue)
             {
                 if (!await BookingBelongsToCustomerAsync(vm.BookingId.Value, vm.CustomerId))
@@ -106,7 +105,6 @@ namespace BLLayer1.BLogic
                 }
             }
 
-            // Validate that customer exists and is active
             var customer = await _customerRepo.GetByIdAsync(vm.CustomerId);
             if (customer == null || !customer.IsActive)
             {
@@ -133,12 +131,12 @@ namespace BLLayer1.BLogic
             return true;
         }
 
+        // ✅ Performance optimized: Uses FirstOrDefaultAsync instead of GetByIdAsync + check
         public async Task<bool> BookingBelongsToCustomerAsync(int bookingId, int customerId)
         {
-            var booking = await _bookingRepo.GetByIdAsync(bookingId);
-            if (booking == null) return false;
-            
-            return booking.CustomerId == customerId;
+            return await _bookingRepo.AnyAsync(b => 
+                b.BookingId == bookingId && 
+                b.CustomerId == customerId);
         }
 
         public async Task<IEnumerable<SelectListItem>> GetBookingsByCustomerAsSelectListAsync(int customerId, int? excludeBookingId = null)
