@@ -103,9 +103,21 @@ namespace PresentationLayer.Controllers
                 }
             }
 
+            if (string.Equals(booking.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["ErrorMessage"] = "This reservation has been cancelled and cannot accept payments.";
+                return RedirectToAction("Details", "Booking", new { id = bookingId });
+            }
+
             var payments = (await _paymentBL.GetAllAsync()).Where(p => p.BookingId == bookingId).ToList();
             var totalPaid = payments.Sum(p => p.Amount);
             var remaining = Math.Max(0, booking.TotalPrice - totalPaid);
+
+            if (remaining <= 0 && booking.TotalPrice > 0)
+            {
+                TempData["SuccessMessage"] = "This booking has already been paid in full.";
+                return RedirectToAction("Details", "Booking", new { id = bookingId });
+            }
 
             ViewBag.Booking = booking;
             ViewBag.TotalPaid = totalPaid;
@@ -115,7 +127,7 @@ namespace PresentationLayer.Controllers
             var vm = new PaymentCreateVm
             {
                 BookingId = bookingId,
-                Amount = remaining > 0 ? remaining : booking.TotalPrice,
+                Amount = remaining,
                 PaymentMethod = "CreditCard",
                 PaymentDate = DateTime.Now
             };
@@ -132,6 +144,22 @@ namespace PresentationLayer.Controllers
             if (booking == null)
             {
                 return NotFound();
+            }
+
+            if (string.Equals(booking.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["ErrorMessage"] = "This reservation has been cancelled and cannot accept payments.";
+                return RedirectToAction("Details", "Booking", new { id = vm.BookingId });
+            }
+
+            var existingPayments = (await _paymentBL.GetAllAsync()).Where(p => p.BookingId == vm.BookingId).ToList();
+            var totalPaidBefore = existingPayments.Sum(p => p.Amount);
+            var remainingBalance = Math.Max(0, booking.TotalPrice - totalPaidBefore);
+
+            if (remainingBalance <= 0 && booking.TotalPrice > 0)
+            {
+                TempData["SuccessMessage"] = "This booking has already been paid in full.";
+                return RedirectToAction("Details", "Booking", new { id = vm.BookingId });
             }
 
             if (!User.IsInRole("Admin") && !User.IsInRole("Receptionist"))
@@ -274,12 +302,26 @@ namespace PresentationLayer.Controllers
         private async Task LoadBookingsDropdownAsync(int? selectedBookingId = null)
         {
             var bookings = await _paymentBL.GetBookingsAsync();
+            var allPayments = await _paymentBL.GetAllAsync();
+            var paymentsByBooking = allPayments.GroupBy(p => p.BookingId).ToDictionary(g => g.Key, g => g.Sum(p => p.Amount));
+
             ViewBag.Bookings = bookings
-                .Select(b => new SelectListItem
+                .Where(b => !string.Equals(b.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+                .Where(b =>
                 {
-                    Value = b.BookingId.ToString(),
-                    Text = $"Booking #{b.BookingId} | Total: {b.TotalPrice:N2} EGP | Status: {b.Status}",
-                    Selected = selectedBookingId.HasValue && b.BookingId == selectedBookingId.Value
+                    paymentsByBooking.TryGetValue(b.BookingId, out var paid);
+                    return b.TotalPrice > paid || (selectedBookingId.HasValue && b.BookingId == selectedBookingId.Value);
+                })
+                .Select(b =>
+                {
+                    paymentsByBooking.TryGetValue(b.BookingId, out var paid);
+                    var rem = Math.Max(0, b.TotalPrice - paid);
+                    return new SelectListItem
+                    {
+                        Value = b.BookingId.ToString(),
+                        Text = $"Booking #{b.BookingId} | Room {b.RoomId} | Due: {rem:N2} EGP | Status: {b.Status}",
+                        Selected = selectedBookingId.HasValue && b.BookingId == selectedBookingId.Value
+                    };
                 })
                 .ToList();
         }

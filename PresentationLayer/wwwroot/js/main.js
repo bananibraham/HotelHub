@@ -285,25 +285,59 @@
 
 	// navigation
 	var OnePageNav = function() {
-		$(".smoothscroll[href^='#'], #ftco-nav ul li a[href^='#']").on('click', function(e) {
-		 	e.preventDefault();
+		var isHomePage = $('body').hasClass('home-page') || $('#rooms-section').length > 0;
 
-		 	var hash = this.hash,
-		 			navToggler = $('.navbar-toggler');
-		 	$('html, body').animate({
-		    scrollTop: $(hash).offset().top
-		  }, 700, 'easeInOutExpo', function(){
-		    window.location.hash = hash;
-		  });
+		$(".smoothscroll[href^='#'], #ftco-nav ul li a[href*='#']").on('click', function(e) {
+			var hash = this.hash;
+			if (hash && $(hash).length > 0) {
+				e.preventDefault();
+				var navToggler = $('.navbar-toggler');
+				var targetOffset = $(hash).offset().top - 70;
 
+				$('html, body').animate({
+					scrollTop: targetOffset
+				}, 600, 'easeInOutExpo', function(){
+					window.location.hash = hash;
+				});
 
-		  if ( navToggler.is(':visible') ) {
-		  	navToggler.click();
-		  }
+				$('#ftco-nav .nav-item').removeClass('active');
+				$(this).closest('.nav-item').addClass('active');
+
+				if (navToggler.is(':visible')) {
+					navToggler.click();
+				}
+			}
 		});
-		$('body').on('activate.bs.scrollspy', function () {
-		  console.log('nice');
-		})
+
+		if (isHomePage) {
+			$(window).on('scroll', function() {
+				var st = $(this).scrollTop();
+				if (st < 200) {
+					$('#ftco-nav .nav-section').removeClass('active');
+					$('#ftco-nav .nav-home').addClass('active');
+					return;
+				}
+
+				var sections = ['#about-section', '#services-section', '#rooms-section'];
+				var currentActive = null;
+
+				sections.forEach(function(secId) {
+					var $sec = $(secId);
+					if ($sec.length > 0) {
+						var top = $sec.offset().top - 120;
+						var bottom = top + $sec.outerHeight();
+						if (st >= top && st < bottom) {
+							currentActive = secId;
+						}
+					}
+				});
+
+				if (currentActive) {
+					$('#ftco-nav .nav-item').removeClass('active');
+					$('#ftco-nav a[href*="' + currentActive + '"]').closest('.nav-item').addClass('active');
+				}
+			});
+		}
 	};
 	OnePageNav();
 

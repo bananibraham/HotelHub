@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -47,6 +47,14 @@ namespace BLLayer1.ViewModel
         [Display(Name = "Total Price ($)")]
         [DataType(DataType.Currency)]
         public decimal TotalPrice { get; set; }
+
+        [Display(Name = "Paid Amount (EGP)")]
+        [DataType(DataType.Currency)]
+        public decimal PaidAmount { get; set; }
+
+        public decimal RemainingAmount => Math.Max(0, TotalPrice - PaidAmount);
+
+        public bool IsPaid => TotalPrice > 0 && PaidAmount >= TotalPrice;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsActive { get; set; } = true;

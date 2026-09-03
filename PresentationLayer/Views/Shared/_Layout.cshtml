@@ -41,23 +41,35 @@
             </button>
 
             <div class="collapse navbar-collapse" id="ftco-nav">
+                @{
+                    var curCtrl = ViewContext.RouteData.Values["Controller"]?.ToString() ?? "";
+                    var curAct = ViewContext.RouteData.Values["Action"]?.ToString() ?? "";
+                    var curPage = ViewContext.RouteData.Values["Page"]?.ToString() ?? "";
+                    var isHomeActive = curCtrl == "Home" && curAct == "Index" && string.IsNullOrEmpty(curPage);
+                    var isBookingsActive = curCtrl == "Booking" && (curAct == "Index" || curAct == "MyBookings");
+                    var isAvailableRoomsActive = curCtrl == "Booking" && curAct == "AvailableRooms";
+                    var manageControllers = new[] { "Room", "RoomType", "Customer", "Invoice", "Payment", "Review" };
+                    var isManageActive = manageControllers.Contains(curCtrl);
+                    var isAdminActive = curCtrl == "Admin";
+                    var isReceptionistActive = curCtrl == "Receptionist";
+                }
                 <ul class="navbar-nav ml-auto align-items-lg-center">
-                    <li class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                    <li class="nav-item nav-home @(isHomeActive ? "active" : "")">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item nav-section" data-section="rooms-section">
                         <a class="nav-link" href="@Url.Action("Index", "Home")#rooms-section">Suites</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item nav-section" data-section="services-section">
                         <a class="nav-link" href="@Url.Action("Index", "Home")#services-section">Amenities</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item nav-section" data-section="about-section">
                         <a class="nav-link" href="@Url.Action("Index", "Home")#about-section">Resort</a>
                     </li>
 
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Booking" && ViewContext.RouteData.Values["Action"]?.ToString() != "AvailableRooms" ? "active" : "")">
+                        <li class="nav-item @(isBookingsActive ? "active" : "")">
                             <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index">
                                 <i class="icon-calendar mr-1"></i>
                                 @(User.IsInRole("Admin") || User.IsInRole("Receptionist") ? "Bookings" : "My Bookings")
@@ -67,40 +79,40 @@
 
                     @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
                     {
-                        <li class="nav-item dropdown @(new[] { "Room", "RoomType", "Customer", "Invoice", "Payment", "Review" }.Contains(ViewContext.RouteData.Values["Controller"]?.ToString()) ? "active" : "")">
+                        <li class="nav-item dropdown @(isManageActive ? "active" : "")">
                             <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Manage
                             </a>
                             <div class="dropdown-menu shadow-lg border-0" aria-labelledby="manageDropdown" style="border-radius: 8px;">
-                                <a class="dropdown-item py-2" asp-area="" asp-controller="Room" asp-action="Index"><i class="icon-bed mr-2 text-muted"></i> Rooms</a>
-                                <a class="dropdown-item py-2" asp-area="" asp-controller="RoomType" asp-action="Index"><i class="icon-th-list mr-2 text-muted"></i> Room Types</a>
-                                <a class="dropdown-item py-2" asp-area="" asp-controller="Customer" asp-action="Index"><i class="icon-users mr-2 text-muted"></i> Customers</a>
-                                <a class="dropdown-item py-2" asp-area="" asp-controller="Invoice" asp-action="Index"><i class="icon-file-text mr-2 text-muted"></i> Invoices</a>
-                                <a class="dropdown-item py-2" asp-area="" asp-controller="Payment" asp-action="Index"><i class="icon-credit-card mr-2 text-muted"></i> Payments</a>
-                                <a class="dropdown-item py-2" asp-area="" asp-controller="Review" asp-action="Index"><i class="icon-star mr-2 text-muted"></i> Reviews</a>
+                                <a class="dropdown-item py-2 @(curCtrl == "Room" ? "active" : "")" asp-area="" asp-controller="Room" asp-action="Index"><i class="icon-bed mr-2 text-muted"></i> Rooms</a>
+                                <a class="dropdown-item py-2 @(curCtrl == "RoomType" ? "active" : "")" asp-area="" asp-controller="RoomType" asp-action="Index"><i class="icon-th-list mr-2 text-muted"></i> Room Types</a>
+                                <a class="dropdown-item py-2 @(curCtrl == "Customer" ? "active" : "")" asp-area="" asp-controller="Customer" asp-action="Index"><i class="icon-users mr-2 text-muted"></i> Customers</a>
+                                <a class="dropdown-item py-2 @(curCtrl == "Invoice" ? "active" : "")" asp-area="" asp-controller="Invoice" asp-action="Index"><i class="icon-file-text mr-2 text-muted"></i> Invoices</a>
+                                <a class="dropdown-item py-2 @(curCtrl == "Payment" ? "active" : "")" asp-area="" asp-controller="Payment" asp-action="Index"><i class="icon-credit-card mr-2 text-muted"></i> Payments</a>
+                                <a class="dropdown-item py-2 @(curCtrl == "Review" ? "active" : "")" asp-area="" asp-controller="Review" asp-action="Index"><i class="icon-star mr-2 text-muted"></i> Reviews</a>
                             </div>
                         </li>
                     }
 
                     @if (User.IsInRole("Admin"))
                     {
-                        <li class="nav-item">
-                            <a class="nav-portal-btn nav-portal-admin" asp-area="" asp-controller="Admin" asp-action="Index">
+                        <li class="nav-item @(isAdminActive ? "active" : "")">
+                            <a class="nav-portal-btn nav-portal-admin @(isAdminActive ? "active" : "")" asp-area="" asp-controller="Admin" asp-action="Index">
                                 <i class="icon-dashboard mr-1"></i> Admin Portal
                             </a>
                         </li>
                     }
                     @if (User.IsInRole("Receptionist"))
                     {
-                        <li class="nav-item">
-                            <a class="nav-portal-btn nav-portal-reception" asp-area="" asp-controller="Receptionist" asp-action="Index">
+                        <li class="nav-item @(isReceptionistActive ? "active" : "")">
+                            <a class="nav-portal-btn nav-portal-reception @(isReceptionistActive ? "active" : "")" asp-area="" asp-controller="Receptionist" asp-action="Index">
                                 <i class="icon-laptop mr-1"></i> Front Desk
                             </a>
                         </li>
                     }
 
-                    <li class="nav-item">
-                        <a class="nav-cta-btn" asp-area="" asp-controller="Booking" asp-action="AvailableRooms">
+                    <li class="nav-item @(isAvailableRoomsActive ? "active" : "")">
+                        <a class="nav-cta-btn @(isAvailableRoomsActive ? "active" : "")" asp-area="" asp-controller="Booking" asp-action="AvailableRooms">
                             <i class="icon-calendar mr-1"></i> Book Now
                         </a>
                     </li>

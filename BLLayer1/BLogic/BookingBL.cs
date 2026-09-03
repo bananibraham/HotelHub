@@ -14,15 +14,18 @@ namespace BLLayer1.BLogic
         private readonly IBasicOperation<Booking> _bookingRepo;
         private readonly IBasicOperation<Customer> _customerRepo;
         private readonly IBasicOperation<Room> _roomRepo;
+        private readonly IBasicOperation<Payment> _paymentRepo;
 
         public BookingBL(
             IBasicOperation<Booking> bookingRepo,
             IBasicOperation<Customer> customerRepo,
-            IBasicOperation<Room> roomRepo)
+            IBasicOperation<Room> roomRepo,
+            IBasicOperation<Payment> paymentRepo)
         {
             _bookingRepo = bookingRepo;
             _customerRepo = customerRepo;
             _roomRepo = roomRepo;
+            _paymentRepo = paymentRepo;
         }
 
         public async Task<IEnumerable<BookingVM>> GetAllAsync()
@@ -30,8 +33,10 @@ namespace BLLayer1.BLogic
             var bookings = await _bookingRepo.GetAllWithIncludesAsync(b => b.Customer!, b => b.Room!);
             var rooms = (await _roomRepo.GetAllWithIncludesAsync(r => r.RoomType!)).ToDictionary(r => r.Id, r => r);
             var customers = (await _customerRepo.GetAllAsync()).ToDictionary(c => c.CustomerId, c => c);
+            var payments = await _paymentRepo.GetAllAsync();
+            var paymentsDict = payments.GroupBy(p => p.BookingId).ToDictionary(g => g.Key, g => g.Sum(p => p.Amount));
 
-            return bookings.Select(b => MapToVM(b, customers, rooms)).OrderByDescending(b => b.CreatedAt);
+            return bookings.Select(b => MapToVM(b, customers, rooms, paymentsDict)).OrderByDescending(b => b.CreatedAt);
         }
 
         public async Task<IEnumerable<BookingVM>> GetByCustomerIdAsync(int customerId)
@@ -47,6 +52,8 @@ namespace BLLayer1.BLogic
 
             var customer = await _customerRepo.GetByIdAsync(b.CustomerId);
             var room = await _roomRepo.GetByIdWithIncludesAsync(r => r.Id == b.RoomId, r => r.RoomType!);
+            var payments = await _paymentRepo.GetAllAsync();
+            var paidAmount = payments.Where(p => p.BookingId == b.BookingId).Sum(p => p.Amount);
 
             return new BookingVM
             {
@@ -62,6 +69,7 @@ namespace BLLayer1.BLogic
                 CheckOutDate = b.CheckOutDate,
                 Status = b.Status,
                 TotalPrice = b.TotalPrice,
+                PaidAmount = paidAmount,
                 CreatedAt = b.CreatedAt,
                 IsActive = b.IsActive
             };
@@ -75,6 +83,17 @@ namespace BLLayer1.BLogic
 
         public async Task<int> CreateAndReturnIdAsync(BookingVM vm)
         {
+            var allBookings = await _bookingRepo.GetAllAsync();
+            bool hasOverlap = allBookings.Any(b => b.IsActive 
+                                                   && b.RoomId == vm.RoomId 
+                                                   && !string.Equals(b.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)
+                                                   && b.CheckInDate < vm.CheckOutDate 
+                                                   && b.CheckOutDate > vm.CheckInDate);
+            if (hasOverlap)
+            {
+                return 0;
+            }
+
             var room = await _roomRepo.GetByIdWithIncludesAsync(r => r.Id == vm.RoomId, r => r.RoomType!);
             int nights = Math.Max(1, (vm.CheckOutDate.Date - vm.CheckInDate.Date).Days);
             decimal rate = room?.RoomType?.PricePerNight ?? 1500m;
@@ -102,6 +121,18 @@ namespace BLLayer1.BLogic
         {
             var booking = await _bookingRepo.GetByIdAsync(vm.BookingId);
             if (booking == null) return false;
+
+            var allBookings = await _bookingRepo.GetAllAsync();
+            bool hasOverlap = allBookings.Any(b => b.IsActive 
+                                                   && b.RoomId == vm.RoomId 
+                                                   && b.BookingId != vm.BookingId
+                                                   && !string.Equals(b.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)
+                                                   && b.CheckInDate < vm.CheckOutDate 
+                                                   && b.CheckOutDate > vm.CheckInDate);
+            if (hasOverlap)
+            {
+                return false;
+            }
 
             var room = await _roomRepo.GetByIdWithIncludesAsync(r => r.Id == vm.RoomId, r => r.RoomType!);
             int nights = Math.Max(1, (vm.CheckOutDate.Date - vm.CheckInDate.Date).Days);
@@ -156,6 +187,36 @@ namespace BLLayer1.BLogic
             return true;
         }
 
+        public async Task<(bool Success, string Message)> ConfirmAsync(int id)
+        {
+            var booking = await _bookingRepo.GetByIdAsync(id);
+            if (booking == null || !booking.IsActive)
+            {
+                return (false, "Booking not found or inactive.");
+            }
+
+            if (booking.Status == "Cancelled")
+            {
+                return (false, "Cannot confirm a cancelled booking.");
+            }
+
+            if (booking.Status == "Confirmed")
+            {
+                return (false, "This booking is already confirmed.");
+            }
+
+            if (booking.Status == "CheckedIn" || booking.Status == "CheckedOut")
+            {
+                return (false, "This booking has already commenced or concluded.");
+            }
+
+            booking.Status = "Confirmed";
+            _bookingRepo.Update(booking);
+            await _bookingRepo.SaveChangesAsync();
+
+            return (true, $"Booking #{id} successfully confirmed.");
+        }
+
         public async Task<(bool Success, string Message)> CheckInAsync(int id)
         {
             var booking = await _bookingRepo.GetByIdAsync(id);
@@ -177,6 +238,11 @@ namespace BLLayer1.BLogic
             if (booking.Status == "CheckedOut")
             {
                 return (false, "This booking has already been checked out.");
+            }
+
+            if (booking.CheckInDate.Date > DateTime.Today)
+            {
+                return (false, $"Check-in date is {booking.CheckInDate:yyyy-MM-dd}. Guest cannot be checked in before the scheduled arrival date.");
             }
 
             booking.Status = "CheckedIn";
@@ -234,10 +300,12 @@ namespace BLLayer1.BLogic
             return (true, $"Booking #{id} successfully checked out.");
         }
 
-        private static BookingVM MapToVM(Booking b, Dictionary<int, Customer> customers, Dictionary<int, Room> rooms)
+        private static BookingVM MapToVM(Booking b, Dictionary<int, Customer> customers, Dictionary<int, Room> rooms, Dictionary<int, decimal>? paymentsDict = null)
         {
             customers.TryGetValue(b.CustomerId, out var customer);
             rooms.TryGetValue(b.RoomId, out var room);
+            decimal paidAmount = 0;
+            paymentsDict?.TryGetValue(b.BookingId, out paidAmount);
 
             return new BookingVM
             {
@@ -253,6 +321,7 @@ namespace BLLayer1.BLogic
                 CheckOutDate = b.CheckOutDate,
                 Status = b.Status,
                 TotalPrice = b.TotalPrice,
+                PaidAmount = paidAmount,
                 CreatedAt = b.CreatedAt,
                 IsActive = b.IsActive
             };

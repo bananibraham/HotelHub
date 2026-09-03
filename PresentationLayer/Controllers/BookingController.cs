@@ -62,7 +62,7 @@ namespace PresentationLayer.Controllers
 
         // GET: /Booking/AvailableRooms (Public)
         [AllowAnonymous]
-        public async Task<IActionResult> AvailableRooms(DateTime? checkIn, DateTime? checkOut, int? roomTypeId, int? guestCount)
+        public async Task<IActionResult> AvailableRooms(DateTime? checkIn, DateTime? checkOut, int? roomTypeId, int? roomId, string? selection, int? guestCount)
         {
             var inDate = checkIn ?? DateTime.Today;
             if (inDate < DateTime.Today)
@@ -76,15 +76,38 @@ namespace PresentationLayer.Controllers
                 outDate = inDate.AddDays(1);
             }
 
-            var availableRooms = await _roomBL.GetAvailableRoomsAsync(inDate, outDate, roomTypeId, guestCount);
+            if (!string.IsNullOrWhiteSpace(selection))
+            {
+                if (string.Equals(selection, "all", StringComparison.OrdinalIgnoreCase))
+                {
+                    roomTypeId = null;
+                    roomId = null;
+                }
+                else if (selection.StartsWith("type_", StringComparison.OrdinalIgnoreCase) && int.TryParse(selection[5..], out var parsedTypeId))
+                {
+                    roomTypeId = parsedTypeId;
+                    roomId = null;
+                }
+                else if (selection.StartsWith("room_", StringComparison.OrdinalIgnoreCase) && int.TryParse(selection[5..], out var parsedRoomId))
+                {
+                    roomId = parsedRoomId;
+                    roomTypeId = null;
+                }
+            }
+
+            var availableRooms = await _roomBL.GetAvailableRoomsAsync(inDate, outDate, roomTypeId, roomId, guestCount);
             var roomTypes = await _roomTypeBL.GetAllAsync();
+            var allRooms = await _roomBL.GetAllAsync();
 
             ViewBag.CheckIn = inDate;
             ViewBag.CheckOut = outDate;
             ViewBag.RoomTypeId = roomTypeId;
+            ViewBag.RoomId = roomId;
+            ViewBag.Selection = selection ?? (roomId.HasValue ? $"room_{roomId.Value}" : (roomTypeId.HasValue ? $"type_{roomTypeId.Value}" : "all"));
             ViewBag.GuestCount = guestCount;
             ViewBag.Nights = Math.Max(1, (outDate - inDate).Days);
             ViewBag.RoomTypes = new SelectList(roomTypes, "Id", "Name", roomTypeId);
+            ViewBag.AllRooms = allRooms;
 
             return View(availableRooms);
         }
@@ -100,10 +123,22 @@ namespace PresentationLayer.Controllers
             }
 
             var inDate = checkIn ?? DateTime.Today;
+            if (inDate < DateTime.Today)
+            {
+                inDate = DateTime.Today;
+            }
+
             var outDate = checkOut ?? inDate.AddDays(1);
             if (outDate <= inDate)
             {
                 outDate = inDate.AddDays(1);
+            }
+
+            bool isAvailable = await _roomBL.IsRoomAvailableAsync(roomId, inDate, outDate);
+            if (!isAvailable)
+            {
+                TempData["ErrorMessage"] = $"Room {room.RoomNumber} is already booked or currently unavailable for the selected dates ({inDate:yyyy-MM-dd} to {outDate:yyyy-MM-dd}). Please choose another room or different dates.";
+                return RedirectToAction(nameof(AvailableRooms), new { checkIn = inDate.ToString("yyyy-MM-dd"), checkOut = outDate.ToString("yyyy-MM-dd") });
             }
 
             int nights = Math.Max(1, (outDate - inDate).Days);
@@ -142,12 +177,18 @@ namespace PresentationLayer.Controllers
             var customer = await GetOrCreateCurrentCustomerAsync();
             vm.CustomerId = customer.CustomerId;
 
-            // Recalculate price server-side for integrity
             var room = await _roomBL.GetByIdAsync(vm.RoomId);
             if (room == null || !room.IsActive)
             {
                 TempData["ErrorMessage"] = "The chosen room is no longer available.";
                 return RedirectToAction(nameof(AvailableRooms));
+            }
+
+            bool isAvailable = await _roomBL.IsRoomAvailableAsync(vm.RoomId, vm.CheckInDate, vm.CheckOutDate);
+            if (!isAvailable)
+            {
+                TempData["ErrorMessage"] = $"Room {room.RoomNumber} is already booked or currently unavailable for the selected dates ({vm.CheckInDate:yyyy-MM-dd} to {vm.CheckOutDate:yyyy-MM-dd}). Please select another room or choose different dates.";
+                return RedirectToAction(nameof(AvailableRooms), new { checkIn = vm.CheckInDate.ToString("yyyy-MM-dd"), checkOut = vm.CheckOutDate.ToString("yyyy-MM-dd") });
             }
 
             int nights = Math.Max(1, (vm.CheckOutDate.Date - vm.CheckInDate.Date).Days);
@@ -158,8 +199,8 @@ namespace PresentationLayer.Controllers
             int bookingId = await _bookingBL.CreateAndReturnIdAsync(vm);
             if (bookingId <= 0)
             {
-                TempData["ErrorMessage"] = "Failed to create booking reservation.";
-                return RedirectToAction(nameof(Checkout), new { roomId = vm.RoomId, checkIn = vm.CheckInDate, checkOut = vm.CheckOutDate });
+                TempData["ErrorMessage"] = "Failed to create booking reservation. The room is already booked for the selected period.";
+                return RedirectToAction(nameof(AvailableRooms), new { checkIn = vm.CheckInDate.ToString("yyyy-MM-dd"), checkOut = vm.CheckOutDate.ToString("yyyy-MM-dd") });
             }
 
             TempData["SuccessMessage"] = $"Reservation #{bookingId} created! Please complete payment.";
@@ -248,10 +289,22 @@ namespace PresentationLayer.Controllers
                 return View(vm);
             }
 
+            bool isAvailable = await _roomBL.IsRoomAvailableAsync(vm.RoomId, vm.CheckInDate, vm.CheckOutDate);
+            if (!isAvailable)
+            {
+                ModelState.AddModelError("RoomId", $"The selected room is already booked or unavailable between {vm.CheckInDate:yyyy-MM-dd} and {vm.CheckOutDate:yyyy-MM-dd}.");
+                await PopulateStaffDropdownsAsync(vm.CustomerId, vm.RoomId, vm.Status);
+                if (User.IsInRole("Admin"))
+                {
+                    ViewData["Layout"] = "_AdminLayout";
+                }
+                return View(vm);
+            }
+
             int bookingId = await _bookingBL.CreateAndReturnIdAsync(vm);
             if (bookingId <= 0)
             {
-                ModelState.AddModelError(string.Empty, "An error occurred while creating the booking.");
+                ModelState.AddModelError(string.Empty, "An error occurred while creating the booking. The room may already be reserved.");
                 await PopulateStaffDropdownsAsync(vm.CustomerId, vm.RoomId, vm.Status);
                 if (User.IsInRole("Admin"))
                 {
@@ -295,6 +348,18 @@ namespace PresentationLayer.Controllers
 
             if (!ModelState.IsValid)
             {
+                await PopulateStaffDropdownsAsync(vm.CustomerId, vm.RoomId, vm.Status);
+                if (User.IsInRole("Admin"))
+                {
+                    ViewData["Layout"] = "_AdminLayout";
+                }
+                return View(vm);
+            }
+
+            bool isAvailable = await _roomBL.IsRoomAvailableAsync(vm.RoomId, vm.CheckInDate, vm.CheckOutDate, vm.BookingId);
+            if (!isAvailable)
+            {
+                ModelState.AddModelError("RoomId", $"The selected room is already booked or unavailable between {vm.CheckInDate:yyyy-MM-dd} and {vm.CheckOutDate:yyyy-MM-dd}.");
                 await PopulateStaffDropdownsAsync(vm.CustomerId, vm.RoomId, vm.Status);
                 if (User.IsInRole("Admin"))
                 {
@@ -349,6 +414,24 @@ namespace PresentationLayer.Controllers
                 TempData["SuccessMessage"] = $"Booking #{id} has been successfully cancelled.";
             }
 
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: /Booking/Confirm/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Receptionist")]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            var (success, message) = await _bookingBL.ConfirmAsync(id);
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+            }
             return RedirectToAction(nameof(Index));
         }
 

@@ -13,7 +13,8 @@ namespace BLLayer1.Interfaces
         Task<bool> CreateAsync(Room room);
         Task<bool> UpdateAsync(Room room);
         Task<bool> DeleteAsync(int id);
-        Task<IEnumerable<Room>> GetAvailableRoomsAsync(DateTime checkIn, DateTime checkOut, int? roomTypeId = null, int? capacity = null);
+        Task<IEnumerable<Room>> GetAvailableRoomsAsync(DateTime checkIn, DateTime checkOut, int? roomTypeId = null, int? roomId = null, int? capacity = null);
+        Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut, int? excludeBookingId = null);
         Task<bool> IsRoomNumberUniqueAsync(int roomNumber, int? excludeId = null);
     }
 }

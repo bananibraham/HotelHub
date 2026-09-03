@@ -3,10 +3,15 @@
 @inject UserManager<IdentityUser> UserManager
 @inject PresentationLayer.Services.IUserService UserService
 
+@{
+    var currentPage = ViewContext.RouteData.Values["Page"]?.ToString() ?? "";
+}
+
 @if (SignInManager.IsSignedIn(User))
 {
     var displayName = await UserService.GetDisplayNameAsync(User);
-    <li class="nav-item">
+    var isManageActive = currentPage.StartsWith("/Account/Manage", StringComparison.OrdinalIgnoreCase);
+    <li class="nav-item @(isManageActive ? "active" : "")">
         <a class="nav-link font-weight-bold" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage Account">
             <i class="icon-user mr-1" style="color: #c5a880;"></i> Hello, @displayName!
         </a>
@@ -21,12 +26,14 @@
 }
 else
 {
-    <li class="nav-item">
+    var isRegisterActive = currentPage.Equals("/Account/Register", StringComparison.OrdinalIgnoreCase);
+    var isLoginActive = currentPage.Equals("/Account/Login", StringComparison.OrdinalIgnoreCase);
+    <li class="nav-item @(isRegisterActive ? "active" : "")">
         <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
             <i class="icon-user-plus mr-1" style="color: #c5a880;"></i> Register
         </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item @(isLoginActive ? "active" : "")">
         <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
             <i class="icon-sign-in mr-1" style="color: #c5a880;"></i> Sign In
         </a>

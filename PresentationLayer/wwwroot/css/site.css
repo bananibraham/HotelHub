@@ -515,6 +515,18 @@
 }
 
 /* 5. Luxury Badges */
+.badge-luxury-confirmed,
+.badge-luxury-checkedin,
+.badge-luxury-checkedout,
+.badge-luxury-cancelled,
+.badge-luxury-gold {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 1.2;
+}
+
 .badge-luxury-confirmed {
     background: #e6f7ef;
     color: #0d8a50;
@@ -577,16 +589,44 @@
     border-radius: 8px;
     padding: 10px 18px;
     font-size: 14.5px;
-    background: #fbfbfb;
+    background-color: #fbfbfb;
     color: #212529 !important;
     transition: all 0.25s ease;
+    box-sizing: border-box;
+    vertical-align: middle;
 }
 
 .luxury-input:focus {
     border-color: #8d703b !important;
-    background: #ffffff !important;
+    background-color: #ffffff !important;
     box-shadow: 0 0 0 3px rgba(141, 112, 59, 0.15) !important;
     outline: none;
+}
+
+select.luxury-input {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #fbfbfb;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238d703b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 16px center !important;
+    background-size: 12px 12px !important;
+    padding-right: 40px !important;
+    cursor: pointer;
+    line-height: normal;
+}
+
+select.luxury-input:focus {
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238d703b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 16px center !important;
+    background-size: 12px 12px !important;
+}
+
+select.luxury-input::-ms-expand {
+    display: none;
 }
 
 /* 7. Hotel Reservation Voucher (Confirmation Page) */
