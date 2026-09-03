@@ -1,100 +1,137 @@
-﻿@model DataAccessLayer.Models.Room
+@model DataAccessLayer.Models.Room
 
 @{
-    ViewData["Title"] = "Room Details";
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = $"Room {Model.RoomNumber} Details";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout" || User.IsInRole("Admin");
 }
 
-<h1>Room Details</h1>
+@if (!isAdmin)
+{
+    <section class="hero-wrap hero-wrap-2 luxury-hero" style="background-image: url('@Url.Content(Model.ImageUrl ?? "~/images/room-1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate pb-5 text-center">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a asp-action="Index">Rooms <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Room @Model.RoomNumber</span>
+                    </p>
+                    <h1 class="mb-3 bread">Suite Specification</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+}
 
-<div class="card">
-    <div class="card-body">
+<div class="@(isAdmin ? "" : "container py-5")">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="luxury-card p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 pb-3 border-bottom">
+                    <div>
+                        <span class="text-uppercase text-muted font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Room &amp; Suite Inventory</span>
+                        <h2 class="mb-0 font-weight-bold text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                            Room @Model.RoomNumber — @(Model.RoomType?.Name ?? "Suite")
+                        </h2>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        @if (Model.Status == "Available")
+                        {
+                            <span class="badge-luxury-confirmed font-weight-bold">
+                                <i class="icon-check-circle mr-1"></i> Available
+                            </span>
+                        }
+                        else if (Model.Status == "Occupied")
+                        {
+                            <span class="badge-luxury-checkedin font-weight-bold">
+                                <i class="icon-bed mr-1"></i> Occupied
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge-luxury-cancelled font-weight-bold">
+                                <i class="icon-wrench mr-1"></i> @Model.Status
+                            </span>
+                        }
+                    </div>
+                </div>
 
-        <h4>Room Information</h4>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <div class="rounded overflow-hidden shadow-sm position-relative" style="height: 260px;">
+                                <img src="@Model.ImageUrl" alt="Room @Model.RoomNumber" class="w-100 h-100" style="object-fit: cover;" />
+                                <div class="position-absolute" style="bottom: 12px; left: 12px; background: rgba(17,20,26,0.85); color: #c5a880; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                                    Floor @Model.Floor
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="rounded bg-light d-flex align-items-center justify-content-center" style="height: 260px; color: #aaa;">
+                                <i class="icon-bed" style="font-size: 3rem;"></i>
+                            </div>
+                        }
+                    </div>
 
-        <hr />
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded mb-3">
+                            <span class="text-muted small d-block font-weight-bold text-uppercase">Room Category</span>
+                            <h4 class="font-weight-bold text-dark mb-1">@(Model.RoomType?.Name ?? "Standard")</h4>
+                            <div class="font-weight-bold" style="color: #8d703b; font-size: 1.15rem;">
+                                @(Model.RoomType != null ? Model.RoomType.PricePerNight.ToString("N2") : "0.00") EGP <small class="text-muted font-weight-normal">/ night</small>
+                            </div>
+                        </div>
 
-        <dl class="row">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="p-2 border rounded">
+                                    <span class="text-muted small d-block">Max Guests</span>
+                                    <strong class="text-dark"><i class="icon-users mr-1"></i> @(Model.RoomType?.Capacity ?? 2) Guests</strong>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="p-2 border rounded">
+                                    <span class="text-muted small d-block">Floor Location</span>
+                                    <strong class="text-dark"><i class="icon-building mr-1"></i> Floor @Model.Floor</strong>
+                                </div>
+                            </div>
+                        </div>
 
-            <dt class="col-sm-3">
-                Room Number
-            </dt>
-            <dd class="col-sm-9">
-                @Model.RoomNumber
-            </dd>
+                        <div class="mb-3">
+                            <span class="text-muted small d-block font-weight-bold text-uppercase">Description</span>
+                            <p class="text-muted mb-0" style="font-size: 0.95rem;">
+                                @(string.IsNullOrWhiteSpace(Model.Description) ? "No special description provided for this room." : Model.Description)
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-            <dt class="col-sm-3">
-                Room Type
-            </dt>
-            <dd class="col-sm-9">
-                @Model.RoomType?.Name
-            </dd>
-
-            <dt class="col-sm-3">
-                Floor
-            </dt>
-            <dd class="col-sm-9">
-                @Model.Floor
-            </dd>
-
-            <dt class="col-sm-3">
-                Status
-            </dt>
-            <dd class="col-sm-9">
-                @Model.Status
-            </dd>
-
-            <dt class="col-sm-3">
-                Description
-            </dt>
-            <dd class="col-sm-9">
-                @Model.Description
-            </dd>
-
-            <dt class="col-sm-3">
-                Image
-            </dt>
-            <dd class="col-sm-9">
-                @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <img src="@Model.ImageUrl"
-                         alt="Room Image"
-                         style="max-width:300px; max-height:200px;"
-                         class="img-thumbnail" />
-                }
-                else
-                {
-                    <span>No image available</span>
-                }
-            </dd>
-
-            <dt class="col-sm-3">
-                Created At
-            </dt>
-            <dd class="col-sm-9">
-                @Model.CreatedAt
-            </dd>
-
-            <dt class="col-sm-3">
-                Active
-            </dt>
-            <dd class="col-sm-9">
-                @(Model.IsActive ? "Yes" : "No")
-            </dd>
-
-        </dl>
-
-        <a asp-action="Index" class="btn btn-secondary">
-            Back to List
-        </a>
-
-        @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
-        {
-            <a asp-action="Edit"
-               asp-route-id="@Model.Id"
-               class="btn btn-warning">
-                Edit
-            </a>
-        }
-
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top flex-wrap">
+                    <a asp-action="Index" class="btn btn-luxury-outline mb-2 mb-md-0">
+                        <i class="icon-arrow-left mr-1"></i> Back to Inventory
+                    </a>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+                    {
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-luxury-gold mr-2">
+                                <i class="icon-pencil mr-1"></i> Edit Room
+                            </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                    <i class="icon-trash mr-1"></i> Delete
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>

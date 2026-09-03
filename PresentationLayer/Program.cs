@@ -21,6 +21,8 @@ builder.Services.AddScoped<IReviewBL, ReviewBL>();
 builder.Services.AddScoped<IBookingBL, BookingBL>();
 builder.Services.AddScoped<IRoomTypeBL, RoomTypeBL>();
 builder.Services.AddScoped<IRoomBL, RoomBL>();
+builder.Services.AddScoped<IDashboardBL, DashboardBL>();
+builder.Services.AddScoped<PresentationLayer.Services.IUserService, PresentationLayer.Services.UserService>();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
@@ -29,10 +31,12 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Seed roles
+// Apply pending migrations and seed data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    await context.Database.MigrateAsync();
     await RoleSeeder.SeedRolesAsync(services);
 }
 

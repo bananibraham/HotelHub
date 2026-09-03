@@ -1,4 +1,4 @@
-﻿using BLLayer1.Interfaces;
+using BLLayer1.Interfaces;
 using BLLayer1.ViewModel;
 using DataAccessLayer.Models;
 using DataAccessLayer.Repositories.Interfaces;
@@ -201,13 +201,7 @@ namespace BLLayer1.BLogic
             IEnumerable<Invoice> invoices =
                 await _invoiceRepository.GetAllAsync();
 
-            Invoice? invoice =
-                invoices.FirstOrDefault(i => i.BookingId == bookingId);
-
-            if (invoice == null)
-            {
-                return;
-            }
+            Invoice? invoice = invoices.FirstOrDefault(i => i.BookingId == bookingId);
 
             IEnumerable<Payment> payments =
                 await _paymentRepository.GetAllAsync();
@@ -216,12 +210,27 @@ namespace BLLayer1.BLogic
                 .Where(p => p.BookingId == bookingId)
                 .Sum(p => p.Amount);
 
-            invoice.TotalAmount = booking.TotalPrice;
-            invoice.PaidAmount = paidAmount;
-            invoice.RemainingAmount =
-                booking.TotalPrice - paidAmount;
-
-            _invoiceRepository.Update(invoice);
+            if (invoice == null)
+            {
+                invoice = new Invoice
+                {
+                    BookingId = bookingId,
+                    InvoiceNumber = $"INV-{DateTime.Now:yyyyMMdd}-{bookingId:D4}",
+                    IssueDate = DateTime.Now,
+                    TotalAmount = booking.TotalPrice,
+                    PaidAmount = paidAmount,
+                    RemainingAmount = Math.Max(0, booking.TotalPrice - paidAmount),
+                    CreatedAt = DateTime.Now
+                };
+                await _invoiceRepository.AddAsync(invoice);
+            }
+            else
+            {
+                invoice.TotalAmount = booking.TotalPrice;
+                invoice.PaidAmount = paidAmount;
+                invoice.RemainingAmount = Math.Max(0, booking.TotalPrice - paidAmount);
+                _invoiceRepository.Update(invoice);
+            }
 
             await _invoiceRepository.SaveChangesAsync();
         }

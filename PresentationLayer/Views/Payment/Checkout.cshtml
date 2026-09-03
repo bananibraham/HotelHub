@@ -1,0 +1,194 @@
+@model BLLayer1.ViewModel.PaymentCreateVm
+@{
+    ViewData["Title"] = "Secure Payment Portal - HotelHub";
+    var booking = (BLLayer1.ViewModel.BookingVM)ViewBag.Booking;
+    var totalPaid = (decimal)ViewBag.TotalPaid;
+    var remaining = (decimal)ViewBag.Remaining;
+}
+
+<!-- HERO BANNER -->
+<section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+    <div class="overlay"></div>
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <p class="breadcrumbs mb-2">
+            <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
+            <span class="mr-2">&bull;</span>
+            <span class="text-white">Payment Gateway</span>
+        </p>
+        <h1 class="bread mb-2">Secure Settlement</h1>
+        <p class="subtitle">Official online payment gateway for HotelHub Luxury Resort &amp; Spa.</p>
+    </div>
+</section>
+
+<section class="ftco-section bg-light py-5">
+    <div class="container">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <i class="icon-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+        }
+
+        <div class="row">
+            <!-- PAYMENT FORM -->
+            <div class="col-lg-7 mb-4">
+                <div class="luxury-card p-4 p-md-5">
+                    <div class="border-bottom pb-3 mb-4">
+                        <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Step 2 of 2</span>
+                        <h3 class="font-weight-bold text-dark mb-1" style="font-family: 'Playfair Display', Georgia, serif;">
+                            Select Settlement Method
+                        </h3>
+                        <p class="text-muted small mb-0">Transactions are encrypted and processed in Egyptian Pounds (EGP).</p>
+                    </div>
+
+                    <form asp-action="ProcessCheckout" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="BookingId" />
+
+                        <div class="form-group mb-4">
+                            <label class="small font-weight-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">Payment Channels</label>
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <label class="border rounded p-3 text-center d-block cursor-pointer bg-light h-100" style="border-radius: 10px; cursor: pointer; transition: border-color 0.2s;">
+                                        <input type="radio" asp-for="PaymentMethod" value="CreditCard" checked class="mr-1" />
+                                        <i class="icon-credit-card d-block my-2" style="font-size: 1.8rem; color: #8d703b;"></i>
+                                        <span class="small font-weight-bold d-block text-dark">Credit / Debit</span>
+                                        <small class="text-muted">Visa / MC / Meeza</small>
+                                    </label>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="border rounded p-3 text-center d-block cursor-pointer bg-light h-100" style="border-radius: 10px; cursor: pointer; transition: border-color 0.2s;">
+                                        <input type="radio" asp-for="PaymentMethod" value="Cash" class="mr-1" />
+                                        <i class="icon-money d-block my-2 text-success" style="font-size: 1.8rem;"></i>
+                                        <span class="small font-weight-bold d-block text-dark">At Reception</span>
+                                        <small class="text-muted">Pay on Arrival</small>
+                                    </label>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="border rounded p-3 text-center d-block cursor-pointer bg-light h-100" style="border-radius: 10px; cursor: pointer; transition: border-color 0.2s;">
+                                        <input type="radio" asp-for="PaymentMethod" value="BankTransfer" class="mr-1" />
+                                        <i class="icon-exchange d-block my-2 text-info" style="font-size: 1.8rem;"></i>
+                                        <span class="small font-weight-bold d-block text-dark">Bank Wire</span>
+                                        <small class="text-muted">Direct Transfer</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card details simulated input -->
+                        <div id="cardFields" class="p-3 bg-light rounded border mb-4" style="border-radius: 10px;">
+                            <div class="form-group mb-3">
+                                <label class="small font-weight-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">Cardholder Name</label>
+                                <input type="text" class="luxury-input w-100" value="@booking.CustomerName" placeholder="Name as printed on card" />
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="small font-weight-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">Card Number</label>
+                                <input type="text" class="luxury-input w-100" placeholder="•••• •••• •••• ••••" maxlength="19" />
+                            </div>
+                            <div class="row">
+                                <div class="col-6 form-group mb-0">
+                                    <label class="small font-weight-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">Expiration</label>
+                                    <input type="text" class="luxury-input w-100" placeholder="MM/YY" maxlength="5" />
+                                </div>
+                                <div class="col-6 form-group mb-0">
+                                    <label class="small font-weight-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">CVV / CVC</label>
+                                    <input type="password" class="luxury-input w-100" placeholder="•••" maxlength="4" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Amount" class="small font-weight-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">Settlement Amount (EGP)</label>
+                            <div class="input-group">
+                                <input asp-for="Amount" class="form-control form-control-lg font-weight-bold" style="height: 52px; font-size: 1.25rem; color: #8d703b; border-color: #8d703b;" step="0.01" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text font-weight-bold" style="background: #8d703b; color: #fff; border-color: #8d703b;">EGP</span>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Amount" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Notes" class="small font-weight-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">Payment Remarks / Notes</label>
+                            <input asp-for="Notes" class="luxury-input w-100" placeholder="Optional notes regarding this transaction" />
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top flex-wrap">
+                            <a asp-controller="Booking" asp-action="Details" asp-route-id="@booking.BookingId" class="btn-luxury-outline mb-2 mb-md-0">
+                                <i class="icon-arrow-left mr-2"></i> Review Booking
+                            </a>
+                            <button type="submit" class="btn-luxury-gold px-5 py-3">
+                                <i class="icon-lock mr-2"></i> Authorize &amp; Pay @Model.Amount.ToString("N2") EGP
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- INVOICE BALANCE SUMMARY -->
+            <div class="col-lg-5 mb-4">
+                <div class="luxury-card p-4">
+                    <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Stay Ledger</span>
+                    <h4 class="font-weight-bold mb-3 text-dark mt-1" style="font-family: 'Playfair Display', Georgia, serif;">
+                        Reservation Breakdown
+                    </h4>
+
+                    <div class="p-3 bg-light rounded mb-3" style="border-radius: 8px;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted small">Reference:</span>
+                            <strong class="text-dark">#HH-@booking.BookingId.ToString("D5")</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted small">Guest Name:</span>
+                            <strong class="text-dark">@booking.CustomerName</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted small">Suite Allocated:</span>
+                            <strong class="text-dark">Room @booking.RoomNumber (@booking.RoomType)</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted small">Stay Window:</span>
+                            <strong class="text-dark">@booking.CheckInDate.ToString("dd MMM") - @booking.CheckOutDate.ToString("dd MMM yyyy")</strong>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3 mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">Total Suite Cost:</span>
+                            <span class="font-weight-bold text-dark">@booking.TotalPrice.ToString("N2") EGP</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">Settled to Date:</span>
+                            <span class="font-weight-bold text-success">-@totalPaid.ToString("N2") EGP</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <span class="h5 font-weight-bold mb-0 text-dark">Outstanding Balance:</span>
+                            <span class="h4 font-weight-bold mb-0" style="color: #8d703b; font-family: 'Playfair Display', Georgia, serif;">
+                                @remaining.ToString("N2") EGP
+                            </span>
+                        </div>
+                    </div>
+
+                    @if (ViewBag.ExistingPayments != null && ((List<DataAccessLayer.Models.Payment>)ViewBag.ExistingPayments).Any())
+                    {
+                        <div class="border-top pt-3">
+                            <h6 class="font-weight-bold text-dark small text-uppercase mb-2" style="letter-spacing: 0.5px;">Prior Transactions</h6>
+                            @foreach (var p in (List<DataAccessLayer.Models.Payment>)ViewBag.ExistingPayments)
+                            {
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>PAY-@p.PaymentId (@p.PaymentMethod):</span>
+                                    <span class="font-weight-bold text-success">+@p.Amount.ToString("N2") EGP</span>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <div class="mt-4 pt-3 border-top text-center small text-muted">
+                        <i class="icon-lock mr-1" style="color: #8d703b;"></i> 256-Bit SSL Encrypted &bull; PCI-DSS Certified
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

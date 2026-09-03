@@ -1,98 +1,106 @@
-﻿@model BLLayer1.ViewModel.BookingVM
+@model BLLayer1.ViewModel.BookingVM
 
 @{
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
     ViewData["Title"] = $"Edit Booking #{Model.BookingId}";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout" || User.IsInRole("Admin");
 }
 
-<!-- HERO BANNER -->
-<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
-            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
-                <div class="text">
-                    <p class="breadcrumbs mb-2">
-                        <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> 
-                        <span class="mr-2"><a asp-action="Index">Bookings</a></span> 
+@if (!isAdmin)
+{
+    <section class="hero-wrap hero-wrap-2 luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate pb-5 text-center">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home <i class="ion-ios-arrow-forward"></i></a></span> 
+                        <span class="mr-2"><a asp-action="Index">Bookings <i class="ion-ios-arrow-forward"></i></a></span> 
                         <span>Edit</span>
                     </p>
-                    <h1 class="mb-4 bread">Edit Booking #@Model.BookingId</h1>
+                    <h1 class="mb-3 bread">Edit Reservation #@Model.BookingId</h1>
                 </div>
+            </div>
+        </div>
+    </section>
+}
+
+<div class="@(isAdmin ? "" : "container py-5")">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="luxury-card p-4 p-md-5">
+                <div class="mb-4 pb-3 border-bottom">
+                    <span class="text-uppercase text-muted font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Stay Management</span>
+                    <h2 class="mb-1 font-weight-bold text-dark" style="font-family: 'Playfair Display', Georgia, serif;">Modify Booking #@Model.BookingId</h2>
+                    <p class="text-muted small mb-0">Update guest assignment, suite allocation, stay dates, or reservation status.</p>
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="BookingId" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="IsActive" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Customer Selection -->
+                    <div class="form-group mb-3">
+                        <label asp-for="CustomerId" class="font-weight-bold small text-muted text-uppercase">Resident Profile <span class="text-danger">*</span></label>
+                        <select asp-for="CustomerId" asp-items="ViewBag.Customers" class="form-control luxury-input">
+                            <option value="">-- Select Customer --</option>
+                        </select>
+                        <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Room Selection -->
+                    <div class="form-group mb-3">
+                        <label asp-for="RoomId" class="font-weight-bold small text-muted text-uppercase">Allocated Suite <span class="text-danger">*</span></label>
+                        <select asp-for="RoomId" asp-items="ViewBag.Rooms" class="form-control luxury-input">
+                            <option value="">-- Select Room --</option>
+                        </select>
+                        <span asp-validation-for="RoomId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <!-- Check-in Date -->
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="CheckInDate" class="font-weight-bold small text-muted text-uppercase">Check-In Date <span class="text-danger">*</span></label>
+                            <input asp-for="CheckInDate" type="date" class="form-control luxury-input" />
+                            <span asp-validation-for="CheckInDate" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Check-out Date -->
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="CheckOutDate" class="font-weight-bold small text-muted text-uppercase">Check-Out Date <span class="text-danger">*</span></label>
+                            <input asp-for="CheckOutDate" type="date" class="form-control luxury-input" />
+                            <span asp-validation-for="CheckOutDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Status Selection -->
+                    <div class="form-group mb-4">
+                        <label asp-for="Status" class="font-weight-bold small text-muted text-uppercase">Reservation Status</label>
+                        <select asp-for="Status" asp-items="ViewBag.Statuses" class="form-control luxury-input">
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-luxury-outline">
+                            <i class="icon-arrow-left mr-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-luxury-gold px-4">
+                            <i class="icon-check mr-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
-<section class="ftco-section bg-light">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-7">
-                <div class="card shadow-sm border-0 p-4">
-                    <div class="auth-header mb-4">
-                        <h2 class="h4 text-primary mb-1">Update Reservation Details</h2>
-                        <p class="text-muted small">Modify guest assignment, room, dates, or booking status.</p>
-                    </div>
-
-                    <form asp-action="Edit" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" asp-for="BookingId" />
-                        <input type="hidden" asp-for="CreatedAt" />
-                        <input type="hidden" asp-for="IsActive" />
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-                        <!-- Customer Selection -->
-                        <div class="form-group mb-3">
-                            <label asp-for="CustomerId" class="font-weight-bold"></label>
-                            <select asp-for="CustomerId" asp-items="ViewBag.Customers" class="form-control">
-                                <option value="">-- Select Customer --</option>
-                            </select>
-                            <span asp-validation-for="CustomerId" class="text-danger small"></span>
-                        </div>
-
-                        <!-- Room Selection -->
-                        <div class="form-group mb-3">
-                            <label asp-for="RoomId" class="font-weight-bold"></label>
-                            <select asp-for="RoomId" asp-items="ViewBag.Rooms" class="form-control">
-                                <option value="">-- Select Room --</option>
-                            </select>
-                            <span asp-validation-for="RoomId" class="text-danger small"></span>
-                        </div>
-
-                        <div class="row">
-                            <!-- Check-in Date -->
-                            <div class="col-md-6 form-group mb-3">
-                                <label asp-for="CheckInDate" class="font-weight-bold"></label>
-                                <input asp-for="CheckInDate" type="date" class="form-control" />
-                                <span asp-validation-for="CheckInDate" class="text-danger small"></span>
-                            </div>
-
-                            <!-- Check-out Date -->
-                            <div class="col-md-6 form-group mb-3">
-                                <label asp-for="CheckOutDate" class="font-weight-bold"></label>
-                                <input asp-for="CheckOutDate" type="date" class="form-control" />
-                                <span asp-validation-for="CheckOutDate" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <!-- Status Selection -->
-                        <div class="form-group mb-4">
-                            <label asp-for="Status" class="font-weight-bold"></label>
-                            <select asp-for="Status" asp-items="ViewBag.Statuses" class="form-control">
-                            </select>
-                            <span asp-validation-for="Status" class="text-danger small"></span>
-                        </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="d-flex justify-content-between pt-3 border-top">
-                            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
-                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

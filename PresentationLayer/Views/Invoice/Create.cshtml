@@ -1,0 +1,82 @@
+@model BLLayer1.ViewModel.InvoiceCreateVm
+
+@{
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = "Generate Invoice";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout" || User.IsInRole("Admin");
+}
+
+@if (!isAdmin)
+{
+    <section class="hero-wrap hero-wrap-2 luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate pb-5 text-center">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a asp-action="Index">Invoices <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Generate</span>
+                    </p>
+                    <h1 class="mb-3 bread">Generate Invoice</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<div class="@(isAdmin ? "" : "container py-5")">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="luxury-card p-4 p-md-5">
+                <div class="mb-4 pb-3 border-bottom">
+                    <span class="text-uppercase text-muted font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Billing &amp; Accounting</span>
+                    <h2 class="mb-1 font-weight-bold text-dark" style="font-family: 'Playfair Display', Georgia, serif;">Generate New Invoice</h2>
+                    <p class="text-muted small mb-0">Select a confirmed reservation to generate an official resort tax invoice and statement.</p>
+                </div>
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="BookingId" class="font-weight-bold small text-muted text-uppercase">Associated Stay / Booking <span class="text-danger">*</span></label>
+                        <select asp-for="BookingId" asp-items="ViewBag.Bookings" class="form-control luxury-input" id="BookingId">
+                            <option value="">-- Select Booking --</option>
+                        </select>
+                        <span asp-validation-for="BookingId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="InvoiceNumber" class="font-weight-bold small text-muted text-uppercase">Invoice Reference</label>
+                            <input asp-for="InvoiceNumber" class="form-control luxury-input" placeholder="e.g. INV-2026-001" />
+                            <span asp-validation-for="InvoiceNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="IssueDate" class="font-weight-bold small text-muted text-uppercase">Issue Date <span class="text-danger">*</span></label>
+                            <input asp-for="IssueDate" type="date" class="form-control luxury-input" />
+                            <span asp-validation-for="IssueDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-luxury-outline">
+                            <i class="icon-arrow-left mr-1"></i> Back to Invoices
+                        </a>
+                        <button type="submit" class="btn btn-luxury-gold px-4">
+                            <i class="icon-check mr-1"></i> Generate Invoice
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

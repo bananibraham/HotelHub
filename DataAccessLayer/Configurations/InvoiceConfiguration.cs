@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Models;
+using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -28,6 +28,8 @@ namespace DataAccessLayer.Configurations
 
             builder.HasIndex(i => i.BookingId)
                    .IsUnique();
+
+            builder.HasQueryFilter(i => i.Booking.IsActive);
 
             builder.HasOne(i => i.Booking)
                    .WithOne()

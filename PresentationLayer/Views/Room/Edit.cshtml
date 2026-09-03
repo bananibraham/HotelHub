@@ -1,134 +1,104 @@
-﻿@model DataAccessLayer.Models.Room
+@model DataAccessLayer.Models.Room
 
 @{
-    ViewData["Title"] = "Edit Room";
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = $"Edit Room {Model.RoomNumber}";
 }
 
-<h1>Edit Room</h1>
-
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-
-        <form asp-action="Edit" method="post">
-
-            <input type="hidden" asp-for="Id" />
-
-            <div asp-validation-summary="ModelOnly"
-                 class="text-danger">
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="RoomNumber" class="control-label">
-                    Room Number
-                </label>
-
-                <input asp-for="RoomNumber"
-                       class="form-control" />
-
-                <span asp-validation-for="RoomNumber"
-                      class="text-danger">
-                </span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="RoomTypeId" class="control-label">
-                    Room Type
-                </label>
-
-                <select asp-for="RoomTypeId"
-                        asp-items="ViewBag.RoomTypes"
-                        class="form-control">
-                    <option value="">-- Select Room Type --</option>
-                </select>
-
-                <span asp-validation-for="RoomTypeId"
-                      class="text-danger">
-                </span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Floor" class="control-label">
-                    Floor
-                </label>
-
-                <input asp-for="Floor"
-                       class="form-control" />
-
-                <span asp-validation-for="Floor"
-                      class="text-danger">
-                </span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Status" class="control-label">
-                    Status
-                </label>
-
-                <input asp-for="Status"
-                       class="form-control" />
-
-                <span asp-validation-for="Status"
-                      class="text-danger">
-                </span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Description" class="control-label">
-                    Description
-                </label>
-
-                <textarea asp-for="Description"
-                          class="form-control"
-                          rows="4">
-                </textarea>
-
-                <span asp-validation-for="Description"
-                      class="text-danger">
-                </span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="ImageUrl" class="control-label">
-                    Image URL
-                </label>
-
-                <input asp-for="ImageUrl"
-                       class="form-control" />
-
-                <span asp-validation-for="ImageUrl"
-                      class="text-danger">
-                </span>
-            </div>
-
-            <div class="form-check mb-3">
-                <input asp-for="IsActive"
-                       class="form-check-input" />
-
-                <label asp-for="IsActive"
-                       class="form-check-label">
-                    Active
-                </label>
-            </div>
-
-            <button type="submit"
-                    class="btn btn-success">
-                Save Changes
-            </button>
-
-            <a asp-action="Index"
-               class="btn btn-secondary">
-                Back to List
-            </a>
-
-        </form>
-
+<div class="luxury-card p-4 p-md-5">
+    <div class="border-bottom pb-3 mb-4">
+        <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Room Inventory</span>
+        <h2 class="font-weight-bold text-dark mb-1" style="font-family: 'Playfair Display', Georgia, serif;">Edit Room #@Model.RoomNumber</h2>
+        <p class="text-muted small mb-0">Modify room classification, status, and local media.</p>
     </div>
+
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CreatedAt" />
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+        <div class="row">
+            <div class="col-md-6 form-group mb-3">
+                <label asp-for="RoomNumber" class="small font-weight-bold text-uppercase text-dark" style="letter-spacing: 0.5px;">Room Number</label>
+                <input asp-for="RoomNumber" class="luxury-input w-100" />
+                <span asp-validation-for="RoomNumber" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6 form-group mb-3">
+                <label asp-for="RoomTypeId" class="small font-weight-bold text-uppercase text-dark" style="letter-spacing: 0.5px;">Room Classification</label>
+                <select asp-for="RoomTypeId" asp-items="ViewBag.RoomTypes" class="luxury-input w-100">
+                </select>
+                <span asp-validation-for="RoomTypeId" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group mb-3">
+                <label asp-for="Floor" class="small font-weight-bold text-uppercase text-dark" style="letter-spacing: 0.5px;">Floor Level</label>
+                <input asp-for="Floor" class="luxury-input w-100" />
+                <span asp-validation-for="Floor" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6 form-group mb-3">
+                <label asp-for="Status" class="small font-weight-bold text-uppercase text-dark" style="letter-spacing: 0.5px;">Current Status</label>
+                <select asp-for="Status" class="luxury-input w-100">
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="UnderMaintenance">Under Maintenance</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="small font-weight-bold text-uppercase text-dark" style="letter-spacing: 0.5px;">Description &amp; Features</label>
+            <textarea asp-for="Description" class="form-control" rows="3" style="border-radius: 8px;"></textarea>
+            <span asp-validation-for="Description" class="text-danger small"></span>
+        </div>
+
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8 form-group mb-0">
+                <label asp-for="ImageUrl" class="small font-weight-bold text-uppercase text-dark" style="letter-spacing: 0.5px;">Local Summer Hotel Photo</label>
+                <select asp-for="ImageUrl" asp-items="ViewBag.AvailableImages" class="luxury-input w-100" id="roomImageSelect" onchange="updatePreview(this.value)">
+                </select>
+                <small class="text-muted">Stored locally in wwwroot/images.</small>
+                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 text-center">
+                <img id="imagePreview" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/room-1.jpg" : Model.ImageUrl)" alt="Room Preview" class="img-thumbnail shadow-sm mt-2" style="max-height: 120px; object-fit: cover; width: 100%; border-radius: 8px;" />
+            </div>
+        </div>
+
+        <div class="form-check mb-4">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label asp-for="IsActive" class="form-check-label font-weight-bold text-dark">
+                Active in Inventory
+            </label>
+        </div>
+
+        <div class="d-flex justify-content-between pt-3 border-top">
+            <a asp-action="Index" class="btn-luxury-outline">
+                <i class="icon-arrow-left mr-1"></i> Back to Rooms
+            </a>
+            <button type="submit" class="btn-luxury-gold px-5 py-2">
+                <i class="icon-check mr-1"></i> Save Changes
+            </button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updatePreview(val) {
+            if (val) {
+                document.getElementById('imagePreview').src = val;
+            }
+        }
+    </script>
 }

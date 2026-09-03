@@ -11,6 +11,7 @@ namespace DataAccessLayer.Configurations
             builder.HasKey(r => r.ReviewId);
             builder.Property(r => r.Rating).IsRequired();
             builder.Property(r => r.Comment).HasMaxLength(1000);
+            builder.HasQueryFilter(r => r.Customer == null || r.Customer.IsActive);
 
             builder.HasOne(r => r.Customer)
                 .WithMany(c => c.Reviews)

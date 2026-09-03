@@ -1,0 +1,131 @@
+@model DataAccessLayer.Models.Invoice
+
+@{
+    ViewData["Title"] = "Delete Invoice";
+}
+
+<section class="hero-wrap hero-wrap-2"
+         style="background-image: url('@Url.Content("~/images/bg_1.jpg")');"
+         data-stellar-background-ratio="0.5">
+
+    <div class="overlay"></div>
+
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+
+                <p class="breadcrumbs">
+                    <span class="mr-2">
+                        <a asp-action="Index">
+                            Invoices
+                            <i class="ion-ios-arrow-forward"></i>
+                        </a>
+                    </span>
+
+                    <span>Delete</span>
+                </p>
+
+                <h1 class="mb-3 bread">Delete Invoice</h1>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-7">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body p-5 text-center">
+
+                        <div class="mb-4">
+                            <i class="icon-warning"
+                               style="font-size:60px;color:#dc3545;"></i>
+                        </div>
+
+                        <h2 class="mb-3">
+                            Delete Invoice?
+                        </h2>
+
+                        <p class="text-muted">
+                            You are about to permanently delete this invoice record.
+                            This action cannot be undone.
+                        </p>
+
+                        <div class="bg-light p-4 my-4 text-left">
+
+                            <div class="row">
+
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted">Invoice Number</small>
+                                    <div>
+                                        <strong>@Model.InvoiceNumber</strong>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted">Booking Reference</small>
+                                    <div>
+                                        <strong>#@Model.BookingId</strong>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <small class="text-muted">Total Amount</small>
+                                    <div>
+                                        <strong style="color:#8d703b;">
+                                            @Model.TotalAmount.ToString("N2") EGP
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <small class="text-muted">Issue Date</small>
+                                    <div>
+                                        <strong>@Model.IssueDate.ToString("dd MMM yyyy")</strong>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <form asp-action="Delete" asp-route-id="@Model.InvoiceId" method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@Model.InvoiceId" />
+
+                            <div class="d-flex justify-content-center flex-wrap">
+
+                                <a asp-action="Index"
+                                   class="btn btn-outline-secondary px-4 py-3 mr-2 mb-2">
+                                    <i class="icon-close mr-2"></i>
+                                    Cancel
+                                </a>
+
+                                <button type="submit"
+                                        class="btn btn-danger px-4 py-3 mb-2">
+                                    <i class="icon-trash mr-2"></i>
+                                    Delete Invoice
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>

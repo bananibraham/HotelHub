@@ -28,46 +28,83 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
         <div class="container">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HotelHub</a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-logo-text">
+                    <i class="flaticon-hotel mr-2" style="color: #c5a880; font-size: 26px;"></i>
+                    Hotel<span>Hub</span>
+                </span>
+                <span class="brand-sub">Luxury Resort &amp; Spa</span>
+            </a>
+
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
 
             <div class="collapse navbar-collapse" id="ftco-nav">
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav ml-auto align-items-lg-center">
                     <li class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Home")#rooms-section">Rooms</a>
+                        <a class="nav-link" href="@Url.Action("Index", "Home")#rooms-section">Suites</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Home")#services-section">Services</a>
+                        <a class="nav-link" href="@Url.Action("Index", "Home")#services-section">Amenities</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Home")#about-section">About</a>
+                        <a class="nav-link" href="@Url.Action("Index", "Home")#about-section">Resort</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Home")#blog-section">Blog</a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Privacy" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Booking" ? "active" : "")">
-                        <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index">Bookings</a>
-                    </li>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Booking" && ViewContext.RouteData.Values["Action"]?.ToString() != "AvailableRooms" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index">
+                                <i class="icon-calendar mr-1"></i>
+                                @(User.IsInRole("Admin") || User.IsInRole("Receptionist") ? "Bookings" : "My Bookings")
+                            </a>
+                        </li>
+                    }
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+                    {
+                        <li class="nav-item dropdown @(new[] { "Room", "RoomType", "Customer", "Invoice", "Payment", "Review" }.Contains(ViewContext.RouteData.Values["Controller"]?.ToString()) ? "active" : "")">
+                            <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Manage
+                            </a>
+                            <div class="dropdown-menu shadow-lg border-0" aria-labelledby="manageDropdown" style="border-radius: 8px;">
+                                <a class="dropdown-item py-2" asp-area="" asp-controller="Room" asp-action="Index"><i class="icon-bed mr-2 text-muted"></i> Rooms</a>
+                                <a class="dropdown-item py-2" asp-area="" asp-controller="RoomType" asp-action="Index"><i class="icon-th-list mr-2 text-muted"></i> Room Types</a>
+                                <a class="dropdown-item py-2" asp-area="" asp-controller="Customer" asp-action="Index"><i class="icon-users mr-2 text-muted"></i> Customers</a>
+                                <a class="dropdown-item py-2" asp-area="" asp-controller="Invoice" asp-action="Index"><i class="icon-file-text mr-2 text-muted"></i> Invoices</a>
+                                <a class="dropdown-item py-2" asp-area="" asp-controller="Payment" asp-action="Index"><i class="icon-credit-card mr-2 text-muted"></i> Payments</a>
+                                <a class="dropdown-item py-2" asp-area="" asp-controller="Review" asp-action="Index"><i class="icon-star mr-2 text-muted"></i> Reviews</a>
+                            </div>
+                        </li>
+                    }
+
                     @if (User.IsInRole("Admin"))
                     {
-                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")">
-                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                        <li class="nav-item">
+                            <a class="nav-portal-btn nav-portal-admin" asp-area="" asp-controller="Admin" asp-action="Index">
+                                <i class="icon-dashboard mr-1"></i> Admin Portal
+                            </a>
                         </li>
                     }
                     @if (User.IsInRole("Receptionist"))
                     {
-                        <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Receptionist" ? "active" : "")">
-                            <a class="nav-link" asp-area="" asp-controller="Receptionist" asp-action="Index">Receptionist</a>
+                        <li class="nav-item">
+                            <a class="nav-portal-btn nav-portal-reception" asp-area="" asp-controller="Receptionist" asp-action="Index">
+                                <i class="icon-laptop mr-1"></i> Front Desk
+                            </a>
                         </li>
                     }
+
+                    <li class="nav-item">
+                        <a class="nav-cta-btn" asp-area="" asp-controller="Booking" asp-action="AvailableRooms">
+                            <i class="icon-calendar mr-1"></i> Book Now
+                        </a>
+                    </li>
+
                     <partial name="_LoginPartial" />
                 </ul>
             </div>

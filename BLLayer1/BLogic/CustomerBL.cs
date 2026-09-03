@@ -22,7 +22,12 @@ namespace BLLayer1.BLogic
                 CustomerId = c.CustomerId,
                 FullName = c.FullName,
                 Email = c.Email,
-                Phone = c.Phone
+                Phone = c.Phone,
+                NationalId = c.NationalId,
+                Address = c.Address,
+                City = c.City,
+                Country = c.Country,
+                IsActive = c.IsActive
             });
         }
 
@@ -36,7 +41,12 @@ namespace BLLayer1.BLogic
                 CustomerId = c.CustomerId,
                 FullName = c.FullName,
                 Email = c.Email,
-                Phone = c.Phone
+                Phone = c.Phone,
+                NationalId = c.NationalId,
+                Address = c.Address,
+                City = c.City,
+                Country = c.Country,
+                IsActive = c.IsActive
             };
         }
 
@@ -46,7 +56,13 @@ namespace BLLayer1.BLogic
             {
                 FullName = vm.FullName,
                 Email = vm.Email,
-                Phone = vm.Phone
+                Phone = vm.Phone,
+                NationalId = vm.NationalId ?? string.Empty,
+                Address = vm.Address ?? string.Empty,
+                City = vm.City ?? string.Empty,
+                Country = vm.Country ?? string.Empty,
+                IsActive = true,
+                CreatedAt = DateTime.Now
             };
 
             await _customerRepo.AddAsync(customer);
@@ -61,6 +77,11 @@ namespace BLLayer1.BLogic
                 customer.FullName = vm.FullName;
                 customer.Email = vm.Email;
                 customer.Phone = vm.Phone;
+                customer.NationalId = vm.NationalId ?? customer.NationalId;
+                customer.Address = vm.Address ?? customer.Address;
+                customer.City = vm.City ?? customer.City;
+                customer.Country = vm.Country ?? customer.Country;
+                customer.IsActive = vm.IsActive;
 
                 _customerRepo.Update(customer);
                 await _customerRepo.SaveChangesAsync();

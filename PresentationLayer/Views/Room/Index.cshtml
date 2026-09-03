@@ -1,83 +1,122 @@
-﻿@model IEnumerable<DataAccessLayer.Models.Room>
+@model IEnumerable<DataAccessLayer.Models.Room>
 
 @{
-    ViewData["Title"] = "Rooms";
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = "Hotel Rooms - Resort Inventory";
 }
 
-<h1>Rooms</h1>
-
-@if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
-{
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Create New Room</a>
-
-       
-    </p>
-}
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Room Number</th>
-            <th>Room Type</th>
-            <th>Floor</th>
-            <th>Status</th>
-            <th>Active</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var room in Model)
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div>
+            <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Resort Inventory</span>
+            <h2 class="font-weight-bold mb-1 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                Resort Suites &amp; Rooms
+            </h2>
+            <p class="text-muted small mb-0">Overview of all physical guest units, availability status, and nightly rates in EGP.</p>
+        </div>
+        @if (User.IsInRole("Admin"))
         {
-            <tr>
-                <td>@room.RoomNumber</td>
-
-                <td>
-                    @room.RoomType?.Name
-                </td>
-
-                <td>@room.Floor</td>
-
-                <td>@room.Status</td>
-
-                <td>
-                    @if (room.IsActive)
-                    {
-                        <span class="badge bg-success">Active</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Inactive</span>
-                    }
-                </td>
-
-                <td>
-                    <a asp-action="Details"
-                       asp-route-id="@room.Id"
-                       class="btn btn-info btn-sm">
-                        Details
-                    </a>
-
-                    @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
-                    {
-                        <a asp-action="Edit"
-                           asp-route-id="@room.Id"
-                           class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
-
-                        <a asp-action="Delete"
-                           asp-route-id="@room.Id"
-                           class="btn btn-danger btn-sm">
-                            Delete
-
-                            
-
-                        </a>
-                    }
-                </td>
-            </tr>
+            <div class="mt-3 mt-md-0">
+                <a asp-action="Create" class="btn-luxury-gold">
+                    <i class="icon-plus mr-1"></i> Add New Room
+                </a>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+
+<div class="luxury-card">
+    <div class="table-responsive">
+        <table class="table table-luxury mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Photo</th>
+                    <th>Room #</th>
+                    <th>Classification</th>
+                    <th>Floor</th>
+                    <th>Rate / Night</th>
+                    <th>Status</th>
+                    <th>Active</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var room in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "/images/room-1.jpg" : room.ImageUrl)" alt="Room @room.RoomNumber" class="rounded shadow-sm" style="width: 65px; height: 45px; object-fit: cover;" />
+                            </td>
+                            <td>
+                                <span class="badge badge-dark px-2 py-1 font-weight-bold">Room @room.RoomNumber</span>
+                            </td>
+                            <td>
+                                <strong class="text-dark d-block">@(room.RoomType?.Name ?? "Standard")</strong>
+                                <small class="text-muted">Capacity: @(room.RoomType?.Capacity ?? 2) Guests</small>
+                            </td>
+                            <td>Floor @room.Floor</td>
+                            <td>
+                                <span class="font-weight-bold" style="color: #8d703b; font-size: 1.05rem;">
+                                    @(room.RoomType != null ? room.RoomType.PricePerNight.ToString("N0") + " EGP" : "-")
+                                </span>
+                            </td>
+                            <td>
+                                @if (string.Equals(room.Status, "Available", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="badge-luxury-confirmed">Available</span>
+                                }
+                                else if (string.Equals(room.Status, "Occupied", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="badge-luxury-checkedin">Occupied</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-luxury-cancelled">@room.Status</span>
+                                }
+                            </td>
+                            <td>
+                                @if (room.IsActive)
+                                {
+                                    <span class="badge badge-light border text-success"><i class="icon-check mr-1"></i>Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-light border text-muted">No</span>
+                                }
+                            </td>
+                            <td class="text-right">
+                                <div class="d-inline-flex" style="gap: 4px;">
+                                    <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-sm btn-outline-secondary" title="View Details">
+                                        <i class="icon-eye"></i> Details
+                                    </a>
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@room.Id" class="btn btn-sm btn-outline-primary" title="Edit Room">
+                                            <i class="icon-pencil"></i> Edit
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@room.Id" class="btn btn-sm btn-outline-danger" title="Delete Room">
+                                            <i class="icon-trash"></i> Delete
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="icon-bed mb-2" style="font-size: 3rem; color: #8d703b;"></i>
+                            <p class="mb-0">No rooms currently found in inventory.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

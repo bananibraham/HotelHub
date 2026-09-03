@@ -1,64 +1,302 @@
-﻿@{
-    ViewData["Title"] = "Admin Dashboard";
+@model BLLayer1.ViewModel.AdminDashboardVM
+@inject PresentationLayer.Services.IUserService UserService
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "HotelHub Executive Dashboard";
+    var adminName = await UserService.GetDisplayNameAsync(User);
 }
 
-<!-- HERO BANNER -->
-<div class="hero-wrap" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row no-gutters slider-text d-flex align-items-end justify-content-center">
-            <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
-                <div class="text">
-                    <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>Admin</span></p>
-                    <h1 class="mb-4 bread">Admin Dashboard</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <div>
+        <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Executive Management</span>
+        <h1 class="h3 mb-1 text-dark font-weight-bold" style="font-family: 'Playfair Display', Georgia, serif;">
+            Resort Operations Dashboard
+        </h1>
+        <p class="text-muted mb-0">Welcome back, <strong>@adminName</strong>. Real-time statistics and resort operational metrics.</p>
+    </div>
+    <div class="mt-3 mt-md-0">
+        <a asp-controller="Booking" asp-action="Index" class="btn-luxury-outline mr-2">
+            <i class="icon-calendar mr-1"></i> Manage Bookings
+        </a>
+        <a asp-controller="Room" asp-action="Create" class="btn-luxury-gold">
+            <i class="icon-plus mr-1"></i> Add Room
+        </a>
+    </div>
+</div>
+
+<!-- TODAY'S OPERATIONS STRIP -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3 mb-md-0">
+        <div class="luxury-card p-3" style="border-left: 4px solid #8d703b;">
+            <div class="d-flex align-items-center">
+                <div class="mr-3 p-3 rounded-circle" style="background: #fdfbf7; color: #8d703b;">
+                    <i class="icon-sign-in" style="font-size: 1.8rem;"></i>
+                </div>
+                <div>
+                    <div class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.5px;">Today's Check-ins</div>
+                    <div class="h3 font-weight-bold mb-0 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">@Model.TodayCheckIns</div>
+                    <small class="text-muted">Arrivals scheduled for today</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="luxury-card p-3" style="border-left: 4px solid #c5a880;">
+            <div class="d-flex align-items-center">
+                <div class="mr-3 p-3 rounded-circle" style="background: #fdfbf7; color: #c5a880;">
+                    <i class="icon-sign-out" style="font-size: 1.8rem;"></i>
+                </div>
+                <div>
+                    <div class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.5px;">Today's Check-outs</div>
+                    <div class="h3 font-weight-bold mb-0 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">@Model.TodayCheckOuts</div>
+                    <small class="text-muted">Departures scheduled for today</small>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<section class="ftco-section bg-light">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow-sm border-0 p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                        <div>
-                            <h2 class="h4 mb-0 text-primary">Administrator Control Panel</h2>
-                            <p class="text-muted mb-0">Authorized Admin: <strong>@User.Identity?.Name</strong></p>
-                        </div>
-                        <span class="badge badge-primary px-3 py-2 text-uppercase" style="font-size: 0.9rem;">Role: Admin</span>
+<!-- STATS ROW 1: ROOMS & REVENUE -->
+<div class="row mb-4">
+    <!-- Total Rooms -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="luxury-card h-100 py-3 px-3" style="border-left: 4px solid #8d703b;">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="small font-weight-bold text-uppercase mb-1" style="color: #8d703b; letter-spacing: 0.5px;">Total Inventory</div>
+                    <div class="h3 mb-0 font-weight-bold text-dark">@Model.TotalRooms</div>
+                    <div class="small text-muted mt-1">
+                        <span class="text-success font-weight-bold">@Model.AvailableRooms</span> Vacant
                     </div>
-
-                    <div class="alert alert-success d-flex align-items-center" role="alert">
-                        <div>
-                            <h5 class="alert-heading mb-1"><i class="icon-check-circle"></i> Authorization Verified!</h5>
-                            <p class="mb-0">You have successfully passed <code>[Authorize(Roles = "Admin")]</code>. Only users with the <strong>Admin</strong> role can view this page.</p>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 bg-white border rounded text-center">
-                                <h6 class="text-muted text-uppercase mb-2">User Management</h6>
-                                <p class="small text-muted mb-0">Manage roles, receptionist accounts, and staff access.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 bg-white border rounded text-center">
-                                <h6 class="text-muted text-uppercase mb-2">System Config</h6>
-                                <p class="small text-muted mb-0">Configure hotel parameters, pricing, and system policies.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 bg-white border rounded text-center">
-                                <h6 class="text-muted text-uppercase mb-2">Hotel Overview</h6>
-                                <p class="small text-muted mb-0">Monitor room allocations, reservations, and analytics.</p>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div class="col-auto">
+                    <i class="icon-bed" style="font-size: 2.2rem; color: #d6cbba;"></i>
                 </div>
             </div>
         </div>
     </div>
-</section>
+
+    <!-- Occupied Rooms -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="luxury-card h-100 py-3 px-3" style="border-left: 4px solid #dc3545;">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="small font-weight-bold text-danger text-uppercase mb-1" style="letter-spacing: 0.5px;">In-House Occupied</div>
+                    <div class="h3 mb-0 font-weight-bold text-dark">@Model.OccupiedRooms</div>
+                    <div class="small text-muted mt-1">Currently staying</div>
+                </div>
+                <div class="col-auto">
+                    <i class="icon-lock" style="font-size: 2.2rem; color: #f5c2c7;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reserved Rooms -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="luxury-card h-100 py-3 px-3" style="border-left: 4px solid #ffc107;">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="small font-weight-bold text-warning text-uppercase mb-1" style="letter-spacing: 0.5px;">Upcoming Stays</div>
+                    <div class="h3 mb-0 font-weight-bold text-dark">@Model.ReservedRooms</div>
+                    <div class="small text-muted mt-1">Confirmed bookings</div>
+                </div>
+                <div class="col-auto">
+                    <i class="icon-bookmark" style="font-size: 2.2rem; color: #ffe69c;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Revenue -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="luxury-card h-100 py-3 px-3" style="border-left: 4px solid #28a745;">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="small font-weight-bold text-success text-uppercase mb-1" style="letter-spacing: 0.5px;">Total Settled Revenue</div>
+                    <div class="h4 mb-0 font-weight-bold text-dark" style="font-family: 'Playfair Display', Georgia, serif;">@Model.TotalRevenue.ToString("N2") EGP</div>
+                    <div class="small text-muted mt-1">From @Model.TotalPayments transactions</div>
+                </div>
+                <div class="col-auto">
+                    <i class="icon-credit-card" style="font-size: 2.2rem; color: #b1dfbb;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- STATS ROW 2: OPERATIONS & METRICS -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3 mb-md-0">
+        <div class="luxury-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.5px;">Total Reservations</span>
+                    <h3 class="mb-0 font-weight-bold text-dark">@Model.TotalBookings</h3>
+                </div>
+                <a asp-controller="Booking" asp-action="Index" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3 mb-md-0">
+        <div class="luxury-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.5px;">Registered Guests</span>
+                    <h3 class="mb-0 font-weight-bold text-dark">@Model.TotalCustomers</h3>
+                </div>
+                <a asp-controller="Customer" asp-action="Index" class="btn btn-sm btn-outline-secondary">Directory</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="luxury-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.5px;">Guest Reviews</span>
+                    <h3 class="mb-0 font-weight-bold text-dark">@Model.TotalReviews</h3>
+                </div>
+                <a asp-controller="Review" asp-action="Index" class="btn btn-sm btn-outline-secondary">Manage</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RECENT ACTIVITY TABLES -->
+<div class="row">
+    <!-- RECENT BOOKINGS -->
+    <div class="col-lg-7 mb-4">
+        <div class="luxury-card h-100">
+            <div class="p-3 d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="m-0 font-weight-bold text-dark">
+                    <i class="icon-calendar mr-2" style="color: #8d703b;"></i> Recent Reservations
+                </h6>
+                <a asp-controller="Booking" asp-action="Index" class="small font-weight-bold" style="color: #8d703b;">View All &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-luxury mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Stay Dates</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentBookings != null && Model.RecentBookings.Any())
+                        {
+                            foreach (var b in Model.RecentBookings)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="Booking" asp-action="Details" asp-route-id="@b.BookingId" class="font-weight-bold" style="color: #8d703b;">
+                                            #HH-@b.BookingId.ToString("D5")
+                                        </a>
+                                    </td>
+                                    <td>@b.CustomerName</td>
+                                    <td>
+                                        <strong class="text-dark">Room @b.RoomNumber</strong>
+                                        <small class="text-muted d-block">@b.RoomType</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">@b.CheckInDate.ToString("dd MMM") - @b.CheckOutDate.ToString("dd MMM yyyy")</small>
+                                    </td>
+                                    <td class="font-weight-bold text-dark">@b.TotalPrice.ToString("N0") EGP</td>
+                                    <td>
+                                        @if (b.Status == "Confirmed")
+                                        {
+                                            <span class="badge-luxury-confirmed">Confirmed</span>
+                                        }
+                                        else if (b.Status == "CheckedIn")
+                                        {
+                                            <span class="badge-luxury-checkedin">Checked In</span>
+                                        }
+                                        else if (b.Status == "CheckedOut")
+                                        {
+                                            <span class="badge-luxury-checkedout">Checked Out</span>
+                                        }
+                                        else if (b.Status == "Cancelled")
+                                        {
+                                            <span class="badge-luxury-cancelled">Cancelled</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-luxury-gold">@b.Status</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-controller="Booking" asp-action="Details" asp-route-id="@b.BookingId" class="btn btn-sm btn-outline-secondary">
+                                            <i class="icon-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">No reservations recorded yet.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT PAYMENTS -->
+    <div class="col-lg-5 mb-4">
+        <div class="luxury-card h-100">
+            <div class="p-3 d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="m-0 font-weight-bold text-dark">
+                    <i class="icon-credit-card mr-2 text-success"></i> Recent Financial Transactions
+                </h6>
+                <a asp-controller="Payment" asp-action="Index" class="small font-weight-bold" style="color: #8d703b;">View All &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-luxury mb-0">
+                    <thead>
+                        <tr>
+                            <th>Receipt</th>
+                            <th>Guest</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentPayments != null && Model.RecentPayments.Any())
+                        {
+                            foreach (var p in Model.RecentPayments)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="Payment" asp-action="Details" asp-route-id="@p.PaymentId" class="font-weight-bold" style="color: #8d703b;">
+                                            PAY-@p.PaymentId
+                                        </a>
+                                        <small class="text-muted d-block">Bk #@p.BookingId</small>
+                                    </td>
+                                    <td>@p.CustomerName</td>
+                                    <td><span class="font-weight-bold text-success">+@p.Amount.ToString("N2") EGP</span></td>
+                                    <td><span class="badge badge-light border">@p.PaymentMethod</span></td>
+                                    <td><small class="text-muted">@p.PaymentDate.ToString("dd MMM yyyy")</small></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No payment records recorded yet.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

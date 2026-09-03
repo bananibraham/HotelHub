@@ -18,17 +18,24 @@
     </div>
 </div>
 
-<section class="ftco-section bg-light">
+<section class="ftco-section bg-light py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="auth-card text-center">
-                    <div class="auth-header mb-4">
-                        <h2 class="text-danger">Access Denied</h2>
-                        <p>You do not have permission to access this resource.</p>
+            <div class="col-md-8 col-lg-5">
+                <div class="card border-0 shadow-sm p-4 p-md-5 text-center bg-white rounded">
+                    <div class="mb-4 d-flex justify-content-center">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background-color: #fee2e2; display: flex; align-items: center; justify-content: center;">
+                            <i class="icon-ban text-danger" style="font-size: 2.5rem;"></i>
+                        </div>
                     </div>
-                    <div class="mt-4">
-                        <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-primary btn-auth px-4">Return Home</a>
+                    <h2 class="font-weight-bold text-danger mb-2">Access Denied</h2>
+                    <p class="text-muted mb-4">
+                        You do not have the required role or permission to view this administrative resource.
+                    </p>
+                    <div class="d-flex justify-content-center">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-primary px-5 py-3 font-weight-bold shadow-sm" style="border-radius: 30px;">
+                            <i class="icon-arrow-left mr-2"></i> Return to Safety
+                        </a>
                     </div>
                 </div>
             </div>

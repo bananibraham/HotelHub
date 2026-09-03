@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -28,7 +28,6 @@ namespace DataAccessLayer.Models
         [StringLength(500)]
         public string? Description { get; set; }
 
-        [Url]
         [StringLength(500)]
         public string? ImageUrl { get; set; }
 
@@ -36,7 +35,7 @@ namespace DataAccessLayer.Models
 
         public bool IsActive { get; set; } = true;
 
-
         public RoomType? RoomType { get; set; } 
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

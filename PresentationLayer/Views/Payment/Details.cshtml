@@ -1,218 +1,114 @@
-﻿@model DataAccessLayer.Models.Payment
+@model DataAccessLayer.Models.Payment
 
 @{
-    ViewData["Title"] = "Payment Details";
-    bool isAdmin = User.IsInRole("Admin");
-    bool isReceptionist = User.IsInRole("Receptionist");
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = $"Receipt PAY-{Model.PaymentId}";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout" || User.IsInRole("Admin");
 }
 
-<section class="hero-wrap hero-wrap-2"
-         style="background-image: url('@Url.Content("~/images/bg_1.jpg")');"
-         data-stellar-background-ratio="0.5">
-
-    <div class="overlay"></div>
-
-    <div class="container">
-        <div class="row no-gutters slider-text align-items-end justify-content-center">
-            <div class="col-md-9 ftco-animate pb-5 text-center">
-
-                <p class="breadcrumbs">
-                    <span class="mr-2">
-                        <a asp-action="Index">
-                            Payments
-                            <i class="ion-ios-arrow-forward"></i>
-                        </a>
-                    </span>
-
-                    <span>Details</span>
-                </p>
-
-                <h1 class="mb-3 bread">Payment Details</h1>
-
+@if (!isAdmin)
+{
+    <section class="hero-wrap hero-wrap-2" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');" data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate pb-5 text-center">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a asp-action="Index">Payments <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Receipt</span>
+                    </p>
+                    <h1 class="mb-3 bread">Payment Receipt</h1>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+}
 
-<section class="ftco-section bg-light">
-    <div class="container">
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm bg-white p-4 p-md-5" style="border-radius: 12px;">
+                <div class="text-center mb-4">
+                    <div class="mb-2">
+                        <i class="icon-check-circle text-success" style="font-size: 50px;"></i>
+                    </div>
+                    <span class="text-muted small text-uppercase font-weight-bold">Verified Transaction</span>
+                    <h2 class="font-weight-bold text-dark mt-1">Payment #PAY-@Model.PaymentId</h2>
+                    <h3 class="font-weight-bold text-success">
+                        @Model.Amount.ToString("N2") EGP
+                    </h3>
+                </div>
 
-        <div class="row justify-content-center">
-
-            <div class="col-lg-9">
-
-                <div class="card border-0 shadow-sm">
-
-                    <div class="card-body p-4 p-md-5">
-
-                        <div class="text-center mb-5">
-
-                            <div class="mb-3">
-                                <i class="icon-credit-card"
-                                   style="font-size:55px;color:#8d703b;"></i>
-                            </div>
-
-                            <span class="subheading">
-                                Payment Transaction
-                            </span>
-
-                            <h2>
-                                Payment #@Model.PaymentId
-                            </h2>
-
-                            <h3 style="color:#8d703b;">
-                                @Model.Amount.ToString("N2") EGP
-                            </h3>
-
-                        </div>
-
-                        <div class="row">
-
-                            <div class="col-md-6 mb-4">
-
-                                <div class="p-4 bg-light h-100">
-
-                                    <span class="text-muted small">
-                                        BOOKING
-                                    </span>
-
-                                    <h4 class="mt-2">
-                                        #@Model.BookingId
-                                    </h4>
-
-                                </div>
-
-                            </div>
-
-                            <div class="col-md-6 mb-4">
-
-                                <div class="p-4 bg-light h-100">
-
-                                    <span class="text-muted small">
-                                        PAYMENT METHOD
-                                    </span>
-
-                                    <h4 class="mt-2">
-                                        @Model.PaymentMethod
-                                    </h4>
-
-                                </div>
-
-                            </div>
-
-                            <div class="col-md-6 mb-4">
-
-                                <div class="p-4 bg-light h-100">
-
-                                    <span class="text-muted small">
-                                        PAYMENT DATE
-                                    </span>
-
-                                    <h4 class="mt-2">
-                                        @Model.PaymentDate.ToString("dd MMM yyyy")
-                                    </h4>
-
-                                    <small class="text-muted">
-                                        @Model.PaymentDate.ToString("hh:mm tt")
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-                            <div class="col-md-6 mb-4">
-
-                                <div class="p-4 bg-light h-100">
-
-                                    <span class="text-muted small">
-                                        CREATED AT
-                                    </span>
-
-                                    <h4 class="mt-2">
-                                        @Model.CreatedAt.ToString("dd MMM yyyy")
-                                    </h4>
-
-                                    <small class="text-muted">
-                                        @Model.CreatedAt.ToString("hh:mm tt")
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        @if (!string.IsNullOrWhiteSpace(Model.TransactionId))
-                        {
-                            <div class="mb-4">
-
-                                <span class="text-muted small">
-                                    TRANSACTION ID
-                                </span>
-
-                                <div class="p-3 bg-light mt-2">
-                                    @Model.TransactionId
-                                </div>
-
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrWhiteSpace(Model.Notes))
-                        {
-                            <div class="mb-4">
-
-                                <span class="text-muted small">
-                                    NOTES
-                                </span>
-
-                                <div class="p-3 bg-light mt-2">
-                                    @Model.Notes
-                                </div>
-
-                            </div>
-                        }
-
-                        <hr class="my-4" />
-
-                        <div class="d-flex justify-content-between flex-wrap">
-
-                            <a asp-action="Index"
-                               class="btn btn-outline-secondary px-4 py-3 mb-2">
-                                <i class="icon-arrow-left mr-2"></i>
-                                Back
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <span class="text-muted small d-block">Reservation Reference</span>
+                            <a asp-controller="Booking" asp-action="Details" asp-route-id="@Model.BookingId" class="h5 font-weight-bold text-primary mb-0">
+                                Booking #@Model.BookingId
                             </a>
-
-                            <div>
-
-                                @if (isAdmin || isReceptionist)
-                                {
-                                    <a asp-action="Edit"
-                                       asp-route-id="@Model.PaymentId"
-                                       class="btn btn-primary px-4 py-3 mr-2 mb-2">
-                                        <i class="icon-pencil mr-2"></i>
-                                        Edit
-                                    </a>
-                                }
-
-                                @if (isAdmin)
-                                {
-                                    <a asp-action="Delete"
-                                       asp-route-id="@Model.PaymentId"
-                                       class="btn btn-outline-danger px-4 py-3 mb-2">
-                                        <i class="icon-trash mr-2"></i>
-                                        Delete
-                                    </a>
-                                }
-
-                            </div>
-
                         </div>
-
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <span class="text-muted small d-block">Payment Method</span>
+                            <span class="h5 font-weight-bold text-dark mb-0">@Model.PaymentMethod</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <span class="text-muted small d-block">Settlement Date</span>
+                            <span class="h6 font-weight-bold text-dark mb-0">@Model.PaymentDate.ToString("dd MMM yyyy, hh:mm tt")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <span class="text-muted small d-block">Audit Status</span>
+                            <span class="badge badge-success px-2 py-1">Immutable Ledger Record</span>
+                        </div>
                     </div>
                 </div>
 
+                @if (!string.IsNullOrWhiteSpace(Model.TransactionId))
+                {
+                    <div class="mb-3 p-3 border rounded bg-light">
+                        <span class="text-muted small d-block font-weight-bold">Bank / Reference ID:</span>
+                        <code class="text-dark font-weight-bold">@Model.TransactionId</code>
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                {
+                    <div class="mb-4 p-3 border rounded bg-light">
+                        <span class="text-muted small d-block font-weight-bold">Transaction Notes:</span>
+                        <p class="mb-0 text-dark">@Model.Notes</p>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top flex-wrap">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="icon-arrow-left mr-1"></i> Back
+                    </a>
+
+                    <div>
+                        <a asp-controller="Booking" asp-action="Details" asp-route-id="@Model.BookingId" class="btn btn-outline-primary px-4 mr-2">
+                            View Reservation
+                        </a>
+
+                        @if (User.IsInRole("Admin") && Model.Amount > 0)
+                        {
+                            <form asp-action="Refund" asp-route-id="@Model.PaymentId" method="post" class="d-inline" onsubmit="return confirm('Authorize and issue a refund of @Model.Amount.ToString("N2") EGP for this payment?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-danger px-3">
+                                    <i class="icon-refresh mr-1"></i> Issue Refund
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
-</section>
+</div>

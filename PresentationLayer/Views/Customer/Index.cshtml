@@ -1,0 +1,118 @@
+@model IEnumerable<BLLayer1.ViewModel.CustomerVM>
+
+@{
+    if (ViewData["Layout"] != null)
+    {
+        Layout = ViewData["Layout"]?.ToString();
+    }
+    ViewData["Title"] = "Guests & Customers";
+    bool isAdmin = ViewData["Layout"]?.ToString() == "_AdminLayout" || User.IsInRole("Admin");
+    bool isReceptionist = User.IsInRole("Receptionist");
+}
+
+@if (!isAdmin)
+{
+    <!-- HERO BANNER -->
+    <section class="luxury-hero" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
+        <div class="overlay"></div>
+        <div class="container text-center position-relative" style="z-index: 2;">
+            <p class="breadcrumbs mb-2"><span class="mr-2"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></span> <span>&bull;</span> <span class="text-white">Directory</span></p>
+            <h1 class="bread mb-2">Guest Directory</h1>
+            <p class="subtitle">Verified guest records, contact information, and stay profiles.</p>
+        </div>
+    </section>
+}
+
+<div class="@(isAdmin ? "" : "container py-5")">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div>
+            <span class="text-uppercase small font-weight-bold" style="color: #8d703b; letter-spacing: 1px;">Guest Relations</span>
+            <h2 class="font-weight-bold mb-1 text-dark" style="font-family: 'Playfair Display', Georgia, serif;">
+                Resident Guest Directory
+            </h2>
+            <p class="text-muted small mb-0">Review guest records, identification numbers, and contact profiles.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a asp-action="Create" class="btn-luxury-gold">
+                <i class="icon-plus mr-1"></i> Register New Guest
+            </a>
+        </div>
+    </div>
+
+    <div class="luxury-card">
+            <div class="table-responsive">
+                <table class="table table-luxury mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            <th>Contact Phone</th>
+                            <th>National ID</th>
+                            <th>Origin</th>
+                            <th>Status</th>
+                            <th class="text-center" style="min-width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model == null || !Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="icon-users mb-2" style="font-size: 3rem; color: #8d703b;"></i>
+                                    <p class="mb-0">No customer records found in directory.</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong style="color: #8d703b;">#@item.CustomerId</strong>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark">@item.FullName</strong>
+                                    </td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Phone</td>
+                                    <td><code class="text-dark bg-light px-2 py-1 rounded">@item.NationalId</code></td>
+                                    <td>
+                                        @(string.IsNullOrEmpty(item.City) ? item.Country : $"{item.City}, {item.Country}")
+                                    </td>
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge-luxury-confirmed">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-luxury-checkedout">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-inline-flex" style="gap: 4px;">
+                                            <a asp-action="Details" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-secondary" title="View Details">
+                                                <i class="icon-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-primary" title="Edit Customer">
+                                                <i class="icon-pencil"></i>
+                                            </a>
+                                            @if (isAdmin)
+                                            {
+                                                <a asp-action="Delete" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-danger" title="Delete Customer">
+                                                    <i class="icon-trash"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

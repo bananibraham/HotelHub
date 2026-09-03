@@ -1,14 +1,29 @@
+using BLLayer1.Interfaces;
 using HotelHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace HotelHub.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IRoomBL _roomBL;
+        private readonly IRoomTypeBL _roomTypeBL;
+
+        public HomeController(IRoomBL roomBL, IRoomTypeBL roomTypeBL)
         {
-            return View();
+            _roomBL = roomBL;
+            _roomTypeBL = roomTypeBL;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var rooms = await _roomBL.GetAllAsync();
+            var roomTypes = await _roomTypeBL.GetAllAsync();
+
+            ViewBag.RoomTypes = roomTypes;
+            return View(rooms);
         }
 
         public IActionResult Privacy()

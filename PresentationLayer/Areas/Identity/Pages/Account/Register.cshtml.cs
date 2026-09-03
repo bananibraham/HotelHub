@@ -29,12 +29,14 @@ namespace HotelHub.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly BLLayer1.Interfaces.ICustomerBL _customerBL;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
+            BLLayer1.Interfaces.ICustomerBL customerBL,
             IEmailSender emailSender = null)
         {
             _userManager = userManager;
@@ -42,6 +44,7 @@ namespace HotelHub.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
+            _customerBL = customerBL;
             _emailSender = emailSender;
         }
 
@@ -54,6 +57,15 @@ namespace HotelHub.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [Required]
+            [Display(Name = "Full Name")]
+            public string FullName { get; set; }
+
+            [Required]
+            [Phone]
+            [Display(Name = "Phone Number")]
+            public string Phone { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -92,6 +104,19 @@ namespace HotelHub.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    // Assign Customer role
+                    await _userManager.AddToRoleAsync(user, "Customer");
+                    await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.GivenName, Input.FullName));
+
+                    // Create Customer entity in DB
+                    await _customerBL.CreateAsync(new BLLayer1.ViewModel.CustomerVM
+                    {
+                        FullName = Input.FullName,
+                        Email = Input.Email,
+                        Phone = Input.Phone,
+                        IsActive = true
+                    });
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
